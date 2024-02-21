@@ -1,0 +1,16 @@
+{
+  "name": "openpoll-main",
+  "version": "1.0.0",
+  "description": "OpenPoll Main",
+  "license": "MIT",
+  "scripts": {
+    "dev": "run-pty % yarn dev:web % yarn dev:app",
+    "dev:web": "cd app/op-next && yarn dev",
+    "dev:app": "cd app/op-expo && yarn start"
+  },
+
+  "devDependencies": {
+    "run-pty": "^4.1.0"
+  }
+}
+
