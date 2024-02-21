@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "run-pty % yarn dev:web % yarn dev:app",
     "dev:web": "cd app/op-next && yarn dev",
-    "dev:app": "cd app/op-expo && yarn start"
+    "dev:app": "cd app/op-expo && yarn start",
+    "install": "yarn install:web && yarn install:app",
+    "install:web": "cd app/op-next && yarn",
+    "install:app": "cd app/op-expo && yarn"
   },
 
   "devDependencies": {
