@@ -1,0 +1,37 @@
+.navButton {
+    background-color: #C5CFE5;
+    border: none;
+    color: black;
+    text-align: center;
+    margin: 2px 2px;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.navImage {
+    width: 30px;
+    height: 30px;
+    margin: 0 20px;
+}
+
+.navItems {
+    display: flex;
+    justify-content: center;
+    flex-grow: 1;
+}
+
+
+.container {
+    width: 1440px; /* Fixed width as per design spec */
+    height: 165px; /* Fixed height as per design spec */
+    background-color: #C5CFE5; /* Replace with the exact color code from your design */
+    margin: 0 auto; /* This will center the div if the parent is wider than 1440px */
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-shrink: 0;
+    font-family: 'Open Sans', sans-serif;
+  }
+  
