@@ -24,10 +24,10 @@
 
 
 .container {
-    width: 1440px; /* Fixed width as per design spec */
-    height: 165px; /* Fixed height as per design spec */
-    background-color: #C5CFE5; /* Replace with the exact color code from your design */
-    margin: 0 auto; /* This will center the div if the parent is wider than 1440px */
+    width: 1440px;
+    height: 165px;
+    background-color: #C5CFE5; 
+    margin: 0 auto; 
     display: flex;
     align-items: center;
     justify-content: flex-start;

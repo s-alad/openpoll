@@ -1,56 +1,95 @@
 import React, { useState } from 'react';
 import Navbar from '@/components/navbar';
 
+type PollOption = {
+  optionText: string;
+};
+
 type Poll = {
-    questionText: string;
-    questionType: string;
+  questionText: string;
+  options: PollOption[];
+  answer: string;
 };
 
 export default function Polls() {
   const [polls, setPolls] = useState<Poll[]>([]);
   const [questionText, setQuestionText] = useState('');
-  const [questionType, setQuestionType] = useState('short-answer'); // Default type
+  const [currentOptions, setCurrentOptions] = useState<PollOption[]>([]);
+  const [optionText, setOptionText] = useState('');
+  const [answer, setAnswer] = useState(''); // State to hold the correct answer
 
   const addPoll = () => {
-    const newPoll: Poll = { questionText, questionType };
-    setPolls([...polls, newPoll]);
-    setQuestionText('');
+    if (questionText && currentOptions.length > 0 && answer) {
+      const newPoll: Poll = {
+        questionText,
+        options: currentOptions,
+        answer,
+      };
+      setPolls(prevPolls => [...prevPolls, newPoll]);
+      setQuestionText('');
+      setCurrentOptions([]);
+      setOptionText('');
+      setAnswer('');
+    }
   };
 
-  const handleQuestionTextChange = (event: any) => {
-    setQuestionText(event.target.value);
-  };
-
-  const handleQuestionTypeChange = (event: any) => {
-    setQuestionType(event.target.value);
+  const handleAddOption = () => {
+    if (optionText) {
+      setCurrentOptions(prevOptions => [
+        ...prevOptions,
+        { optionText },
+      ]);
+      setOptionText('');
+    }
   };
 
   return (
     <>
       <Navbar />
-      <div> Teacher adding questions </div>
       <div>
+        <h1>Teacher Inputs Multiple Choice Questions</h1>
         <input
           type="text"
           value={questionText}
-          onChange={handleQuestionTextChange}
+          onChange={(e) => setQuestionText(e.target.value)}
           placeholder="Enter your question"
         />
-        <select value={questionType} onChange={handleQuestionTypeChange}>
-          <option value="short-answer">Short Answer</option>
-          <option value="paragraph">Paragraph</option>
-          <option value="multiple-choice">Multiple Choice</option>
-          <option value="true-false">True/False</option>
-          <option value="date">Date</option>
-          <option value="time">Time</option>
-        </select>
-        <button onClick={addPoll}>Add Question</button>
+        {/* Input fields for adding options */}
+        <div>
+          {currentOptions.map((option, index) => (
+            <div key={index}>{option.optionText}</div>
+          ))}
+          <input
+            type="text"
+            value={optionText}
+            onChange={(e) => setOptionText(e.target.value)}
+            placeholder="Enter an option"
+          />
+          <button onClick={handleAddOption}>Add Option</button>
+        </div>
+        {/* Input for the correct answer */}
+        <div>
+          <input
+            type="text"
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            placeholder="Enter the correct answer"
+          />
+        </div>
+        <button onClick={addPoll}>Add Multiple Choice Question</button>
       </div>
+
       <div>
+        {/* Displays the poll items for testing */}
         {polls.map((poll, index) => (
           <div key={index}>
             <p>Question: {poll.questionText}</p>
-            <p>Type: {poll.questionType}</p>
+            <p>Correct Answer: {poll.answer}</p> 
+            <ul>
+              {poll.options.map((option, optionIndex) => (
+                <li key={optionIndex}>{option.optionText}</li>
+              ))}
+            </ul>
           </div>
         ))}
       </div>
