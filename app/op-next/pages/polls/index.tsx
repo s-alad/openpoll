@@ -46,7 +46,7 @@ export default function Polls() {
 
   return (
     <>
-        <Navbar />
+{/*         <Navbar /> */}
         <div className={styles.container}>
             <h1>Teacher Inputs Multiple Choice Questions</h1>
             <input

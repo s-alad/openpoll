@@ -11,6 +11,10 @@ export default function Class() {
 
     const { class: classId } = router.query;
 
+    async function createpoll() {
+        router.push("/polls");
+    }
+
 
     return (
         <div className={s.class}>
@@ -22,7 +26,11 @@ export default function Class() {
             </nav>
 
             <div className={s.start}>
-                <div className={s.add}>
+                <div className={s.add}
+                    onClick={() => {
+                        createpoll()
+                    }}
+                >
                     <FontAwesomeIcon icon={faPlus} />
                 </div>
             </div>
