@@ -1,15 +1,27 @@
 .dashboard {
+    width: 100%;
     nav {
         height: 100px;
         width: 100%;
         display: flex;
         align-items: center;
+        justify-content: space-between;
         padding: 0 40px;
         background-color: #c5cfe5;
 
         .path {
             font-size: 22px;
             font-weight: 600;
+        }
+        
+        .person {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid black;
+            border-radius: 50%;
         }
 
     }
