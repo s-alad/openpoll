@@ -1,6 +1,6 @@
 import { use, useState } from "react"
 import s from "./dashboard.module.scss"
-import { faUser } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faHome } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRouter } from "next/router";
 
@@ -15,7 +15,7 @@ export default function Dashboard() {
     return (
         <div className={s.dashboard}>
             <nav>
-                <div className={s.path}>Courses /</div>
+            <div className={s.path}><FontAwesomeIcon icon={faHome} onClick={() => router.back()} className={s.back}/> Courses / </div>
                 <div className={s.person}>
                         <FontAwesomeIcon icon={faUser} />
                 </div>

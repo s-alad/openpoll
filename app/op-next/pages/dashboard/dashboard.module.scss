@@ -12,6 +12,12 @@
         .path {
             font-size: 22px;
             font-weight: 600;
+
+            .back {
+                margin-right: 12px;
+                cursor: pointer;
+                width: 30px;
+            }
         }
         
         .person {

@@ -1,5 +1,8 @@
 import { useRouter } from 'next/router';
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faArrowLeftLong, faPlus } from '@fortawesome/free-solid-svg-icons';
+import s from './class.module.scss';
 
 export default function Class() {
 
@@ -10,8 +13,19 @@ export default function Class() {
 
 
     return (
-        <div>
-            <h1>Class {classId}</h1>
+        <div className={s.class}>
+            <nav>     
+                <div className={s.path}><FontAwesomeIcon icon={faArrowLeftLong} onClick={() => router.back()} className={s.back}/> Courses / {classId}</div>
+                <div className={s.person}>
+                        <FontAwesomeIcon icon={faUser} />
+                </div>
+            </nav>
+
+            <div className={s.start}>
+                <div className={s.add}>
+                    <FontAwesomeIcon icon={faPlus} />
+                </div>
+            </div>
         </div>
     )
 }
