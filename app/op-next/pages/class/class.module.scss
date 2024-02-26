@@ -1,0 +1,58 @@
+.class {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    nav {
+        height: 100px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 40px;
+        background-color: #c5cfe5;
+    
+        .path {
+            font-size: 22px;
+            font-weight: 600;
+
+            .back {
+                margin-right: 12px;
+                cursor: pointer;
+                width: 30px;
+            }
+        }
+        
+        .person {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid black;
+            border-radius: 50%;
+        }
+    }
+
+    .start {
+        width: 100%;
+        height: 90%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        .add {
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 600;
+            border-radius: 50%;
+            border: 4px solid black;
+        }
+    }
+}
