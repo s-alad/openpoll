@@ -1,9 +1,16 @@
-import { useState } from "react"
+import { use, useState } from "react"
 import s from "./dashboard.module.scss"
 import { faUser } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useRouter } from "next/router";
 
 export default function Dashboard() {
+
+    const router = useRouter();
+
+    async function enterclass(id: string) {
+        router.push("/class/" + id);
+    }
     
     return (
         <div className={s.dashboard}>
@@ -24,7 +31,11 @@ export default function Dashboard() {
                                 <div className={s.teacher}>Prof. John Doe</div>
                             </div>
                             <div className={s.actions}>
-                                <div className={s.join}>join</div>
+                                <div className={s.join}
+                                    onClick={() => {
+                                        enterclass("XYZ123")
+                                    }}
+                                >join</div>
                             </div>
                         </div>
                     </div>
@@ -38,7 +49,11 @@ export default function Dashboard() {
                                 <div className={s.teacher}>Prof. Jane Doe</div>
                             </div>
                             <div className={s.actions}>
-                                <div className={s.join}>join</div>
+                                <div className={s.join}
+                                    onClick={() => {
+                                        enterclass("ABC456")
+                                    }}
+                                >join</div>
                             </div>
                         </div>
                     </div>
