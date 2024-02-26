@@ -23,6 +23,79 @@
             border: 3px solid black;
             border-radius: 50%;
         }
-
     }
+    main {
+        padding-top: 200px;
+        .classes {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        align-items: center;
+        gap: 40px;
+        .class {
+            display: flex;
+            flex-direction: column;
+            
+            width: 70%;
+            .trap {
+                width: 20%;
+                height: 30px;
+                clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+            }
+            .content {
+                width: 100%;
+                height: 155px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 60px;
+
+
+                .info {
+                    .code {
+                        font-size: 18px;
+                        font-weight: 600;
+                    }
+                    .name {
+                        font-size: 24px;
+                        font-weight: 600;
+                    }
+                    .teacher {
+                        font-size: 18px;
+                        font-weight: 600;
+                    }
+                }
+
+                .actions {
+                    .join {
+                        width: 200px;
+                        height: 50px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        background-color: #4036ee;
+                        color: white;
+                        border-radius: 32px;
+                        font-size: 18px;
+                        font-weight: 600;
+                    }
+                }
+            }
+
+            .actions {
+                display: flex;
+                
+            }
+
+            .yellow {
+                background-color: #FBB91B;
+            }
+            .pink {
+                background-color: #ffc9c9;
+            }
+        }
+    }
+    }
+    
 }
