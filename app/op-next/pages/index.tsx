@@ -2,6 +2,8 @@ import Image from 'next/image'
 import s from './index.module.scss'
 import { Open_Sans } from 'next/font/google'
 import { useRouter } from 'next/router';
+import Head from 'next/head';
+import { useAuth } from '@/context/authcontext';
 
 const openSansNormal = Open_Sans({ weight: "400", style: 'normal', subsets: ['latin'] });
 const openSansBold = Open_Sans({ weight: "700", style: 'normal', subsets: ['latin'] });
@@ -10,29 +12,34 @@ const openSansBold = Open_Sans({ weight: "700", style: 'normal', subsets: ['lati
 export default function Index() {
 
   let router = useRouter()
-
-  async function signin() {
-    router.push('/login')
-  }
+  const { user, status, googlesignin, logout } = useAuth();
 
   return (
-    <div className={s.container}>
-      <Image
-        src="/OpenPollLogo1.png"
-        alt="Open Poll Logo"
-        width={300}
-        height={300}
-        className={s.logo}
-      />
-      <div className={s.text}>
-        <h1 className={openSansBold.className}>Log in to Open Poll</h1>
-        <p className={openSansNormal.className}>Welcome back! Please log in below</p>
+    <>
+      <Head>
+        <title>OpenPoll</title>
+        <meta name="description" content="Openpoll" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <div className={s.container}>
+        <Image
+          src="/OpenPollLogo1.png"
+          alt="Open Poll Logo"
+          width={300}
+          height={300}
+          className={s.logo}
+        />
+        <div className={s.text}>
+          <h1 className={openSansBold.className}>Log in to Open Poll</h1>
+          <p className={openSansNormal.className}>Welcome back! Please log in below</p>
+        </div>
+        <button className={s.loginButton}
+          onClick={ () => {googlesignin();} }
+        >
+          Continue with Google
+        </button>
       </div>
-      <button className={s.loginButton}
-        onClick={signin}
-      >
-        Continue with Google
-      </button>
-    </div>
+      </>
   );
 }

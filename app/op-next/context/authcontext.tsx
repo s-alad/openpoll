@@ -6,7 +6,7 @@ import {
 	GoogleAuthProvider,
 } from "firebase/auth";
 
-import { User } from "firebase/auth";
+import { User, getAdditionalUserInfo } from "firebase/auth";
 import { auth } from "../firebase/firebaseconfig";
 import { useRouter } from "next/router";
 
@@ -35,9 +35,14 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
 	function googlesignin() {
 		const provider = new GoogleAuthProvider();
-		signInWithPopup(auth, provider).then((result) => {
+		signInWithPopup(auth, provider).then(async (result) => {
+            const isfirst = getAdditionalUserInfo(result)!.isNewUser;
             setStatus("valid");
-			console.log("pushing", auth); router.push("/dashboard");
+            if (isfirst) {
+                router.push("/onboard");
+            } else {
+                console.log("pushing", auth); router.push("/dashboard");
+            }
 		}).catch((error) => {
 			console.log(error);
 		});
