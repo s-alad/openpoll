@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Navbar from '@/components/navbar';
+import styles from '@/styles/Polls.module.css';
 
 type PollOption = {
   optionText: string;
@@ -45,51 +46,60 @@ export default function Polls() {
 
   return (
     <>
-      <Navbar />
-      <div>
-        <h1>Teacher Inputs Multiple Choice Questions</h1>
-        <input
-          type="text"
-          value={questionText}
-          onChange={(e) => setQuestionText(e.target.value)}
-          placeholder="Enter your question"
-        />
-        {/* Input fields for adding options */}
-        <div>
-          {currentOptions.map((option, index) => (
-            <div key={index}>{option.optionText}</div>
-          ))}
-          <input
+        <Navbar />
+        <div className={styles.container}>
+            <h1>Teacher Inputs Multiple Choice Questions</h1>
+            <input
+            className={styles.questionInput}
             type="text"
-            value={optionText}
-            onChange={(e) => setOptionText(e.target.value)}
-            placeholder="Enter an option"
-          />
-          <button onClick={handleAddOption}>Add Option</button>
-        </div>
-        {/* Input for the correct answer */}
-        <div>
-          <input
-            type="text"
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            placeholder="Enter the correct answer"
-          />
-        </div>
-        <button onClick={addPoll}>Add Multiple Choice Question</button>
-      </div>
+            value={questionText}
+            onChange={(e) => setQuestionText(e.target.value)}
+            placeholder="Enter your question"
+            />
+            <div className={styles.optionsContainer}>
+            
+            <input
+                className={styles.questionInput}
+                type="text"
+                value={optionText}
+                onChange={(e) => setOptionText(e.target.value)}
+                placeholder="Enter an option"
+            />
+            {currentOptions.map((option, index) => (
+                <div key={index} className={styles.optionItem}>
+                <label className={styles.optionLabel}>{option.optionText}</label>
+                <input type="checkbox" className={styles.optionCheckbox} id={`option_${index}`} />
+                </div>
+            ))}
+            <button className={styles.addButton} onClick={handleAddOption}>Add Option</button>
+            </div>
+            <div className={styles.optionsContainer}>
+                <input 
+                    className={styles.questionInput}
+                    type="text"
+                    value={answer}
+                    onChange={(e) => setAnswer(e.target.value)}
+                    placeholder="Enter the correct answer"
+                />
+            </div>
 
-      <div>
-        {/* Displays the poll items for testing */}
+            <button className={styles.saveButton} onClick={addPoll}>Save</button>
+        </div>
+
+        {/* Displays list of polls created for testing */}
+        <div className={styles.pollList}>
         {polls.map((poll, index) => (
-          <div key={index}>
+          <div key={index} className={styles.pollItem}>
             <p>Question: {poll.questionText}</p>
-            <p>Correct Answer: {poll.answer}</p> 
-            <ul>
+            <p>Options:</p>
+            <ul className={styles.pollOptions}>
               {poll.options.map((option, optionIndex) => (
-                <li key={optionIndex}>{option.optionText}</li>
+                <li key={optionIndex} className={styles.pollOption}>
+                  {option.optionText}
+                </li>
               ))}
             </ul>
+            <p>Correct Answer: {poll.answer}</p>
           </div>
         ))}
       </div>
