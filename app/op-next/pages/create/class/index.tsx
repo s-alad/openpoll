@@ -16,21 +16,14 @@ interface ClassData {
     description: string;
 }
 
-/* async function addClassToDb (form: any) {
-    const user = auth.currentUser;
-    const docRef = db.collection("classes").doc();
-    docRef.set({
-        name: user,
-        description: form.description,
-        admin: [],
-        students: [],
-        questions: []
-    });
-} */
 
 export default function Create() {
 
     const router = useRouter();
+
+    async function dashboard() {
+        router.push("/dashboard");
+    }
 
 
     async function createclass(e: FormEvent) {
@@ -86,7 +79,7 @@ export default function Create() {
                         required
                     />
                 </div>
-                <button type="submit">Create Class</button>
+                <button type="submit" onClick={dashboard}>Create Class</button>
             </form>
         </>
     );
