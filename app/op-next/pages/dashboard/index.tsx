@@ -27,9 +27,8 @@ export default function Dashboard() {
 
         const userClassesQuery = query(collection(db, "classes"), where("owner", "==", uid));
         const userClassesSnapshot = await getDocs(userClassesQuery);
-        userClassesSnapshot.forEach((doc) => {
-            setClasses((prevClasses) => [...prevClasses, doc.data() as ClassData]);
-          });
+        const newClasses = userClassesSnapshot.docs.map((doc) => doc.data() as ClassData);
+        setClasses(newClasses);
         } catch (e) {
             console.error("Error getting documents: ", e);
         }
