@@ -62,9 +62,28 @@ export default function Dashboard() {
                 </div>
             </nav>
             <main className={s.main}>
-                {/* {classes.map((classData, index) => (
-                    
-                ))} */}
+                {classes.map((classData, index) => (
+                    <div className={s.classes}>
+                        <div className={s.class}>
+                            <div className={`${s.trap} ${s.yellow}`}></div>
+                            <div className={`${s.content} ${s.yellow}`}>
+                                <div className={s.info}>
+                                    <div className={s.code}>{classData.className}</div>
+                                    <div className={s.name}>{classData.description}</div>
+                                    <div className={s.teacher}>{classData.owner}</div>
+                                </div>
+                                <div className={s.actions}>
+                                    <div className={s.join}
+                                        onClick={() => {
+                                            enterclass(classData.className)
+                                        }}
+                                    >enter</div>
+                                </div>
+                            </div>  
+                        </div>
+                    </div>
+                ))}
+
                 <div className={s.options}>
                     <div className={s.join}>
                         <FontAwesomeIcon icon={faRightToBracket} />
