@@ -22,12 +22,18 @@ const RedirectBasedOnAuth = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         if (protectedRoutes.includes(currentRoute)) {
-            if ((!user && !calledPush)) {
+            if ((!user)) {
                 setCalledPush(true);
                 router.push("/");
                 return;
             }
-        } 
+        }
+        if (currentRoute === "/") {
+            if (user) {
+                router.push("/dashboard");
+                return;
+            }
+        }
     }, [calledPush, currentRoute, router]);
 
     return children;

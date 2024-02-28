@@ -1,6 +1,6 @@
 import { use, useState } from "react"
 import s from "./dashboard.module.scss"
-import { faUser, faHome, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faHome, faPlus, faRightToBracket } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRouter } from "next/router";
 
@@ -21,14 +21,6 @@ export default function Dashboard() {
                 </div>
             </nav>
             <main className={s.main}>
-
-                <div className={s.options}>
-                    <div className={s.join}>
-                        <FontAwesomeIcon icon={faPlus} />
-                        join a class
-                    </div>
-                </div>
-
                 <div className={s.classes}>
                     <div className={s.class}>
                         <div className={`${s.trap} ${s.yellow}`}></div>
@@ -64,6 +56,17 @@ export default function Dashboard() {
                                 >enter</div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <div className={s.options}>
+                    <div className={s.join}>
+                        <FontAwesomeIcon icon={faRightToBracket} />
+                        join a class
+                    </div> 
+                    <div className={s.create}>
+                        <FontAwesomeIcon icon={faPlus} />
+                        create a class
                     </div>
                 </div>
             </main>

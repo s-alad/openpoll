@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Navbar from '@/components/navbar';
-import styles from '@/styles/Polls.module.css';
+import Navbar from '@/components/navbar/navbar';
+import styles from './polls.module.scss';
 
 type PollOption = {
   optionText: string;

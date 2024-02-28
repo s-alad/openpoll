@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import styles from "../styles/Navbar.module.css";
+import styles from "./navbar.module.scss";
 import Link from "next/link";
 import { Open_Sans } from 'next/font/google'
 
