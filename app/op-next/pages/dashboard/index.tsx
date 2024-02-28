@@ -64,7 +64,11 @@ export default function Dashboard() {
                         <FontAwesomeIcon icon={faRightToBracket} />
                         join a class
                     </div> 
-                    <div className={s.create}>
+                    <div className={s.create}
+                        onClick={() => {
+                            router.push("/create/class")
+                        }}
+                    >
                         <FontAwesomeIcon icon={faPlus} />
                         create a class
                     </div>
