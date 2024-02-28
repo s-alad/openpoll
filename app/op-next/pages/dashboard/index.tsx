@@ -3,14 +3,25 @@ import s from "./dashboard.module.scss"
 import { faUser, faHome, faPlus, faRightToBracket } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRouter } from "next/router";
+import { db } from "../../firebase/firebaseconfig";
+import { collection, getDoc, doc } from "firebase/firestore";
+import { get } from "http";
 
 export default function Dashboard() {
+
+    async function getClass () {
+        const classDocRef = doc(db, "classes");
+        const classSnapshot = await getDoc(classDocRef);
+        console.log(classSnapshot.data());
+    }    
 
     const router = useRouter();
 
     async function enterclass(id: string) {
         router.push("/class/" + id);
     }
+
+    getClass();
     
     return (
         <div className={s.dashboard}>
