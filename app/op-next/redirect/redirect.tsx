@@ -9,6 +9,8 @@ import { get } from "http";
 // Many of these routes do not exits yet. That's okay (:
 const protectedRoutes = [
     "/dashboard",
+    "/create/class",
+    "/create/poll"
 ];
 
 const RedirectBasedOnAuth = ({ children }: { children: React.ReactNode }) => {
