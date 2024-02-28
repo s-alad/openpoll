@@ -61,36 +61,28 @@ export default function Create() {
 
     const [formData, setFormData] = useState<ClassData>({ classname: '', description: '' });
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-    };
 
     return (
         <>
             <Navbar path={"Create class /"} />
             <form onSubmit={createclass}>
                 <div>
-                    <label htmlFor="className">Class Name:</label>
-                    <input
-                        type="text"
+                    <label>Class Name:</label>
+                    <textarea
                         id="className"
                         name="className"
                         value={formData.classname}
-                        onChange={handleChange}
+                        onChange={(e) => setFormData({ ...formData, classname: e.target.value })}
                         required
                     />
                 </div>
                 <div>
-                    <label htmlFor="description">Description:</label>
+                    <label>Description:</label>
                     <textarea
                         id="description"
                         name="description"
                         value={formData.description}
-                        onChange={handleChange}
+                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         required
                     />
                 </div>
