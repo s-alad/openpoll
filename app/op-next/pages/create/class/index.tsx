@@ -6,7 +6,7 @@ import { User, getAdditionalUserInfo } from "firebase/auth";
 import { auth, db, fxns } from "../../../firebase/firebaseconfig";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { useRouter } from "next/router";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 
 // index.tsx
 import React, { useState, FormEvent } from 'react';
@@ -44,12 +44,12 @@ export default function Create() {
             questions: []
         }
 
-        const generateClassId = httpsCallable(fxns, "generateClassId");
-        const cid = await generateClassId();
+        const generateClassId = await httpsCallable(fxns, "generateClassId");
+        const cid = (await generateClassId()).data as { id: string };
 
         try {
-            const docRef = await addDoc(collection(db, "classes"), classdata);
-            console.log("Document written with ID: ", docRef.id);
+            const docRef = await setDoc(doc(db, "classes", cid.id), classdata);
+            console.log("Document written with ID: ", cid)
 
         } catch (e) {
             console.error("Error adding document: ", e);
