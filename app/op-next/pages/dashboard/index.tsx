@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRouter } from "next/router";
 import { db,auth } from "../../firebase/firebaseconfig";
 import { collection, getDocs, where, query } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 
 interface ClassData {
     className: string;
@@ -41,9 +42,17 @@ export default function Dashboard() {
     }
 
     useEffect(() => {
-        getClass();
-    }, [])
-    
+        const unsubscribe =  onAuthStateChanged(auth, (user) => {
+            if (user) {
+                getClass();
+            } else {
+                router.push("/");
+            }
+        });
+
+        return () => unsubscribe();
+    }, []);
+
     return (
         <div className={s.dashboard}>
             <nav>
@@ -53,30 +62,9 @@ export default function Dashboard() {
                 </div>
             </nav>
             <main className={s.main}>
-                {classes.map((classData, index) => (
-                    <div key={index} className={s.classes}>
-                        <div className={s.class}>
-                        <div className={`${s.trap} ${classData.color}`}></div>
-                        <div className={`${s.content} ${classData.color}`}>
-                            <div className={s.info}>
-                            <div className={s.code}>{classData.className}</div>
-                            <div className={s.name}>{classData.description}</div>
-                            <div className={s.teacher}>{classData.teacher}</div>
-                            </div>
-                            <div className={s.actions}>
-                            <div
-                                className={s.join}
-                                onClick={() => {
-                                enterclass(classData.className);
-                                }}
-                            >
-                                enter
-                            </div>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                ))}
+                {/* {classes.map((classData, index) => (
+                    
+                ))} */}
                 <div className={s.options}>
                     <div className={s.join}>
                         <FontAwesomeIcon icon={faRightToBracket} />
