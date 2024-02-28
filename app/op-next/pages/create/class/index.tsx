@@ -38,7 +38,7 @@ export default function Create() {
         const uid = user!.uid;
 
         const classdata = {
-            className: formData.className,
+            className: formData.classname,
             description: formData.description,
             admin: [uid],
             students: [],
