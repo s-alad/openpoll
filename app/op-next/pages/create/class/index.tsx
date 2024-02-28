@@ -16,6 +16,18 @@ interface ClassFormData {
   description: string;
 }
 
+/* async function addClassToDb (form: any) {
+    const user = auth.currentUser;
+    const docRef = db.collection("classes").doc();
+    docRef.set({
+        name: user,
+        description: form.description,
+        admin: [],
+        students: [],
+        questions: []
+    });
+} */
+
 export default function CreateClass() {
 
     const router = useRouter();
