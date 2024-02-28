@@ -11,8 +11,8 @@ import { addDoc, collection } from "firebase/firestore";
 // index.tsx
 import React, { useState, FormEvent } from 'react';
 
-interface ClassFormData {
-    className: string;
+interface ClassData {
+    classname: string;
     description: string;
 }
 
@@ -28,13 +28,12 @@ interface ClassFormData {
     });
 } */
 
-export default function CreateClass() {
+export default function Create() {
 
     const router = useRouter();
 
 
     async function createclass() {
-        // in the document classes in firebase, create a new class
         const user = auth.currentUser;
         const uid = user!.uid;
 
@@ -57,7 +56,7 @@ export default function CreateClass() {
 
     }
 
-    const [formData, setFormData] = useState<ClassFormData>({ className: '', description: '' });
+    const [formData, setFormData] = useState<ClassData>({ classname: '', description: '' });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -67,23 +66,22 @@ export default function CreateClass() {
         }));
     };
 
-    const handleSubmit = (e: FormEvent) => {
+    async function submit(e: FormEvent) {
         e.preventDefault();
-        // Here you would typically handle the submission to your backend or state management solution
         console.log('Form data submitted:', formData);
     };
 
     return (
         <>
             <Navbar path={"Create class /"} />
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={submit}>
                 <div>
                     <label htmlFor="className">Class Name:</label>
                     <input
                         type="text"
                         id="className"
                         name="className"
-                        value={formData.className}
+                        value={formData.classname}
                         onChange={handleChange}
                         required
                     />
