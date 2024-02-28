@@ -17,6 +17,7 @@ interface ClassData {
 }
 
 
+
 export default function Create() {
 
     const router = useRouter();
@@ -37,10 +38,13 @@ export default function Create() {
         const classdata = {
             className: formData.classname,
             description: formData.description,
-            admin: [uid],
+            owner: uid,
+            admin: [],
             students: [],
             questions: []
         }
+
+        const classID = 
 
         try {
             const docRef = await addDoc(collection(db, "classes"), classdata);
