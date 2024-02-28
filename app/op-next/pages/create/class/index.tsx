@@ -4,6 +4,8 @@ import React from "react"
 import styles from "./create.class.module.scss"
 
 export default function CreateClass() {
+    
+
     return (
         <div>
             <Navbar path={"Create class /"}/>
