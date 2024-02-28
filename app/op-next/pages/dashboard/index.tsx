@@ -20,15 +20,18 @@ export default function Dashboard() {
     const [classes, setClasses] = useState<ClassData[]>([]);
 
     async function getClass () {
+        try {
         const user = auth.currentUser;
         const uid = user!.uid;
 
         const userClassesQuery = query(collection(db, "classes"), where("owner", "==", uid));
         const userClassesSnapshot = await getDocs(userClassesQuery);
         userClassesSnapshot.forEach((doc) => {
-            console.log(doc.data());
             setClasses((prevClasses) => [...prevClasses, doc.data() as ClassData]);
           });
+        } catch (e) {
+            console.error("Error getting documents: ", e);
+        }
     }    
 
     const router = useRouter();
@@ -39,7 +42,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         getClass();
-    }, [classes])
+    }, [])
     
     return (
         <div className={s.dashboard}>
@@ -50,7 +53,44 @@ export default function Dashboard() {
                 </div>
             </nav>
             <main className={s.main}>
-
+                {classes.map((classData, index) => (
+                    <div key={index} className={s.classes}>
+                        <div className={s.class}>
+                        <div className={`${s.trap} ${classData.color}`}></div>
+                        <div className={`${s.content} ${classData.color}`}>
+                            <div className={s.info}>
+                            <div className={s.code}>{classData.className}</div>
+                            <div className={s.name}>{classData.description}</div>
+                            <div className={s.teacher}>{classData.teacher}</div>
+                            </div>
+                            <div className={s.actions}>
+                            <div
+                                className={s.join}
+                                onClick={() => {
+                                enterclass(classData.className);
+                                }}
+                            >
+                                enter
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                ))}
+                <div className={s.options}>
+                    <div className={s.join}>
+                        <FontAwesomeIcon icon={faRightToBracket} />
+                        join a class
+                    </div> 
+                    <div className={s.create}
+                        onClick={() => {
+                            router.push("/create/class")
+                        }}
+                    >
+                        <FontAwesomeIcon icon={faPlus} />
+                        create a class
+                    </div>
+                </div>
                 {/* <div className={s.classes}>
                     <div className={s.class}>
                         <div className={`${s.trap} ${s.yellow}`}></div>
