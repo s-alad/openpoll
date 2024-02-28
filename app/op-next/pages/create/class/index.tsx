@@ -38,12 +38,11 @@ export default function Create() {
         const uid = user!.uid;
 
         const classdata = {
-            name: "x",
-            description: "x",
-            owner: uid,
+            className: formData.className,
+            description: formData.description,
+            admin: [uid],
             students: [],
-            assignments: [],
-            polls: []
+            questions: []
         }
 
         try {
@@ -74,7 +73,7 @@ export default function Create() {
     return (
         <>
             <Navbar path={"Create class /"} />
-            <form onSubmit={submit}>
+            <form onSubmit={createclass}>
                 <div>
                     <label htmlFor="className">Class Name:</label>
                     <input
