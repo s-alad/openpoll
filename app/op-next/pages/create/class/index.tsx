@@ -12,8 +12,8 @@ import { addDoc, collection } from "firebase/firestore";
 import React, { useState, FormEvent } from 'react';
 
 interface ClassFormData {
-  className: string;
-  description: string;
+    className: string;
+    description: string;
 }
 
 /* async function addClassToDb (form: any) {
@@ -50,54 +50,56 @@ export default function CreateClass() {
         try {
             const docRef = await addDoc(collection(db, "classes"), classdata);
             console.log("Document written with ID: ", docRef.id);
-        
+
         } catch (e) {
             console.error("Error adding document: ", e);
         }
 
     }
 
-  const [formData, setFormData] = useState<ClassFormData>({ className: '', description: '' });
+    const [formData, setFormData] = useState<ClassFormData>({ className: '', description: '' });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-  };
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setFormData(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    // Here you would typically handle the submission to your backend or state management solution
-    console.log('Form data submitted:', formData);
-  };
+    const handleSubmit = (e: FormEvent) => {
+        e.preventDefault();
+        // Here you would typically handle the submission to your backend or state management solution
+        console.log('Form data submitted:', formData);
+    };
 
-  return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="className">Class Name:</label>
-        <input
-          type="text"
-          id="className"
-          name="className"
-          value={formData.className}
-          onChange={handleChange}
-          required
-        />
-      </div>
-      <div>
-            <Navbar path={"Create class /"}/>
-        <label htmlFor="description">Description:</label>
-        <textarea
-          id="description"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          required
-        />
-      </div>
-      <button type="submit">Create Class</button>
-    </form>
-  );
+    return (
+        <>
+            <Navbar path={"Create class /"} />
+            <form onSubmit={handleSubmit}>
+                <div>
+                    <label htmlFor="className">Class Name:</label>
+                    <input
+                        type="text"
+                        id="className"
+                        name="className"
+                        value={formData.className}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div>
+                    <label htmlFor="description">Description:</label>
+                    <textarea
+                        id="description"
+                        name="description"
+                        value={formData.description}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <button type="submit">Create Class</button>
+            </form>
+        </>
+    );
 };
