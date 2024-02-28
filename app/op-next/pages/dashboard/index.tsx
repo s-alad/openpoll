@@ -1,18 +1,34 @@
-import { use, useState } from "react"
+import { use, useEffect, useState } from "react"
 import s from "./dashboard.module.scss"
 import { faUser, faHome, faPlus, faRightToBracket } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRouter } from "next/router";
-import { db } from "../../firebase/firebaseconfig";
-import { collection, getDoc, doc } from "firebase/firestore";
-import { get } from "http";
+import { db,auth } from "../../firebase/firebaseconfig";
+import { collection, getDocs, where, query } from "firebase/firestore";
+
+interface ClassData {
+    className: string;
+    description: string;
+    owner: string;
+    admin: string[];
+    students: string[];
+    questions: string[];
+}
 
 export default function Dashboard() {
 
+    const [classes, setClasses] = useState<ClassData[]>([]);
+
     async function getClass () {
-        const classDocRef = doc(db, "classes");
-        const classSnapshot = await getDoc(classDocRef);
-        console.log(classSnapshot.data());
+        const user = auth.currentUser;
+        const uid = user!.uid;
+
+        const userClassesQuery = query(collection(db, "classes"), where("owner", "==", uid));
+        const userClassesSnapshot = await getDocs(userClassesQuery);
+        userClassesSnapshot.forEach((doc) => {
+            console.log(doc.data());
+            setClasses((prevClasses) => [...prevClasses, doc.data() as ClassData]);
+          });
     }    
 
     const router = useRouter();
@@ -21,7 +37,9 @@ export default function Dashboard() {
         router.push("/class/" + id);
     }
 
-    getClass();
+    useEffect(() => {
+        getClass();
+    }, [classes])
     
     return (
         <div className={s.dashboard}>
@@ -32,7 +50,8 @@ export default function Dashboard() {
                 </div>
             </nav>
             <main className={s.main}>
-                <div className={s.classes}>
+
+                {/* <div className={s.classes}>
                     <div className={s.class}>
                         <div className={`${s.trap} ${s.yellow}`}></div>
                         <div className={`${s.content} ${s.yellow}`}>
@@ -83,7 +102,7 @@ export default function Dashboard() {
                         <FontAwesomeIcon icon={faPlus} />
                         create a class
                     </div>
-                </div>
+                </div> */}
             </main>
         </div>
     )
