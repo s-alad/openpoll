@@ -33,7 +33,11 @@ export default function Create() {
     const router = useRouter();
 
 
-    async function createclass() {
+    async function createclass(e: FormEvent) {
+        e.preventDefault();
+        console.log('Form data submitted:', formData);
+
+
         const user = auth.currentUser;
         const uid = user!.uid;
 
@@ -63,11 +67,6 @@ export default function Create() {
             ...prevState,
             [name]: value
         }));
-    };
-
-    async function submit(e: FormEvent) {
-        e.preventDefault();
-        console.log('Form data submitted:', formData);
     };
 
     return (
