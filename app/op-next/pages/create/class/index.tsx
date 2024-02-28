@@ -3,8 +3,8 @@ import Navbar from "@/layout/navbar/navbar"
 import styles from "./create.class.module.scss"
 
 import { User, getAdditionalUserInfo } from "firebase/auth";
-import { auth, db } from "../../../firebase/firebaseconfig";
-
+import { auth, db, fxns } from "../../../firebase/firebaseconfig";
+import { getFunctions, httpsCallable } from "firebase/functions";
 import { useRouter } from "next/router";
 import { addDoc, collection } from "firebase/firestore";
 
@@ -44,7 +44,8 @@ export default function Create() {
             questions: []
         }
 
-        const classID = 
+        const generateClassId = httpsCallable(fxns, "generateClassId");
+        const cid = await generateClassId();
 
         try {
             const docRef = await addDoc(collection(db, "classes"), classdata);
