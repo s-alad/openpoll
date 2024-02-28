@@ -16,7 +16,7 @@ interface ClassFormData {
   description: string;
 }
 
-const CreateClassForm: React.FC = () => {
+export default function CreateClass() {
 
     const router = useRouter();
 
@@ -89,5 +89,3 @@ const CreateClassForm: React.FC = () => {
     </form>
   );
 };
-
-export default CreateClassForm;
