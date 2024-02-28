@@ -6,6 +6,7 @@ import { User, getAdditionalUserInfo } from "firebase/auth";
 import { auth, db } from "../../../firebase/firebaseconfig";
 
 import { useRouter } from "next/router";
+import { addDoc, collection } from "firebase/firestore";
 
 // index.tsx
 import React, { useState, FormEvent } from 'react';
@@ -24,6 +25,23 @@ const CreateClassForm: React.FC = () => {
         // in the document classes in firebase, create a new class
         const user = auth.currentUser;
         const uid = user!.uid;
+
+        const classdata = {
+            name: "x",
+            description: "x",
+            owner: uid,
+            students: [],
+            assignments: [],
+            polls: []
+        }
+
+        try {
+            const docRef = await addDoc(collection(db, "classes"), classdata);
+            console.log("Document written with ID: ", docRef.id);
+        
+        } catch (e) {
+            console.error("Error adding document: ", e);
+        }
 
     }
 
