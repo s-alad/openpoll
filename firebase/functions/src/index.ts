@@ -4,6 +4,7 @@
 
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
+import { v4 as uuidv4 } from 'uuid';
 
 admin.initializeApp();
 
@@ -35,15 +36,7 @@ export const generateClassId = functions.https.onCall(async (data, context) => {
     }
 
     const generateId = () => {
-        let id = '';
-        while (true) {
-            const randomNumber = Math.floor(10000 + Math.random() * 90000);
-            id = randomNumber.toString();
-
-            // Check for at least two repeating consecutive digits
-            if (/(\d)\1{1,}/.test(id)) break; 
-        }
-        return id;
+        return uuidv4().split("-")[0].toUpperCase();
     }
 
     let id = generateId();
