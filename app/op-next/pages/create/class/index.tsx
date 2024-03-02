@@ -24,7 +24,7 @@ export default function Create() {
     }
 
     async function createclass(data: formdata) {
-        console.log('Form data submitted:', data);
+        console.log('form data submitted:', data);
 
 
         const user = auth.currentUser;
@@ -75,7 +75,6 @@ export default function Create() {
                             name="classname"
                             register={register}
                             error={errors.classname}
-                            disabled={true}
                         />
 
                         <ClassInput
@@ -83,7 +82,6 @@ export default function Create() {
                             name="description"
                             register={register}
                             error={errors.description}
-                            disabled={true}
                         />
                         <button type="submit">Create Class</button>
                     </form>
