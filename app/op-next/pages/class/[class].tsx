@@ -18,13 +18,6 @@ export default function Class() {
 
     return (
         <div className={s.class}>
-            <nav>     
-                <div className={s.path}><FontAwesomeIcon icon={faArrowLeftLong} onClick={() => router.back()} className={s.back}/> Courses / {classId}</div>
-                <div className={s.person}>
-                        <FontAwesomeIcon icon={faUser} />
-                </div>
-            </nav>
-
             <div className={s.start}>
                 <div className={s.add}
                     onClick={() => {

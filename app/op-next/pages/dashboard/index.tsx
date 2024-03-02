@@ -7,43 +7,51 @@ import { db,auth } from "../../firebase/firebaseconfig";
 import { collection, getDocs, where, query } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import Classroom from "@/models/class";
+import Loader from "@/components/loader/loader";
+import { useAuth } from "@/context/authcontext";
+import Unauthorized from "@/components/unauthorized/unauthorized";
+import { useGlobal } from "@/context/globalcontext";
 
 export default function Dashboard() {
-
+    const router = useRouter();
+    const {path, setPath} = useGlobal();
+    const { user, googlesignin, logout } = useAuth();
+    const [loading, setLoading] = useState(true);
     const [classes, setClasses] = useState<Classroom[]>([]);
 
     async function getclass () {
+        setLoading(true);
         try {
-        const user = auth.currentUser;
-        const uid = user!.uid;
+            const user = auth.currentUser;
+            const uid = user!.uid;
 
-        const userClassesQuery = query(collection(db, "classes"), where("owner.uid", "==", uid));
-        const userClassesSnapshot = await getDocs(userClassesQuery);
-        const newClasses = userClassesSnapshot.docs.map((doc) => doc.data() as Classroom);
-        setClasses(newClasses);
+            const userClassesQuery = query(collection(db, "classes"), where("owner.uid", "==", uid));
+            const userClassesSnapshot = await getDocs(userClassesQuery);
+            const newClasses = userClassesSnapshot.docs.map((doc) => doc.data() as Classroom);
+            setClasses(newClasses);
         } catch (e) {
             console.error("Error getting documents: ", e);
         }
+        setLoading(false);
     }    
 
-    const router = useRouter();
+   
 
     async function enterclass(id: string) {
         router.push("/class/" + id);
     }
 
     useEffect(() => {
+        setPath("Courses /");
         getclass();
     }, []);
 
+    if (!user) { return (<Unauthorized />); }
+
+    if (loading) { return (<Loader/>);}
+
     return (
         <div className={s.dashboard}>
-            <nav>
-            <div className={s.path}><FontAwesomeIcon icon={faHome} onClick={() => router.back()} className={s.back}/> Courses / </div>
-                <div className={s.person}>
-                        <FontAwesomeIcon icon={faUser} />
-                </div>
-            </nav>
             <main className={s.main}>
             <div className={s.classes}>
                 {classes.map((classData, index) => (

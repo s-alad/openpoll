@@ -65,7 +65,6 @@ export default function Create() {
 
     return (
         <>
-            <Navbar path={"Create class /"} />
             <main className={s.createclass}>
                 <div className={s.create}>
                     <div className={`${s.trap} ${s.yellow}`}></div>
