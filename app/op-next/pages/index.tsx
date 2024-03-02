@@ -12,7 +12,7 @@ const openSansBold = Open_Sans({ weight: "700", style: 'normal', subsets: ['lati
 export default function Index() {
 
   let router = useRouter()
-  const { user, status, googlesignin, logout } = useAuth();
+  const { user, googlesignin, logout } = useAuth();
 
   return (
     <>
