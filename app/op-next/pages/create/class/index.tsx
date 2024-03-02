@@ -1,21 +1,18 @@
 import Navbar from "@/layout/navbar/navbar"
 
-import styles from "./create.class.module.scss"
+import s from "./create.class.module.scss"
 
 import { User, getAdditionalUserInfo } from "firebase/auth";
 import { auth, db, fxns } from "../../../firebase/firebaseconfig";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { useRouter } from "next/router";
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
-
-// index.tsx
 import React, { useState, FormEvent } from 'react';
-
-interface ClassData {
-    classname: string;
-    description: string;
-}
-
+import ClassInput from "@/components/class-input/class-input";
+import { useForm } from "react-hook-form";
+import { formdata } from "@/models/form";
+import { matchschema } from "@/models/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 
 export default function Create() {
@@ -26,30 +23,35 @@ export default function Create() {
         router.push("/dashboard");
     }
 
-
-    async function createclass(e: FormEvent) {
-        e.preventDefault();
-        console.log('Form data submitted:', formData);
+    async function createclass(data: formdata) {
+        console.log('Form data submitted:', data);
 
 
         const user = auth.currentUser;
         const uid = user!.uid;
 
+        const generate = await httpsCallable(fxns, "generateClassId");
+        const cid = (await generate()).data as { id: string };
+
         const classdata = {
-            className: formData.classname,
-            description: formData.description,
-            owner: uid,
+            classid: cid.id,
+            classname: data.classname,
+            description: data.description,
+            owner: {
+                uid: uid,
+                email: user!.email,
+                name: user!.displayName
+            },
             admin: [],
             students: [],
             questions: []
         }
 
-        const generateClassId = await httpsCallable(fxns, "generateClassId");
-        const cid = (await generateClassId()).data as { id: string };
 
         try {
-            const docRef = await setDoc(doc(db, "classes", cid.id), classdata);
-            console.log("Document written with ID: ", cid)
+            const docRef = await addDoc(collection(db, "classes"), classdata);
+            console.log("Document written with ID: ", docRef.id);
+            router.push("/dashboard");
 
         } catch (e) {
             console.error("Error adding document: ", e);
@@ -57,35 +59,36 @@ export default function Create() {
 
     }
 
-    const [formData, setFormData] = useState<ClassData>({ classname: '', description: '' });
-
+    const { register, handleSubmit, setError, formState: { errors } } = useForm<formdata>({
+        resolver: zodResolver(matchschema)
+    });
 
     return (
         <>
             <Navbar path={"Create class /"} />
-            <form onSubmit={createclass}>
-                <div>
-                    <label>Class Name:</label>
-                    <textarea
-                        id="className"
-                        name="className"
-                        value={formData.classname}
-                        onChange={(e) => setFormData({ ...formData, classname: e.target.value })}
-                        required
-                    />
+            <main className={s.createclass}>
+                <div className={s.create}>
+                    <div className={`${s.trap} ${s.yellow}`}></div>
+                    <form onSubmit={handleSubmit(createclass)}>
+                        <ClassInput
+                            type="text"
+                            name="classname"
+                            register={register}
+                            error={errors.classname}
+                            disabled={true}
+                        />
+
+                        <ClassInput
+                            type="text"
+                            name="description"
+                            register={register}
+                            error={errors.description}
+                            disabled={true}
+                        />
+                        <button type="submit">Create Class</button>
+                    </form>
                 </div>
-                <div>
-                    <label>Description:</label>
-                    <textarea
-                        id="description"
-                        name="description"
-                        value={formData.description}
-                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        required
-                    />
-                </div>
-                <button type="submit" onClick={dashboard}>Create Class</button>
-            </form>
+            </main>
         </>
     );
 };

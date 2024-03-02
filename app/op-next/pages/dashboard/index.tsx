@@ -6,28 +6,20 @@ import { useRouter } from "next/router";
 import { db,auth } from "../../firebase/firebaseconfig";
 import { collection, getDocs, where, query } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
-
-interface ClassData {
-    className: string;
-    description: string;
-    owner: string;
-    admin: string[];
-    students: string[];
-    questions: string[];
-}
+import Classroom from "@/models/class";
 
 export default function Dashboard() {
 
-    const [classes, setClasses] = useState<ClassData[]>([]);
+    const [classes, setClasses] = useState<Classroom[]>([]);
 
-    async function getClass () {
+    async function getclass () {
         try {
         const user = auth.currentUser;
         const uid = user!.uid;
 
-        const userClassesQuery = query(collection(db, "classes"), where("owner", "==", uid));
+        const userClassesQuery = query(collection(db, "classes"), where("owner.uid", "==", uid));
         const userClassesSnapshot = await getDocs(userClassesQuery);
-        const newClasses = userClassesSnapshot.docs.map((doc) => doc.data() as ClassData);
+        const newClasses = userClassesSnapshot.docs.map((doc) => doc.data() as Classroom);
         setClasses(newClasses);
         } catch (e) {
             console.error("Error getting documents: ", e);
@@ -41,15 +33,7 @@ export default function Dashboard() {
     }
 
     useEffect(() => {
-        const unsubscribe =  onAuthStateChanged(auth, (user) => {
-            if (user) {
-                getClass();
-            } else {
-                router.push("/");
-            }
-        });
-
-        return () => unsubscribe();
+        getclass();
     }, []);
 
     return (
@@ -61,27 +45,28 @@ export default function Dashboard() {
                 </div>
             </nav>
             <main className={s.main}>
+            <div className={s.classes}>
                 {classes.map((classData, index) => (
-                    <div className={s.classes}>
+                
                         <div className={s.class}>
                             <div className={`${s.trap} ${s.yellow}`}></div>
                             <div className={`${s.content} ${s.yellow}`}>
                                 <div className={s.info}>
-                                    <div className={s.code}>{classData.className}</div>
+                                    <div className={s.code}>{classData.classname}</div>
                                     <div className={s.name}>{classData.description}</div>
-                                    <div className={s.teacher}>{classData.owner}</div>
+                                    <div className={s.teacher}>{classData.owner.name}</div>
                                 </div>
                                 <div className={s.actions}>
                                     <div className={s.join}
                                         onClick={() => {
-                                            enterclass(classData.className)
+                                            enterclass(classData.classid)
                                         }}
                                     >enter</div>
                                 </div>
                             </div>  
-                        </div>
                     </div>
                 ))}
+                </div>
 
                 <div className={s.options}>
                     <div className={s.join}>
@@ -134,21 +119,7 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </div>
-
-                <div className={s.options}>
-                    <div className={s.join}>
-                        <FontAwesomeIcon icon={faRightToBracket} />
-                        join a class
-                    </div> 
-                    <div className={s.create}
-                        onClick={() => {
-                            router.push("/create/class")
-                        }}
-                    >
-                        <FontAwesomeIcon icon={faPlus} />
-                        create a class
-                    </div>
-                </div> */}
+                */}
             </main>
         </div>
     )

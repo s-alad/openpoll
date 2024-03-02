@@ -4,7 +4,6 @@
 
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
-import { v4 as uuidv4 } from 'uuid';
 
 admin.initializeApp();
 
@@ -31,12 +30,20 @@ export const onAccountCreated = functions.auth.user().onCreate(async (user) => {
 export const generateClassId = functions.https.onCall(async (data, context) => {
     
     const checkUniqueId = async (id: string) => {
-        const doc = await admin.firestore().collection("classes").doc(id).get();
-        return doc.exists;
+        // check the classes document, then check the fields for the id
+        const classes = admin.firestore().collection("classes");
+        const query = await classes.where("id", "==", id).get();
+        return query.docs.length > 0;
     }
 
     const generateId = () => {
-        return uuidv4().split("-")[0].toUpperCase();
+        // make a six digit alphanumeric id
+        let id = "";
+        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        for (let i = 0; i < 6; i++) {
+            id += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        return id;
     }
 
     let id = generateId();
