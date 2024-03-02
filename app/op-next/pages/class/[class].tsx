@@ -8,22 +8,14 @@ export default function Class() {
 
     // get the class id from the url
     const router = useRouter();
-
-    const { class: classId } = router.query;
-
     async function createpoll() {
-        router.push("/polls");
+        router.push("/create/poll");
     }
-
 
     return (
         <div className={s.class}>
             <div className={s.start}>
-                <div className={s.add}
-                    onClick={() => {
-                        createpoll()
-                    }}
-                >
+                <div className={s.add} onClick={() => {createpoll()}}>
                     <FontAwesomeIcon icon={faPlus} />
                 </div>
             </div>

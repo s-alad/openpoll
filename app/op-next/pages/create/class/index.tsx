@@ -44,7 +44,7 @@ export default function Create() {
             },
             admin: [],
             students: [],
-            questions: []
+            polls: [],
         }
 
 
