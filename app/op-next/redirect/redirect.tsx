@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useAuth } from "../context/authcontext";
-import { get } from "http";
+import {
+	onAuthStateChanged,
+} from "firebase/auth";
+import { auth } from "../firebase/firebaseconfig";
 
 // these are the protected routes that you need token verification
 // add routes that you want to have it protected
@@ -9,6 +12,13 @@ import { get } from "http";
 // Many of these routes do not exits yet. That's okay (:
 const protectedRoutes = [
     "/dashboard",
+    "/create/class",
+    "/create/poll",
+];
+
+const protectedDynamicRoutes = [
+    "/class",
+    "/poll",
 ];
 
 const RedirectBasedOnAuth = ({ children }: { children: React.ReactNode }) => {
@@ -21,19 +31,32 @@ const RedirectBasedOnAuth = ({ children }: { children: React.ReactNode }) => {
     const currentRoute = router.asPath; // this shows the route you are currently in
 
     useEffect(() => {
-        if (protectedRoutes.includes(currentRoute)) {
+        if (protectedRoutes.includes(currentRoute) || protectedDynamicRoutes.some((route) => currentRoute.startsWith(route))) {
+            console.log("protected route", currentRoute);
+            console.log("user is", user);
             if ((!user)) {
                 setCalledPush(true);
                 router.push("/");
                 return;
             }
         }
-        if (currentRoute === "/") {
-            if (user) {
-                router.push("/dashboard");
-                return;
+
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+			console.log("auth state changed");
+			console.log(currentUser);
+
+            if (currentRoute === "/") {
+                console.log("current route is /");
+                console.log("user is", currentUser);
+                if (currentUser) {
+                    console.log("user is logged in");
+                    router.push("/dashboard");
+                    return;
+                }
             }
-        }
+		});
+		return () => unsubscribe();
+
     }, [calledPush, currentRoute, router]);
 
     return children;
