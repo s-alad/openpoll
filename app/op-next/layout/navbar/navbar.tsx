@@ -17,7 +17,7 @@ export default function Navbar({ path }: Navbar) {
 
     function matchRouterWithPath() {
         let staticmatches: { [key: string]: string } = {
-            "/dashboard": "Courses /",
+            "/home": "Courses /",
             "/create/class": "Create a class /",
             "/create/poll": "Create a poll /",
         }
@@ -46,7 +46,7 @@ export default function Navbar({ path }: Navbar) {
             <div className={s.path}>
 
                 {
-                    router.pathname === "/dashboard" ?
+                    router.pathname === "/home" ?
                         <FontAwesomeIcon icon={faHome} className={s.back} />
                         :
                         <FontAwesomeIcon icon={faArrowLeftLong} onClick={() => router.back()} className={s.back} />

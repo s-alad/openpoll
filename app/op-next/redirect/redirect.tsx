@@ -11,7 +11,7 @@ import { auth } from "../firebase/firebaseconfig";
 // also only these routes can get the decoded jwt token data
 // Many of these routes do not exits yet. That's okay (:
 const protectedRoutes = [
-    "/dashboard",
+    "/home",
     "/create/class",
     "/create/poll",
 ];
@@ -50,7 +50,7 @@ const RedirectBasedOnAuth = ({ children }: { children: React.ReactNode }) => {
                 console.log("user is", currentUser);
                 if (currentUser) {
                     console.log("user is logged in");
-                    router.push("/dashboard");
+                    router.push("/home");
                     return;
                 }
             }

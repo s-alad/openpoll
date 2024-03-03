@@ -37,7 +37,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             if (isfirst) {
                 router.push("/onboard");
             } else {
-                console.log("pushing", auth); router.push("/dashboard");
+                console.log("pushing", auth); router.push("/home");
             }
 		}).catch((error) => {
 			console.log(error);

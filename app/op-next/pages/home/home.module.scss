@@ -1,4 +1,4 @@
-.dashboard {
+.home {
     width: 100%;
 
     nav {
@@ -106,8 +106,20 @@
 
                 .trap {
                     width: 20%;
-                    height: 30px;
+                    height: 40px;
                     clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 18px;
+                    font-weight: bold;
+                    
+                    span {
+                        margin-top: 10px;
+                        width: 100px;
+                        text-align: center;
+                        border-bottom: 2px solid #000;
+                    }
                 }
 
                 .content {

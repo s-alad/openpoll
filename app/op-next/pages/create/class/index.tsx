@@ -19,10 +19,6 @@ export default function CreateClass() {
 
     const router = useRouter();
 
-    async function dashboard() {
-        router.push("/dashboard");
-    }
-
     async function createclass(data: createclassformdata) {
         console.log('form data submitted:', data);
 
@@ -52,7 +48,7 @@ export default function CreateClass() {
             await addDoc(pollsCollectionRef, { });
 
             console.log("Document written with ID: ", docRef.id);
-            router.push("/dashboard");
+            router.push("/home");
 
         } catch (e) {
             console.error("Error adding document: ", e);

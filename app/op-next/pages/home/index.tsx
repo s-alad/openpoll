@@ -1,5 +1,5 @@
 import { use, useEffect, useState } from "react"
-import s from "./dashboard.module.scss"
+import s from "./home.module.scss"
 import { faUser, faHome, faPlus, faRightToBracket } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRouter } from "next/router";
@@ -18,10 +18,10 @@ interface Class {
     class: Classroom;
 }
 
-export default function Dashboard() {
+export default function Home() {
     const router = useRouter();
     const { user, googlesignin, logout } = useAuth();
-    const {  } = useGlobal();
+    const { } = useGlobal();
 
     const [loading, setLoading] = useState(true);
     const [classes, setClasses] = useState<Class[]>([]);
@@ -38,7 +38,7 @@ export default function Dashboard() {
 
             // go through the classes collection, and look for the document class that has field classid equal to classCode
             const classQuery = query(collection(db, "classes"), where("classid", "==", classCode));
-            
+
             // get the actual firebase id of that class, and add the user to the students collection
             const classSnapshot = await getDocs(classQuery);
             const classDoc = classSnapshot.docs[0];
@@ -48,7 +48,7 @@ export default function Dashboard() {
                 email: user!.email,
                 name: user!.displayName
             };
-    
+
             const studentsCollectionRef = collection(db, "classes", classDoc.id, "students");
             await setDoc(doc(studentsCollectionRef, uid), studentData);
 
@@ -57,7 +57,7 @@ export default function Dashboard() {
             await updateDoc(userRef, {
                 enrolled: arrayUnion(classDoc.id)
             });
-    
+
             console.log("Added student with ID: ", studentsCollectionRef.id);
         } catch (e) {
             console.error("Error getting documents: ", e);
@@ -103,13 +103,13 @@ export default function Dashboard() {
                 console.log("User document data:", userSnap.data());
                 // Get the array of enrolled class IDs
                 const enrolledClassesIds: string[] = userSnap.data().enrolled || [];
-                
+
                 // Fetch each class using its ID
-                const classesPromises = enrolledClassesIds.map(classId => 
+                const classesPromises = enrolledClassesIds.map(classId =>
                     getDoc(doc(db, "classes", classId))
                 );
                 const classesSnapshots = await Promise.all(classesPromises);
-    
+
                 // Map each class to its ID
                 const newClasses = classesSnapshots.map(
                     (doc) => {
@@ -131,7 +131,7 @@ export default function Dashboard() {
     }
 
     useEffect(() => {
-        
+
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
                 getclass();
@@ -150,7 +150,7 @@ export default function Dashboard() {
     if (loading) { return (<Loader />); }
 
     return (
-        <div className={s.dashboard}>
+        <div className={s.home}>
             <main className={s.main}>
                 <div className={s.classes}>
                     <div className={s.details}>
@@ -162,7 +162,9 @@ export default function Dashboard() {
                     </div>
                     {classes.map((classData, index) => (
                         <div className={s.class}>
-                            <div className={`${s.trap} ${s.yellow}`}></div>
+                            <div className={`${s.trap} ${s.yellow}`}>
+                                <span>{classData.class.classid}</span>
+                            </div>
                             <div className={`${s.content} ${s.yellow}`}>
                                 <div className={s.info}>
                                     <div className={s.code}>{classData.class.classname}</div>
@@ -190,30 +192,32 @@ export default function Dashboard() {
                     <div className={s.details}>
                         <h2>classes i'm taking</h2>
                         {
-                            joinClass ? 
-                            <div className={s.join}>
-                                <input type="text" placeholder="class code" 
-                                    onChange={(e) => { setClassCode(e.target.value) }}
-                                />
-                                <button
-                                    onClick={joinclass}
+                            joinClass ?
+                                <div className={s.join}>
+                                    <input type="text" placeholder="class code"
+                                        onChange={(e) => { setClassCode(e.target.value) }}
+                                    />
+                                    <button
+                                        onClick={joinclass}
+                                    >
+                                        <FontAwesomeIcon icon={faRightToBracket} />
+                                    </button>
+                                </div>
+                                :
+                                <div className={s.join}
+                                    onClick={() => { setJoinClass(true) }}
                                 >
                                     <FontAwesomeIcon icon={faRightToBracket} />
-                                </button>
-                            </div> 
-                            :
-                            <div className={s.join}
-                                onClick={() => { setJoinClass(true) }}
-                            >
-                                <FontAwesomeIcon icon={faRightToBracket} />
-                                join a class
-                            </div> 
+                                    join a class
+                                </div>
                         }
                     </div>
                     {
                         enrolled.map((classData, index) => (
                             <div className={s.class}>
-                                <div className={`${s.trap} ${s.yellow}`}></div>
+                                <div className={`${s.trap} ${s.yellow}`}>
+                                    <span>{classData.class.classid}</span>
+                                </div>
                                 <div className={`${s.content} ${s.yellow}`}>
                                     <div className={s.info}>
                                         <div className={s.code}>{classData.class.classname}</div>
