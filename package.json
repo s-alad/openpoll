@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "OpenPoll Main",
   "license": "MIT",
+  "workspaces": ["app/*", "packages/*"],
+  "private": true,
   "scripts": {
     "dev": "run-pty % yarn dev:web % yarn dev:app",
     "dev:web": "cd app/op-next && yarn dev",

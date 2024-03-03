@@ -28,22 +28,22 @@ const RedirectBasedOnAuth = ({ children }: { children: React.ReactNode }) => {
     const [calledPush, setCalledPush] = useState(false);
     const { user, logout, googlesignin } = useAuth();
     const router = useRouter();
-    const currentRoute = router.asPath; // this shows the route you are currently in
+    const currentRoute = router.asPath;
 
     useEffect(() => {
-        if (protectedRoutes.includes(currentRoute) || protectedDynamicRoutes.some((route) => currentRoute.startsWith(route))) {
-            console.log("protected route", currentRoute);
-            console.log("user is", user);
-            if ((!user)) {
-                setCalledPush(true);
-                router.push("/");
-                return;
-            }
-        }
-
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
 			console.log("auth state changed");
 			console.log(currentUser);
+
+            if (protectedRoutes.includes(currentRoute) || protectedDynamicRoutes.some((route) => currentRoute.startsWith(route))) {
+                console.log("protected route", currentRoute);
+                console.log("user is", currentUser);
+                if ((!currentUser)) {
+                    setCalledPush(true);
+                    router.push("/");
+                    return;
+                }
+            }
 
             if (currentRoute === "/") {
                 console.log("current route is /");

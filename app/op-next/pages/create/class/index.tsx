@@ -10,12 +10,12 @@ import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import React, { useState, FormEvent } from 'react';
 import ClassInput from "@/components/class-input/class-input";
 import { useForm } from "react-hook-form";
-import { formdata } from "@/models/form";
-import { matchschema } from "@/models/schema";
+import { createclassformdata } from "@/models/form";
+import { createClassSchema } from "@/models/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 
-export default function Create() {
+export default function CreateClass() {
 
     const router = useRouter();
 
@@ -23,7 +23,7 @@ export default function Create() {
         router.push("/dashboard");
     }
 
-    async function createclass(data: formdata) {
+    async function createclass(data: createclassformdata) {
         console.log('form data submitted:', data);
 
 
@@ -59,8 +59,8 @@ export default function Create() {
 
     }
 
-    const { register, handleSubmit, setError, formState: { errors } } = useForm<formdata>({
-        resolver: zodResolver(matchschema)
+    const { register, handleSubmit, setError, formState: { errors } } = useForm<createclassformdata>({
+        resolver: zodResolver(createClassSchema)
     });
 
     return (
