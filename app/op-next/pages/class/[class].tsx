@@ -28,7 +28,8 @@ export default function Class() {
             snapshot.forEach((doc) => {
                 const pid = doc.id;
                 const data = doc.data() as Poll;
-                console.log(data.created);
+                if (!data.classid) return;
+                console.log(pid, data);
                 openpolls.push(data);
             });
             setOpenpolls(openpolls);

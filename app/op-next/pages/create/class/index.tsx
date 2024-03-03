@@ -26,7 +26,6 @@ export default function CreateClass() {
     async function createclass(data: createclassformdata) {
         console.log('form data submitted:', data);
 
-
         const user = auth.currentUser;
         const uid = user!.uid;
 
@@ -43,13 +42,15 @@ export default function CreateClass() {
                 name: user!.displayName
             },
             admin: [],
-            students: [],
-            polls: [],
         }
-
 
         try {
             const docRef = await addDoc(collection(db, "classes"), classdata);
+            const pollsCollectionRef = collection(db, "classes", docRef.id, "polls");
+            const studentsCollectionRef = collection(db, "classes", docRef.id, "students");
+            await addDoc(studentsCollectionRef, {  });
+            await addDoc(pollsCollectionRef, { });
+
             console.log("Document written with ID: ", docRef.id);
             router.push("/dashboard");
 
