@@ -11,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import QuestionInput from '@/components/question-input/question-input';
 import AnswerInput from '@/components/answer-input/answer-input';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faMinus, faMinusCircle, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 
 import Box from '@mui/material/Box';
@@ -115,7 +115,9 @@ export default function CreatePoll() {
 											/>
 											{
 												index === fields.length - 1 ?
-													<div className={s.delete} onClick={() => { remove(index); }}></div>
+													<div className={s.delete} onClick={() => { remove(index); }}>
+														<FontAwesomeIcon icon={faTrash} />
+													</div>
 													: null
 											}
 										</div>
@@ -144,16 +146,8 @@ export default function CreatePoll() {
 										inputProps={
 											{
 												MenuProps: {
-													MenuListProps: {
-														sx: {
-															borderRadius: 0,
-														}
-													},
-													PaperProps: {
-														sx: {
-															borderRadius: 0,
-														},
-													}
+													MenuListProps: {sx: {borderRadius: 0,}},
+													PaperProps: {sx: {borderRadius: 0,},}
 												}
 											}
 										}
@@ -181,9 +175,7 @@ export default function CreatePoll() {
 
 									>
 										{fields.map((field, index) => (
-											<MenuItem key={field.letter} value={field.letter}
-												sx={{ borderRadius: "0px" }}
-											>
+											<MenuItem key={field.letter} value={field.letter} sx={{ borderRadius: "0px" }}>
 												{field.letter}
 											</MenuItem>
 										))}
