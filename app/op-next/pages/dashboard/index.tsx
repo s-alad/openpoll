@@ -3,7 +3,7 @@ import s from "./dashboard.module.scss"
 import { faUser, faHome, faPlus, faRightToBracket } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRouter } from "next/router";
-import { db,auth } from "../../firebase/firebaseconfig";
+import { db, auth } from "../../firebase/firebaseconfig";
 import { collection, getDocs, where, query } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import Classroom from "@/models/class";
@@ -11,15 +11,21 @@ import Loader from "@/components/loader/loader";
 import { useAuth } from "@/context/authcontext";
 import Unauthorized from "@/components/unauthorized/unauthorized";
 import { useGlobal } from "@/context/globalcontext";
+import Link from "next/link";
+
+interface Class {
+    id: string;
+    class: Classroom;
+}
 
 export default function Dashboard() {
     const router = useRouter();
-    const {path, setPath} = useGlobal();
+    const { path, setPath } = useGlobal();
     const { user, googlesignin, logout } = useAuth();
     const [loading, setLoading] = useState(true);
-    const [classes, setClasses] = useState<Classroom[]>([]);
+    const [classes, setClasses] = useState<Class[]>([]);
 
-    async function getclass () {
+    async function getclass() {
         setLoading(true);
         try {
             const user = auth.currentUser;
@@ -27,15 +33,21 @@ export default function Dashboard() {
 
             const userClassesQuery = query(collection(db, "classes"), where("owner.uid", "==", uid));
             const userClassesSnapshot = await getDocs(userClassesQuery);
-            const newClasses = userClassesSnapshot.docs.map((doc) => doc.data() as Classroom);
+            const newClasses = userClassesSnapshot.docs.map(
+                (doc) => {
+                    const data = doc.data();
+                    const id = doc.id;
+                    return { id, class: data as Classroom };
+                }
+            );
             setClasses(newClasses);
         } catch (e) {
             console.error("Error getting documents: ", e);
         }
         setLoading(false);
-    }    
+    }
 
-   
+
 
     async function enterclass(id: string) {
         router.push("/class/" + id);
@@ -48,39 +60,42 @@ export default function Dashboard() {
 
     if (!user) { return (<Unauthorized />); }
 
-    if (loading) { return (<Loader/>);}
+    if (loading) { return (<Loader />); }
 
     return (
         <div className={s.dashboard}>
             <main className={s.main}>
-            <div className={s.classes}>
-                {classes.map((classData, index) => (
-                
+                <div className={s.classes}>
+                    {classes.map((classData, index) => (
+
                         <div className={s.class}>
                             <div className={`${s.trap} ${s.yellow}`}></div>
                             <div className={`${s.content} ${s.yellow}`}>
                                 <div className={s.info}>
-                                    <div className={s.code}>{classData.classname}</div>
-                                    <div className={s.name}>{classData.description}</div>
-                                    <div className={s.teacher}>{classData.owner.name}</div>
+                                    <div className={s.code}>{classData.class.classname}</div>
+                                    <div className={s.name}>{classData.class.description}</div>
+                                    <div className={s.teacher}>{classData.class.owner.name}</div>
                                 </div>
                                 <div className={s.actions}>
-                                    <div className={s.join}
-                                        onClick={() => {
-                                            enterclass(classData.classid)
+                                    <Link
+                                        href={{
+                                            pathname: '/class/' + classData.class.classid,
+                                            query: { classid: classData.id }
                                         }}
-                                    >enter</div>
+                                    >
+                                        <div className={s.join}>enter</div>
+                                    </Link>
                                 </div>
-                            </div>  
-                    </div>
-                ))}
+                            </div>
+                        </div>
+                    ))}
                 </div>
 
                 <div className={s.options}>
                     <div className={s.join}>
                         <FontAwesomeIcon icon={faRightToBracket} />
                         join a class
-                    </div> 
+                    </div>
                     <div className={s.create}
                         onClick={() => {
                             router.push("/create/class")

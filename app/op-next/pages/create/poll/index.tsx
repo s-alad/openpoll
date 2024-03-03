@@ -1,7 +1,5 @@
 import s from './create.poll.module.scss';
-import { User, getAdditionalUserInfo } from "firebase/auth";
 import { auth, db, fxns } from "../../../firebase/firebaseconfig";
-import { getFunctions, httpsCallable } from "firebase/functions";
 import { useRouter } from "next/router";
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import React, { useState, FormEvent, useEffect } from 'react';
@@ -10,7 +8,6 @@ import { createPollSchema } from "@/models/schema";
 import { useForm, UseFormProps, useFieldArray, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { v4 as uuidv4 } from 'uuid';
 import QuestionInput from '@/components/question-input/question-input';
 import AnswerInput from '@/components/answer-input/answer-input';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -22,14 +19,15 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
 
 export default function CreatePoll() {
 
 	const router = useRouter();
 
-	const classid = router.query.class
+	const classid = router.query.classid
+	console.log(classid);
 
 	async function createpoll(data: createpollformdata) {
 		console.log('form data submitted:', data);
@@ -40,12 +38,24 @@ export default function CreatePoll() {
 
 		const polldata = {
 			classid: classid,
-			pollid: uuidv4(),
 			question: data.question,
-			options: data.options
+			options: data.options,
+			answers: data.answers,
+			created: new Date(),
+			active: false,
 		}
 
 		console.log(polldata);
+
+		const classref = doc(db, "classes", classid as string);
+		const pollref = collection(classref, "polls");
+
+		try {
+			await addDoc(pollref, polldata);
+			router.push(`/class/${classid}`);
+		} catch (e) {
+			console.error("Error adding document: ", e);
+		}
 
 
 		try {

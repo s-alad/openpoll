@@ -16,7 +16,7 @@ export default function Class() {
                 <Link
                     href={{
                         pathname: '/create/poll',
-                        query: { class: router.query.class }
+                        query: { classid: router.query.classid }
                     }}
                 >
                 <div className={s.add}>
