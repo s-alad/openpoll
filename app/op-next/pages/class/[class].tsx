@@ -13,8 +13,8 @@ export default function Class() {
     // get the class id from the url
     const router = useRouter();
     const classid = router.query.class;
-    
 
+    
     const [openpolls, setOpenpolls] = useState<Poll[]>([]);
 
     async function getpolls() {
