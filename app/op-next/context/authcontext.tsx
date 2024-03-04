@@ -11,14 +11,12 @@ import { auth } from "../firebase/firebaseconfig";
 import { useRouter } from "next/router";
 
 interface IAuthContext {
-	status: "valid" | "loading" | null;
 	user: User | null;
 	googlesignin: () => void;
 	logout: () => void;
 }
 
 const AuthContext = createContext<IAuthContext>({
-	status: null,
 	user: null,
 	googlesignin: () => { },
 	logout: () => { },
@@ -31,17 +29,15 @@ export function useAuth() {
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
 	let router = useRouter();
 	const [user, setUser] = useState<User | null>(null);
-	const [status, setStatus] = useState<"valid" | "loading" | null>(null);
 
 	function googlesignin() {
 		const provider = new GoogleAuthProvider();
 		signInWithPopup(auth, provider).then(async (result) => {
             const isfirst = getAdditionalUserInfo(result)!.isNewUser;
-            setStatus("valid");
             if (isfirst) {
                 router.push("/onboard");
             } else {
-                console.log("pushing", auth); router.push("/dashboard");
+                console.log("pushing", auth); router.push("/home");
             }
 		}).catch((error) => {
 			console.log(error);
@@ -51,14 +47,15 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+			console.log("auth state changed");
+			console.log(currentUser);
             setUser(currentUser);
-            setStatus("valid");
 		});
 		return () => unsubscribe();
 	}, [user]);
 
 	return (
-		<AuthContext.Provider value={{ user, status, googlesignin, logout }}>
+		<AuthContext.Provider value={{ user, googlesignin, logout }}>
 			{children}
 		</AuthContext.Provider>
 	);
