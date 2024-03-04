@@ -1,0 +1,85 @@
+.class {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    
+    .openpolls {
+        padding-top: 100px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
+        justify-content: center;
+
+        .poll {
+            height: 120px;
+            width: 70%;
+            display: flex;
+            background-color: #4036ee;
+            color: white;
+            padding: 20px 40px;
+            .details {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                flex: 1;
+                .question {
+                    font-size: 28px;
+                    font-weight: 600;
+                }
+            }
+            .actions {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                button {
+                    cursor: pointer;
+                    border-radius: 24px;
+                    width: 100px;
+                    height: 40px;
+                }
+                .live {
+                    background-color: #fff;
+                    border: none;
+                    &:hover {
+                        background-color: #fbb91b;
+                        color: #fff;
+                    }   
+                }
+                .configure {
+                    border: 2px solid #fff;
+                    background-color: transparent;
+                    color: #fff;
+                    &:hover {
+                        background-color: #fff;
+                        color: #4036ee;
+                    }
+                }
+            }
+        }
+    }
+
+    .start {
+        width: 100%;
+        height: 90%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        .add {
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 600;
+            border-radius: 50%;
+            border: 4px solid black;
+        }
+    }
+}
