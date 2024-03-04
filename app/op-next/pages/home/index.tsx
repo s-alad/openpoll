@@ -41,24 +41,31 @@ export default function Home() {
 
             // get the actual firebase id of that class, and add the user to the students collection
             const classSnapshot = await getDocs(classQuery);
-            const classDoc = classSnapshot.docs[0];
-
-            const studentData = {
-                uid: uid,
-                email: user!.email,
-                name: user!.displayName
-            };
-
-            const studentsCollectionRef = collection(db, "classes", classDoc.id, "students");
-            await setDoc(doc(studentsCollectionRef, uid), studentData);
-
-            // add the classDoc.id to the user's enrolled classes list
-            const userRef = doc(db, "users", user!.email!);
-            await updateDoc(userRef, {
-                enrolled: arrayUnion(classDoc.id)
-            });
-
-            console.log("Added student with ID: ", studentsCollectionRef.id);
+            if (classSnapshot.docs.length > 0) {
+                const classDoc = classSnapshot.docs[0];
+                const studentData = {
+                    uid: uid,
+                    email: user!.email,
+                    name: user!.displayName
+                };
+    
+                const studentsCollectionRef = collection(db, "classes", classDoc.id, "students");
+                await setDoc(doc(studentsCollectionRef, uid), studentData);
+    
+                // add the classDoc.id to the user's enrolled classes list
+                const userRef = doc(db, "users", user!.email!);
+                await updateDoc(userRef, {
+                    enrolled: arrayUnion(classDoc.id)
+                });
+    
+                console.log("Added student with ID: ", studentsCollectionRef.id);
+    
+                // Update the enrolled state with the new class without refreshing
+                const newClass = { id: classDoc.id, class: classDoc.data() as Classroom };
+                setEnrolled([...enrolled, newClass]); // Add the new class to the enrolled state
+            } else {
+                console.log("No class found with the provided code.");
+            }
         } catch (e) {
             console.error("Error getting documents: ", e);
         }
@@ -136,6 +143,8 @@ export default function Home() {
             if (user) {
                 getclass();
                 getenrolled();
+            } else {
+                return (<Unauthorized />);
             }
         })
 
@@ -145,7 +154,7 @@ export default function Home() {
 
     }, []);
 
-    if (!user) { return (<Unauthorized />); }
+    // if (!user) { return (<Unauthorized />); }
 
     if (loading) { return (<Loader />); }
 
