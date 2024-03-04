@@ -130,7 +130,7 @@ export default function Class() {
                                 )
                             })
                         }
-                    </div> : 'no active polls'
+                    </div> : <div className={s.openpolls}>no active polls</div>
             }
         </div>
     )
