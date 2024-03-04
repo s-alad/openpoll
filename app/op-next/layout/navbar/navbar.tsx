@@ -22,8 +22,8 @@ export default function Navbar({ path }: Navbar) {
             "/create/poll": "Create a poll /",
         }
         let dynamicmatches:  { [key: string]: string } = {
-            "/class": `Class / ${router.query.class}`,
-            "/poll": `Poll / ${router.query.poll}`
+            "/class": `Class / ${router.query.class || ""}`,
+            "/poll": `Poll / ${router.query.poll || ""}`
         }
 
         if (staticmatches[router.pathname]) {
