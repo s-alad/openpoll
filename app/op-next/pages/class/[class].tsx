@@ -68,12 +68,12 @@ export default function Class() {
         // add student to selected options
         for (const letter of selectedOptions) {
             const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses/${letter}/students`);
-            await update(answerRef, { [user.uid]: user.email });
+            await update(answerRef, { [user!.uid]: user!.email });
         }
 
         // remove student from non selected options
         for (const letter of nonSelectedOptions) {
-            const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses/${letter}/students/${user.uid}`);
+            const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses/${letter}/students/${user!.uid}`);
             await remove(answerRef);
         }
 
