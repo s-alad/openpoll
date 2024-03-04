@@ -1,14 +1,14 @@
-import { createclassformfield } from "@/models/form";
+import { createpollformfield } from "@/models/form";
 
-import s from "./class-input.module.scss";
+import s from "./question-input.module.scss";
 
-interface field extends createclassformfield {
+interface field extends createpollformfield {
     inputstyle?: "input" | "textarea"
 }
 
-export default function ClassInput({ type, inputstyle, description, placeholder, name, register, error, valueAsNumber, disabled, defaultvalue }: field) {
+export default function QuestionInput({ type, inputstyle, description, placeholder, name, register, error, valueAsNumber, disabled, defaultvalue }: field) {
     return (
-        <div className={s.classinput}>
+        <div className={s.questioninput}>
             <label htmlFor={name}>{description ? description : name}:</label>
             {
                 inputstyle === "textarea" ?

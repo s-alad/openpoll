@@ -1,108 +1,196 @@
-import React, { useState } from 'react';
-import Navbar from '@/components/subnav/navbar';
-import styles from './polls.module.scss';
+import s from './create.poll.module.scss';
+import { auth, db, fxns } from "../../../firebase/firebaseconfig";
+import { useRouter } from "next/router";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import React, { useState, FormEvent, useEffect } from 'react';
+import { createpollformdata } from "@/models/form";
+import { createPollSchema } from "@/models/schema";
+import { useForm, UseFormProps, useFieldArray, Controller } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import QuestionInput from '@/components/question-input/question-input';
+import AnswerInput from '@/components/answer-input/answer-input';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMinus, faMinusCircle, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 
-type PollOption = {
-	optionText: string;
-};
 
-type Poll = {
-	questionText: string;
-	options: PollOption[];
-	answer: string;
-};
+import Box from '@mui/material/Box';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Chip from '@mui/material/Chip';
 
-export default function Poll() {
-	const [polls, setPolls] = useState<Poll[]>([]);
-	const [questionText, setQuestionText] = useState('');
-	const [currentOptions, setCurrentOptions] = useState<PollOption[]>([]);
-	const [optionText, setOptionText] = useState('');
-	const [answer, setAnswer] = useState(''); // State to hold the correct answer
+export default function CreatePoll() {
 
-	const addPoll = () => {
-		if (questionText && currentOptions.length > 0 && answer) {
-			const newPoll: Poll = {
-				questionText,
-				options: currentOptions,
-				answer,
-			};
-			setPolls(prevPolls => [...prevPolls, newPoll]);
-			setQuestionText('');
-			setCurrentOptions([]);
-			setOptionText('');
-			setAnswer('');
+	const router = useRouter();
+
+	const classid = router.query.classid
+	console.log(classid);
+
+	async function createpoll(data: createpollformdata) {
+		console.log('form data submitted:', data);
+
+
+		const user = auth.currentUser;
+		const uid = user!.uid;
+
+		const polldata = {
+			classid: classid,
+			question: data.question,
+			options: data.options,
+			answers: data.answers,
+			created: new Date(),
+			active: false,
 		}
-	};
 
-	const handleAddOption = () => {
-		if (optionText) {
-			setCurrentOptions(prevOptions => [
-				...prevOptions,
-				{ optionText },
-			]);
-			setOptionText('');
+		console.log(polldata);
+
+		const classref = doc(db, "classes", classid as string);
+		const pollref = collection(classref, "polls");
+
+		try {
+			await addDoc(pollref, polldata);
+			router.push(`/class/${classid}`);
+		} catch (e) {
+			console.error("Error adding document: ", e);
 		}
-	};
+
+
+		try {
+
+		} catch (e) {
+			console.error("Error adding document: ", e);
+		}
+
+	}
+
+	const colorselection: { [key: string]: string } = { "A": s.a, "B": s.b, "C": s.c, "D": s.d }
+	const initalpolls = [{ letter: "A", option: "" }, { letter: "B", option: "" }];
+
+	const { register, handleSubmit, control, setError, formState: { errors } } = useForm<createpollformdata>({
+		resolver: zodResolver(createPollSchema),
+		defaultValues: {
+			options: initalpolls,
+			answers: []
+		}
+	});
+
+	const { fields, append, remove, update, } = useFieldArray({
+		control,
+		name: "options"
+	});
+
+
 
 	return (
 		<>
-			{/*         <Navbar /> */}
-			<div className={styles.container}>
-				<h1>Teacher Inputs Multiple Choice Questions</h1>
-				<input
-					className={styles.questionInput}
-					type="text"
-					value={questionText}
-					onChange={(e) => setQuestionText(e.target.value)}
-					placeholder="Enter your question"
-				/>
-				<div className={styles.optionsContainer}>
-
-					<input
-						className={styles.questionInput}
-						type="text"
-						value={optionText}
-						onChange={(e) => setOptionText(e.target.value)}
-						placeholder="Enter an option"
-					/>
-					{currentOptions.map((option, index) => (
-						<div key={index} className={styles.optionItem}>
-							<label className={styles.optionLabel}>{option.optionText}</label>
-							<input type="checkbox" className={styles.optionCheckbox} id={`option_${index}`} />
+			<main className={s.createpoll}>
+				<div className={s.create}>
+					<form onSubmit={handleSubmit(createpoll)}>
+						<QuestionInput
+							type="text"
+							placeholder="Enter your question"
+							register={register}
+							name="question"
+							error={errors.question}
+							description="Question"
+						/>
+						<div className={s.options}>
+							{
+								fields.map((field, index) => {
+									return (
+										<div className={s.mc} key={field.id}>
+											<div className={s.choice}>
+												<div className={`${s.letter} ${colorselection[field.letter]}`}>{field.letter}</div>
+											</div>
+											<AnswerInput
+												type="text"
+												placeholder="Enter your answer"
+												register={register}
+												name={`options`}
+												error={errors.options?.[index]?.option}
+												index={index}
+											/>
+											{
+												index === fields.length - 1 ?
+													<div className={s.delete} onClick={() => { remove(index); }}>
+														<FontAwesomeIcon icon={faTrash} />
+													</div>
+													: null
+											}
+										</div>
+									)
+								}
+								)}
+							<div className={s.add}>
+								<FontAwesomeIcon icon={faPlus} onClick={
+									() => append({ letter: String.fromCharCode(65 + fields.length), option: "" })
+								} />
+							</div>
 						</div>
-					))}
-					<button className={styles.addButton} onClick={handleAddOption}>Add Option</button>
-				</div>
-				<div className={styles.optionsContainer}>
-					<input
-						className={styles.questionInput}
-						type="text"
-						value={answer}
-						onChange={(e) => setAnswer(e.target.value)}
-						placeholder="Enter the correct answer"
-					/>
-				</div>
 
-				<button className={styles.saveButton} onClick={addPoll}>Save</button>
-			</div>
+						<Controller
+							name='answers'
+							control={control}
+							render={({ field }) => (
+								<FormControl sx={{ width: 300 }}>
+									<label>Answers:</label>
+									<Select
+										label={false}
+										multiple
+										value={field.value}
+										sx={{ height: 40, borderRadius: 0 }}
+										onChange={field.onChange}
+										inputProps={
+											{
+												MenuProps: {
+													MenuListProps: {sx: {borderRadius: 0,}},
+													PaperProps: {sx: {borderRadius: 0,},}
+												}
+											}
+										}
+										input={
+											<OutlinedInput
+												style={{
+													borderRadius: "0px",
+													backgroundColor: "white",
+													display: "flex",
+													justifyContent: "center",
+													alignItems: "center",
+													padding: 0
+												}}
+											/>
+										}
+										renderValue={(selected) => (
+											<Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, alignItems: 'center', borderRadius: '0px' }}>
+												{selected.map((value) => (
+													<Chip key={value} label={value}
+														style={{ width: "50px", borderRadius: "0px", height: "20px" }}
+													/>
+												))}
+											</Box>
+										)}
 
-			{/* Displays list of polls created for testing */}
-			<div className={styles.pollList}>
-				{polls.map((poll, index) => (
-					<div key={index} className={styles.pollItem}>
-						<p>Question: {poll.questionText}</p>
-						<p>Options:</p>
-						<ul className={styles.pollOptions}>
-							{poll.options.map((option, optionIndex) => (
-								<li key={optionIndex} className={styles.pollOption}>
-									{option.optionText}
-								</li>
-							))}
-						</ul>
-						<p>Correct Answer: {poll.answer}</p>
-					</div>
-				))}
-			</div>
+									>
+										{fields.map((field, index) => (
+											<MenuItem key={field.letter} value={field.letter} sx={{ borderRadius: "0px" }}>
+												{field.letter}
+											</MenuItem>
+										))}
+
+									</Select>
+								</FormControl>
+							)}
+						/>
+
+
+
+						<button type="submit">Create Poll</button>
+					</form>
+				</div>
+			</main>
 		</>
 	);
 }

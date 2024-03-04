@@ -10,22 +10,17 @@ import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import React, { useState, FormEvent } from 'react';
 import ClassInput from "@/components/class-input/class-input";
 import { useForm } from "react-hook-form";
-import { formdata } from "@/models/form";
-import { matchschema } from "@/models/schema";
+import { createclassformdata } from "@/models/form";
+import { createClassSchema } from "@/models/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 
-export default function Create() {
+export default function CreateClass() {
 
     const router = useRouter();
 
-    async function dashboard() {
-        router.push("/dashboard");
-    }
-
-    async function createclass(data: formdata) {
+    async function createclass(data: createclassformdata) {
         console.log('form data submitted:', data);
-
 
         const user = auth.currentUser;
         const uid = user!.uid;
@@ -43,15 +38,17 @@ export default function Create() {
                 name: user!.displayName
             },
             admin: [],
-            students: [],
-            polls: [],
         }
-
 
         try {
             const docRef = await addDoc(collection(db, "classes"), classdata);
+            const pollsCollectionRef = collection(db, "classes", docRef.id, "polls");
+            const studentsCollectionRef = collection(db, "classes", docRef.id, "students");
+            await addDoc(studentsCollectionRef, {  });
+            await addDoc(pollsCollectionRef, { });
+
             console.log("Document written with ID: ", docRef.id);
-            router.push("/dashboard");
+            router.push("/home");
 
         } catch (e) {
             console.error("Error adding document: ", e);
@@ -59,8 +56,8 @@ export default function Create() {
 
     }
 
-    const { register, handleSubmit, setError, formState: { errors } } = useForm<formdata>({
-        resolver: zodResolver(matchschema)
+    const { register, handleSubmit, setError, formState: { errors } } = useForm<createclassformdata>({
+        resolver: zodResolver(createClassSchema)
     });
 
     return (

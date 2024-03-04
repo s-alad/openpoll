@@ -1,15 +1,44 @@
 import { FieldError, UseFormRegister } from "react-hook-form";
+import { z } from "zod";
+import { createPollSchema } from "./schema";
 
-export type formdata = {
+export type createclassformdata = {
     classname: string;
     description: string;
 };
 
-export type formfield = {
-    register: UseFormRegister<formdata>;
+export type ValidCreateClassFieldNames =
+    | "classname"
+    | "description"
+
+
+export interface createclassformfield extends defaultformfield {
+    register: UseFormRegister<createclassformdata>;
+    name: ValidCreateClassFieldNames;
+};
+
+export type createpollformdata = {
+    question: string;
+    options: {
+        letter: string;
+        option: string;
+    }[]
+    answers: string[];
+};
+
+export type ValidCreatePollFieldNames =
+    | "question"
+    | "options"
+    | "answers"
+
+export interface createpollformfield extends defaultformfield {
+    register: UseFormRegister<createpollformdata>;
+    name: ValidCreatePollFieldNames;
+};
+
+export type defaultformfield = {
     type: string;
     placeholder?: string;
-    name: ValidFieldNames;
     error: FieldError | undefined;
     valueAsNumber?: boolean;
     disabled?: boolean;
@@ -17,8 +46,3 @@ export type formfield = {
     description?: string;
     options?: string[] | number[];
 };
-
-
-export type ValidFieldNames =
-    | "classname"
-    | "description"

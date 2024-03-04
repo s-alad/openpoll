@@ -11,7 +11,7 @@ import { auth } from "../firebase/firebaseconfig";
 // also only these routes can get the decoded jwt token data
 // Many of these routes do not exits yet. That's okay (:
 const protectedRoutes = [
-    "/dashboard",
+    "/home",
     "/create/class",
     "/create/poll",
 ];
@@ -28,29 +28,29 @@ const RedirectBasedOnAuth = ({ children }: { children: React.ReactNode }) => {
     const [calledPush, setCalledPush] = useState(false);
     const { user, logout, googlesignin } = useAuth();
     const router = useRouter();
-    const currentRoute = router.asPath; // this shows the route you are currently in
+    const currentRoute = router.asPath;
 
     useEffect(() => {
-        if (protectedRoutes.includes(currentRoute) || protectedDynamicRoutes.some((route) => currentRoute.startsWith(route))) {
-            console.log("protected route", currentRoute);
-            console.log("user is", user);
-            if ((!user)) {
-                setCalledPush(true);
-                router.push("/");
-                return;
-            }
-        }
-
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
 			console.log("auth state changed");
 			console.log(currentUser);
+
+            if (protectedRoutes.includes(currentRoute) || protectedDynamicRoutes.some((route) => currentRoute.startsWith(route))) {
+                console.log("protected route", currentRoute);
+                console.log("user is", currentUser);
+                if ((!currentUser)) {
+                    setCalledPush(true);
+                    router.push("/");
+                    return;
+                }
+            }
 
             if (currentRoute === "/") {
                 console.log("current route is /");
                 console.log("user is", currentUser);
                 if (currentUser) {
                     console.log("user is logged in");
-                    router.push("/dashboard");
+                    router.push("/home");
                     return;
                 }
             }
