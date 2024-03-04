@@ -26,6 +26,7 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
     const [classes, setClasses] = useState<Class[]>([]);
     const [enrolled, setEnrolled] = useState<Class[]>([]);
+    const [authCheckDone, setAuthCheckDone] = useState(false);
 
     const [joinClass, setJoinClass] = useState(false);
     const [classCode, setClassCode] = useState("");
@@ -143,9 +144,9 @@ export default function Home() {
             if (user) {
                 getclass();
                 getenrolled();
-            } else {
-                return (<Unauthorized />);
             }
+            setAuthCheckDone(true); // Update the state to indicate auth check is done
+            setLoading(false);
         })
 
         return () => {
@@ -154,7 +155,11 @@ export default function Home() {
 
     }, []);
 
-    // if (!user) { return (<Unauthorized />); }
+    if (!authCheckDone) {
+        return <Loader />;
+    }
+
+    if (!user) { return (<Unauthorized />); }
 
     if (loading) { return (<Loader />); }
 
