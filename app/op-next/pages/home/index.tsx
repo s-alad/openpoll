@@ -161,7 +161,7 @@ export default function Home() {
                         </div>
                     </div>
                     {classes.map((classData, index) => (
-                        <div className={s.class}>
+                        <div className={s.class} key={index}>
                             <div className={`${s.trap} ${s.yellow}`}>
                                 <span>{classData.class.classid}</span>
                             </div>
@@ -214,7 +214,7 @@ export default function Home() {
                     </div>
                     {
                         enrolled.map((classData, index) => (
-                            <div className={s.class}>
+                            <div className={s.class} key={index}>
                                 <div className={`${s.trap} ${s.yellow}`}>
                                     <span>{classData.class.classid}</span>
                                 </div>
