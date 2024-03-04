@@ -174,7 +174,7 @@ export default function Home() {
                                 <div className={s.actions}>
                                     <Link
                                         href={{
-                                            pathname: '/class/' + classData.class.classid,
+                                            pathname: '/dashboard/' + classData.class.classid,
                                             query: { classid: classData.id }
                                         }}
                                     >

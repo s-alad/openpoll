@@ -17,6 +17,7 @@ const protectedRoutes = [
 ];
 
 const protectedDynamicRoutes = [
+    "/dashboard",
     "/class",
     "/poll",
 ];
