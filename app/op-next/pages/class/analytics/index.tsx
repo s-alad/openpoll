@@ -4,53 +4,22 @@ import React, { useEffect, useState } from 'react';
 import { collection, doc, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase/firebaseconfig';
 import Poll from "@/models/poll";
+import { PieChart } from '@mui/x-charts';
 
 export default function analytics() {
     const router = useRouter();
     const classid = router.query.classid;
 
+    // 0 = Pie Chart, 1 = Bar Chart, 2 = Scatter
+    const analyticsView = 0
     
-    const sampleAnswers = {
-        "A": 10,
-        "B": 5,
-        "C": 2,
-        "D": 4
-    }
-
-    
-    // const [students, setStudents] = useState([])
-    // const [openpolls, setOpenpolls] = useState<Poll[]>([])
-
-    // async function getPolls() {
-    //     // collection classes -> document ID -> collection students
-    //     const classref = doc(db, "classes", classid as string)
-    //     // Grab the polls
-    //     const pollsref = collection(classref, "polls")
-        
-    //     try {
-    //         const pollsSnapshot = await getDocs(pollsref);
-            
-    //         let openpolls: Poll[] = [];
-    //         pollsSnapshot.forEach((doc) => {
-    //             const pid = doc.id;
-    //             const data = doc.data() as Poll;
-    //             if (!data.classid) return;
-    //             console.log(pid, data);
-    //             openpolls.push(data);
-    //         });
-    //         setOpenpolls(openpolls)
-    //     } catch (e) {
-    //         console.error("Error getting documents: ", e);
-    //     }
-    // }
-
-
-
-    // useEffect(() => {
-    //     if (classid) {
-    //         getPolls()
-    //     }
-    // }, [classid])
+    // Value: # of responses, Label: Answers
+    const data = [
+        {value: 5, label: "A"},
+        {value: 10, label: "B"},
+        {value: 10, label: "C"},
+        {value: 10, label: "D"}
+    ]
 
     return(
         <>
@@ -61,6 +30,11 @@ export default function analytics() {
 
             <div className={s.pollAnalyticsView}>
                 {/* Place Poll views here */}
+                <PieChart 
+                    series={[{data}]}
+                    width={400}
+                    height={200}
+                />
             </div>
         </div>
         </>
