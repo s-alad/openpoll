@@ -13,6 +13,12 @@ export default function analytics() {
     // 0 = Pie Chart, 1 = Bar Chart, 2 = Scatter
     const analyticsView = 0
     
+    const pollQuestions = [
+        "Question 1",
+        "Question 2",
+        "Question 3"
+    ]
+
     // Value: # of responses, Label: Answers
     const data = [
         {value: 5, label: "A"},
@@ -20,6 +26,10 @@ export default function analytics() {
         {value: 10, label: "C"},
         {value: 10, label: "D"}
     ]
+
+    const listPollAnswers = pollQuestions.map((pollQuestions) => {
+
+    })
 
     return(
         <>
