@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { collection, doc, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase/firebaseconfig';
 import Poll from "@/models/poll";
-import { PieChart } from '@mui/x-charts';
+import { PieChart, BarChart } from '@mui/x-charts';
 
 // Value: # of responses, Label: Answers
 const pollAnswer1 = [
@@ -21,9 +21,18 @@ const pollAnswer2 = [
     {label: "D", value: 5},
 ]
 
+const pollAnswer3 = [
+    {label: "A", value: 10},
+    {label: "B", value: 5},
+    {label: "C", value: 5},
+    {label: "D", value: 5},
+]
+
+// Place all answers here
 const allAnswers = [
     pollAnswer1,
-    pollAnswer2
+    pollAnswer2,
+    pollAnswer3
 ]
 
 
@@ -50,7 +59,7 @@ export default function analytics() {
                 const data = doc.data() as Poll;
                 if (!data.classid) return;
 
-                openpolls.push(data);
+                openpolls.push(data);  
             });
             setOpenpolls(openpolls);
         } catch (e) {
@@ -75,20 +84,24 @@ export default function analytics() {
 
             <div className={s.pollAnalyticsView}>
                 {/* Place Poll views here */}
-                {/* <PieChart 
-                    series={[{data: pollAnswer}]}
-                    width={400}
-                    height={200}
-                /> */}
 
+                {/* Pie Chart Views */}
+                {/* TODO: Change Fill color of arcLabel */}
                 {allAnswers.map((data, index) => (
                     <PieChart
                         key={index}
-                        series={[{data}]}
+                        series={[
+                            {
+                                arcLabel: (item) => `${item.label} (${item.value})`,
+                                data
+                            }
+                        ]}
                         width={400}
                         height={200}
                     />
                 ))}
+
+                {/* Bar Chart Views */}
             </div>
         </div>
         </>
