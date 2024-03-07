@@ -1,4 +1,5 @@
 import { rdb } from "@/firebase/firebaseconfig";
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { equalTo, get, onValue, orderByChild, query, ref, set } from "firebase/database";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -7,6 +8,7 @@ import s from './live.module.scss';
 
 interface LivePoll {
     active: boolean;
+    done: boolean,
     options: {
         option: string;
         letter: string;
@@ -26,6 +28,10 @@ export default function Live() {
 
     const [livepoll, setLivepoll] = useState<LivePoll>();
     const [pollstatus, setPollstatus] = useState<boolean>(false);
+    const [pollFinalStatus, setPollFinalStatus] = useState<boolean>(false);
+    const transferPollResults = httpsCallable(getFunctions(), 'transferPollResults');
+
+
 
     async function getpoll() {
         const pollsref = ref(rdb, `classes/${live![0]}/polls`);
@@ -48,6 +54,17 @@ export default function Live() {
         console.log(pollsref);
 
         try { await set(pollsref, status); setPollstatus(status); }
+        catch (e) { console.error("Error getting documents: ", e); }
+    }
+
+    async function endPoll() {
+        const pollsref = ref(rdb, `classes/${live![0]}/polls/${live![1]}/done`);
+        console.log(pollsref);
+
+        try { await set(pollsref, true); setPollFinalStatus(true); setpollstatus(false);
+            transferPollResults({ pollId: live![1],
+                                  classId: live![0]  })
+        }
         catch (e) { console.error("Error getting documents: ", e); }
     }
 
@@ -95,6 +112,12 @@ export default function Live() {
                                 <button onClick={() => setpollstatus(false)} className={s.stop}>Stop</button>
                                 :
                                 <button onClick={() => setpollstatus(true)} className={s.start}>Start Poll</button>
+                        }
+                        {
+                            pollFinalStatus ?
+                            <>poll ended</>
+                            :
+                            <button onClick={() => endPoll()} className={s.stop}>End Poll</button>
                         }
                     </div>
                     :
