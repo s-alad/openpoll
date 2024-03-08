@@ -35,6 +35,35 @@ const allAnswers = [
     pollAnswer3
 ]
 
+const renderPieChartViews = () => {
+    return allAnswers.map((data, index) => (
+        <PieChart
+            key={index}
+            series={[
+                {
+                    arcLabel: (item) => `${item.label} (${item.value})`,
+                    data
+                }
+            ]}
+            width={400}
+            height={200}
+        />
+    ))
+}
+
+const renderBarChartViews = () => {
+    return allAnswers.map((data, index) => (
+        <BarChart
+            key={index}
+            dataset={data}
+            yAxis={[{ scaleType: "band", dataKey: "label"}]}
+            series={[{ dataKey: "value", label: "Answers"}]}
+            width={500}
+            height={400}
+            layout="horizontal"
+        />
+    ));
+}
 
 export default function analytics() {
     const router = useRouter();
@@ -87,21 +116,10 @@ export default function analytics() {
 
                 {/* Pie Chart Views */}
                 {/* TODO: Change Fill color of arcLabel */}
-                {allAnswers.map((data, index) => (
-                    <PieChart
-                        key={index}
-                        series={[
-                            {
-                                arcLabel: (item) => `${item.label} (${item.value})`,
-                                data
-                            }
-                        ]}
-                        width={400}
-                        height={200}
-                    />
-                ))}
+                {/* {renderPieChartViews()} */}
 
                 {/* Bar Chart Views */}
+                {renderBarChartViews()}
             </div>
         </div>
         </>
