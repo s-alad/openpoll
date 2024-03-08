@@ -95,15 +95,29 @@ export default function Live() {
     }, [live]);
 
 
-    useEffect(() => {
-        const pollsRef = ref(rdb, `classes/${live![0]}/polls/${live![1]}`);
-        const unsubscribe = onValue(pollsRef, (snapshot) => {
-            const polls = snapshot.val();
-            console.log(polls);
-            setLivepoll(polls);
-        });
+    // useEffect(() => {
+    //     const pollsRef = ref(rdb, `classes/${live![0]}/polls/${live![1]}`);
+    //     const unsubscribe = onValue(pollsRef, (snapshot) => {
+    //         const polls = snapshot.val();
+    //         console.log(polls);
+    //         setLivepoll(polls);
+    //     });
 
-        return () => unsubscribe();
+    //     return () => unsubscribe();
+    // }, [live]);
+
+    useEffect(() => {
+        // Need live to be an array and have a length greater than 1
+        if (Array.isArray(live) && live.length > 1) {
+            const pollsRef = ref(rdb, `classes/${live[0]}/polls/${live[1]}`);
+            const unsubscribe = onValue(pollsRef, (snapshot) => {
+                const polls = snapshot.val();
+                console.log(polls);
+                setLivepoll(polls);
+            });
+
+            return () => unsubscribe();
+        }
     }, [live]);
 
     return (
