@@ -14,7 +14,7 @@ import { useGlobal } from "@/context/globalcontext";
 import Link from "next/link";
 
 interface Class {
-    id: string;
+    cid: string;
     class: Classroom;
 }
 
@@ -79,8 +79,8 @@ export default function Home() {
             const newClasses = userClassesSnapshot.docs.map(
                 (doc) => {
                     const data = doc.data();
-                    const id = doc.id;
-                    return { id, class: data as Classroom };
+                    const cid = doc.id;
+                    return { cid, class: data as Classroom };
                 }
             );
             setClasses(newClasses);
@@ -115,8 +115,8 @@ export default function Home() {
                     (doc) => {
                         const data = doc.data();
                         console.log(data);
-                        const id = doc.id;
-                        return { id, class: data as Classroom };
+                        const cid = doc.id;
+                        return { cid, class: data as Classroom };
                     }
                 );
                 setEnrolled(newClasses);
@@ -163,7 +163,7 @@ export default function Home() {
                     {classes.map((classData, index) => (
                         <div className={s.class} key={index}>
                             <div className={`${s.trap} ${s.yellow}`}>
-                                <span>{classData.class.classid}</span>
+                                <span>{classData.cid.substring(0,6)}</span>
                             </div>
                             <div className={`${s.content} ${s.yellow}`}>
                                 <div className={s.info}>
@@ -174,8 +174,7 @@ export default function Home() {
                                 <div className={s.actions}>
                                     <Link
                                         href={{
-                                            pathname: '/dashboard/' + classData.class.classid,
-                                            query: { classid: classData.id }
+                                            pathname: '/dashboard/' + classData.cid,
                                         }}
                                     >
                                         <div className={s.join}>enter</div>
@@ -216,7 +215,7 @@ export default function Home() {
                         enrolled.map((classData, index) => (
                             <div className={s.class} key={index}>
                                 <div className={`${s.trap} ${s.yellow}`}>
-                                    <span>{classData.class.classid}</span>
+                                    <span>{classData.cid.substring(0,6)}</span>
                                 </div>
                                 <div className={`${s.content} ${s.yellow}`}>
                                     <div className={s.info}>
@@ -227,8 +226,7 @@ export default function Home() {
                                     <div className={s.actions}>
                                         <Link
                                             href={{
-                                                pathname: '/class/' + classData.class.classid,
-                                                query: { classid: classData.id }
+                                                pathname: '/class/' + classData.cid,
                                             }}
                                         >
                                             <div className={s.join}>enter</div>

@@ -17,7 +17,7 @@ export default function Dashboard() {
 
     // get the class id from the url
     const router = useRouter();
-    const classid = router.query.classid;
+    const classid = router.query.class;
     console.log(classid);
 
     const [openpolls, setOpenpolls] = useState<PollAndId[]>([]);
@@ -88,7 +88,7 @@ export default function Dashboard() {
                 <Link
                     href={{
                         pathname: '/create/poll',
-                        query: { classid: router.query.classid }
+                        query: { classid: router.query.class }
                     }}
                 >
                 <div className={s.add}>
