@@ -13,9 +13,7 @@ interface LivePoll {
     }[];
     question: string;
     responses?: {
-        [letter: string]: {
-            [studentid: string]: string;
-        }
+        [studentid: string]: string;
     }
 }
 
@@ -150,7 +148,7 @@ export default function Live() {
             }
             {/* Live Poll response section */}
             {/* If the poll is live (Start poll) then we only show how many have responded and after we stop the poll we show the disparity of answers like bar/pie graph */}
-            <div className={s.live}>
+             <div className={s.live}>
             {
                 livepoll && livepoll.active ?
                     <div className={s.response}> 
@@ -161,7 +159,7 @@ export default function Live() {
                                 // Get an array of all student objects
                                 Object.values(livepoll.responses)
                                 // Flatten the array of student objects into an array of student IDs
-                                .flatMap(response => Object.keys(response.students))
+                                .flatMap(response => Object.keys(response))
                             ).size
                             :
                             0
@@ -184,7 +182,7 @@ export default function Live() {
                         />
                     ))
             }
-            </div>
+            </div> 
         </div>
     )
 }
