@@ -147,7 +147,7 @@ export default function Home() {
 
     if (!user) { return (<Unauthorized />); }
 
-    if (loading) { return (<Loader />); }
+    if (loading) { return (<Loader flex/>); }
 
     return (
         <div className={s.home}>
