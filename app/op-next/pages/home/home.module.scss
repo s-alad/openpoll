@@ -1,37 +1,6 @@
 .home {
     width: 100%;
 
-    nav {
-        height: 100px;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 40px;
-        background-color: #c5cfe5;
-
-        .path {
-            font-size: 22px;
-            font-weight: 600;
-
-            .back {
-                margin-right: 12px;
-                cursor: pointer;
-                width: 30px;
-            }
-        }
-
-        .person {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 3px solid black;
-            border-radius: 50%;
-        }
-    }
-
     main {
         padding-top: 60px;
         display: flex;

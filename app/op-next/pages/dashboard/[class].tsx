@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { collection, doc, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase/firebaseconfig';
 import Poll from '@/models/poll';
+import Loader from '@/components/loader/loader';
 
 interface PollAndId {
     poll: Poll;
@@ -15,14 +16,17 @@ interface PollAndId {
 
 export default function Dashboard() {
 
+    const [loading, setLoading] = useState(false);
+
     // get the class id from the url
     const router = useRouter();
-    const classid = router.query.classid;
+    const classid = router.query.class;
     console.log(classid);
 
     const [openpolls, setOpenpolls] = useState<PollAndId[]>([]);
 
     async function getpolls() {
+        setLoading(true);
         // collection classes - document class id - collection polls
         const classref = doc(db, "classes", classid as string);
         console.log(classref);
@@ -42,8 +46,8 @@ export default function Dashboard() {
         } catch (e) {
             console.error("Error getting documents: ", e);
         }
-
-
+        
+        setLoading(false);
     }
 
     //wait for router to load
@@ -55,30 +59,32 @@ export default function Dashboard() {
 
     return (
         <div className={s.class}>
-            
-            <div className={s.openpolls}>
-                {
-                    openpolls.map((poll, index) => {
-                        return (
-                            <div key={index} className={s.poll}>
-                                <div className={s.details}>
-                                    <div className={s.question}>{poll.poll.question}</div>
-                                    <div>created: {new Date(poll.poll.created.seconds).toLocaleDateString()}</div>
-                                </div>
-                                <div className={s.actions}>
-                                    <button className={s.configure}>configure</button>
-                                    <Link
-                                        href={{
-                                            pathname: `/live/${classid}/${poll.id}`,
-                                        }}
-                                    ><button className={s.live}>go live</button></Link>
-                                </div>
-                            </div>
-                        )
-                    })
-                }
+            {
+                loading ? <Loader/> :
 
-            </div>
+                    <div className={s.openpolls}>
+                        {
+                            openpolls.map((poll, index) => {
+                                return (
+                                    <div key={index} className={s.poll}>
+                                        <div className={s.details}>
+                                            <div className={s.question}>{poll.poll.question}</div>
+                                            <div>created: {new Date(poll.poll.created.seconds).toLocaleDateString()}</div>
+                                        </div>
+                                        <div className={s.actions}>
+                                            <button className={s.configure}>configure</button>
+                                            <Link
+                                                href={{
+                                                    pathname: `/live/${classid}/${poll.id}`,
+                                                }}
+                                            ><button className={s.live}>go live</button></Link>
+                                        </div>
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+            }
 
             <div className={s.stalepolls}>
 
@@ -88,12 +94,12 @@ export default function Dashboard() {
                 <Link
                     href={{
                         pathname: '/create/poll',
-                        query: { classid: router.query.classid }
+                        query: { classid: router.query.class }
                     }}
                 >
-                <div className={s.add}>
-                    <FontAwesomeIcon icon={faPlus} />
-                </div>
+                    <div className={s.add}>
+                        <FontAwesomeIcon icon={faPlus} />
+                    </div>
                 </Link>
             </div>
         </div>

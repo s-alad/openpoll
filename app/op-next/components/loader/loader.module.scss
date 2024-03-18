@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding-top: 200px;
 
     .spinner {
         border: 4px solid #f3f3f3;
@@ -22,4 +23,8 @@
             transform: rotate(360deg);
         }
     }
+}
+
+.flex {
+    flex: 1;
 }

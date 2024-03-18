@@ -37,7 +37,7 @@ export default function Class() {
 
     // get the class id from the url
     const router = useRouter();
-    const classid = router.query.classid;
+    const classid = router.query.class;
 
     const { user } = useAuth();
 
