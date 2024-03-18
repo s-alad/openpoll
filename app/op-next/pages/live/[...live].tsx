@@ -6,6 +6,8 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import s from './live.module.scss';
 import { BarChart } from '@mui/x-charts'
+import { axisClasses } from '@mui/x-charts';
+import Image from "next/image";
 
 interface LivePoll {
     active: boolean;
@@ -56,15 +58,36 @@ export default function Live() {
 
       
     const chartSetting = {
-        margin: {
-            top: 50,
-            right: 30,
-            bottom: 20,
-            left: 30,
-          },
-          width: 500,
-          height: 400,
-    }; // Chart settings
+    xAxis: [{
+        ticks: {
+            beginAtZero: true,
+            callback: function(value: any) {
+                if (value % 1 === 0) {
+                    return value;
+                }
+            }
+        }
+    }],
+    yAxis: [{
+        scaleType: 'band', // Adjust the scale type to match the expected type
+        dataKey: 'option', // Set the data key for the y-axis
+        ticks: {
+            beginAtZero: true,
+            callback: (value: any) => {
+                if (value % 1 === 0) {
+                    return value;
+                }
+            }
+        }
+    }],
+    width: 500,
+    height: 300,
+    sx: {
+        [`.${axisClasses.bottom} .${axisClasses.label}`]: {
+            transform: 'translate(-20px, 0)',
+        },
+    },
+    };
 
     // Uses pollId and classId to get the correct answers from the database
     async function getCorrectAnswers(pollId: any) {
@@ -220,14 +243,30 @@ export default function Live() {
                     // Shows the bar graph of the responses if the poll is stopped
                     (data.length > 0 && (
                         <BarChart
-                            dataset={data}
-                            yAxis={[{ scaleType: 'band', dataKey: 'option' }]} 
+                            dataset={data} 
                             series={[{
                                 dataKey: 'responses',
                                 label: 'Number of Responses',
                             }]}
                             layout="horizontal"
                             {...chartSetting}
+                            sx={{
+                                "& .MuiBarElement-root:nth-child(1)": {
+                                    fill: "#FBB91B", // Style the first bar
+                                },
+                                "& .MuiBarElement-root:nth-child(2)": {
+                                    fill: "#FE6768", // Style the second bar
+                                },
+                                "& .MuiBarElement-root:nth-child(3)": {
+                                    fill: "#9596FF", //
+                                },
+                                "& .MuiBarElement-root:nth-child(4)": {
+                                    fill: "blue", // 
+                                },
+                                "& .MuiBarElement-root:nth-child(5)": {
+                                    fill: "purple",
+                                },
+                            }}
                         />
                     ))
             }
