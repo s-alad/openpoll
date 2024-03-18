@@ -157,7 +157,7 @@ export default function Live() {
     return (
         <div className={s.livepoll}>
             {
-                live ?
+                live && livepoll && livepoll.options ?
                     <div className={s.poll}>
                         <div className={s.question}>{livepoll?.question}</div>
                         <div className={s.options}>

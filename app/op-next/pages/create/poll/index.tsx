@@ -22,6 +22,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
 import { push, ref, set } from 'firebase/database';
+import ShortAnswerInput from '@/components/short-answer-input/short-answer-input';
 
 export default function CreatePoll() {
 
@@ -102,6 +103,42 @@ export default function CreatePoll() {
 
 	async function createshortanswer(data: createshortanswerformdata) {
 		console.log('form data submitted:', data);
+
+		const user = auth.currentUser;
+		const uid = user!.uid;
+
+		const polldata = {
+			type: "short",
+			classid: classid,
+			question: data.question,
+			answers: data.answers,
+			created: new Date(),
+			active: false,
+		}
+
+		console.log(polldata);
+
+		const classref = doc(db, "classes", classid as string);
+		const pollref = collection(classref, "polls");
+
+		try {
+			const docRef = await addDoc(pollref, polldata);
+			
+			const pollid = docRef.id;
+			const rdbref = ref(rdb, `classes/${classid}/polls/${pollid}`);
+			await set(rdbref, {
+				type: "short",
+				question: polldata.question,
+				active: false,
+				responses: []
+			})
+
+			router.back();
+		} catch (e) {
+			console.error("Error adding document: ", e);
+		}
+
+
 	}
 
 	const { register: registershort, handleSubmit: handleSubmitshort, control: control2, formState: { errors: errors2 } } = 
@@ -109,7 +146,7 @@ export default function CreatePoll() {
 		resolver: zodResolver(createShortAnswerSchema),
 		defaultValues: {
 			question: "",
-			answer: ""
+			answers: ""
 		}
 	});
 
@@ -242,18 +279,18 @@ export default function CreatePoll() {
 							</form>
 							: 
 							<form onSubmit={handleSubmitshort(createshortanswer)}>
-								<QuestionInput
+								<ShortAnswerInput
 									type="text"
 									placeholder="Enter your short answer prompt"
-									register={register}
+									register={registershort}
 									name="question"
 									error={errors.question}
 									description="Short Answer Prompt"
 								/>
-								<QuestionInput
+								<ShortAnswerInput
 									type="text"
 									placeholder="Enter the answer"
-									register={register}
+									register={registershort}
 									name="answers"
 									error={errors.answers as any}
 									description="Answer"
