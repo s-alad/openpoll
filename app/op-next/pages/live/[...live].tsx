@@ -43,6 +43,17 @@ export default function Live() {
     const [classId, setClassId] = useState<string>("");
     const [showAnswers, setShowAnswers] = useState<boolean>(false);
 
+    const pathToState = `classes/${live![0]}/polls/${live![1]}/done`
+
+    const stateRef = ref(rdb, pathToState);
+
+    get(stateRef)
+        .then((snapshot) => {
+        if (snapshot.exists()) {
+        setPollFinalStatus(true);
+        }
+    })
+
     useEffect(() => {
         if (livepoll?.options) {
             const newData = livepoll.options.map(option => {
@@ -190,10 +201,14 @@ export default function Live() {
 
 
                             {
-                                pollstatus ?
-                                    <button onClick={() => setpollstatus(false)} className={s.stop}>Stop</button>
+                                pollFinalStatus ?
+                                    <></>
                                     :
-                                    <button onClick={() => setpollstatus(true)} className={s.start}>Start Poll</button>
+                                    pollstatus ?
+                                        <button onClick={() => setpollstatus(false)} className={s.stop}>Stop</button>
+                                        :
+                                        <button onClick={() => setpollstatus(true)} className={s.start}>Start Poll</button>
+                                    
                             }
 
                             <button onClick={handleShowAnswers} className={s.answer}>
