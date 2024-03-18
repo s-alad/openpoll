@@ -137,16 +137,6 @@ export default function Live() {
         catch (e) { console.error("Error getting documents: ", e); }
     }
 
-    const pathToState = `classes/${classId}/polls/${pollId}/done`
-
-    const stateRef = ref(rdb, pathToState);
-
-    get(stateRef)
-        .then((snapshot) => {
-        if (snapshot.exists()) {
-        setPollFinalStatus(true);
-        }
-    })
 
     //wait until router is loaded
     useEffect(() => {
@@ -157,6 +147,17 @@ export default function Live() {
             getpoll();
         }
     }, [live]);
+
+    // const pathToState = `classes/${classId}/polls/${pollId}/done`
+
+    // const stateRef = ref(rdb, pathToState);
+
+    // get(stateRef)
+    //     .then((snapshot) => {
+    //     if (snapshot.exists()) {
+    //     setPollFinalStatus(true);
+    //     }
+    // })
 
     useEffect(() => {
         // Need live to be an array and have a length greater than 1
