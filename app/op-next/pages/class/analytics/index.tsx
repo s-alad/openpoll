@@ -114,8 +114,8 @@ export default function analytics() {
 
             <div className={s.pollAnalyticsView}>
                 {/* Place Poll views here */}
-                {analyticsView == 0 && renderPieChartViews()}
-                {analyticsView == 1 && renderBarChartViews()}
+                {renderPieChartViews()}
+                {renderBarChartViews()}
             </div>
         </div>
         </>
