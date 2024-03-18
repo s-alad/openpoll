@@ -163,7 +163,7 @@ export default function Live() {
                         </div>
                     )}
                 </div>
-                {showAnswers && livepoll && data.length > 0 && (
+                {showAnswers && livepoll  && (
                     <div className={s.content}>
                         <PollChart livepoll={livepoll} />
                     </div>
