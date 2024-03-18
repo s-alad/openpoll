@@ -11,6 +11,7 @@ interface LivePoll {
         option: string;
         letter: string;
     }[];
+    type: "mc" | "short";
     question: string;
     responses?: {
         [studentid: string]: string;
@@ -32,31 +33,31 @@ export default function Live() {
 
     useEffect(() => {
         if (livepoll?.options) {
-          const newData = livepoll.options.map(option => {
-            const responseCount = livepoll.responses?.[option.letter]
-              ? Object.keys(livepoll.responses[option.letter]).length
-              : 0;
-            return {
-              option: option.letter, 
-              responses: responseCount, 
-            } as unknown as DatasetElementType; // Cast each object to the expected type
-          });
-    
-          setData(newData as DatasetElementType[]); // Cast the entire array to the expected type
+            const newData = livepoll.options.map(option => {
+                const responseCount = livepoll.responses?.[option.letter]
+                    ? Object.keys(livepoll.responses[option.letter]).length
+                    : 0;
+                return {
+                    option: option.letter,
+                    responses: responseCount,
+                } as unknown as DatasetElementType; // Cast each object to the expected type
+            });
+
+            setData(newData as DatasetElementType[]); // Cast the entire array to the expected type
         }
-      }, [livepoll]); // Update the data whenever livepoll changes
+    }, [livepoll]); // Update the data whenever livepoll changes
 
     console.log(data, "dataSet")
-      
+
     const chartSetting = {
         margin: {
             top: 50,
             right: 30,
             bottom: 20,
             left: 30,
-          },
-          width: 500,
-          height: 400,
+        },
+        width: 500,
+        height: 400,
     }; // Chart settings
 
     async function getpoll() {
@@ -84,7 +85,6 @@ export default function Live() {
     }
 
 
-    //wait until router is loaded
     useEffect(() => {
         if (live) {
             console.log(live);
@@ -93,19 +93,7 @@ export default function Live() {
     }, [live]);
 
 
-    // useEffect(() => {
-    //     const pollsRef = ref(rdb, `classes/${live![0]}/polls/${live![1]}`);
-    //     const unsubscribe = onValue(pollsRef, (snapshot) => {
-    //         const polls = snapshot.val();
-    //         console.log(polls);
-    //         setLivepoll(polls);
-    //     });
-
-    //     return () => unsubscribe();
-    // }, [live]);
-
     useEffect(() => {
-        // Need live to be an array and have a length greater than 1
         if (Array.isArray(live) && live.length > 1) {
             const pollsRef = ref(rdb, `classes/${live[0]}/polls/${live[1]}`);
             const unsubscribe = onValue(pollsRef, (snapshot) => {
@@ -121,11 +109,13 @@ export default function Live() {
     return (
         <div className={s.livepoll}>
             {
-                live && livepoll && livepoll.options ?
+                live && livepoll ?
                     <div className={s.poll}>
                         <div className={s.question}>{livepoll?.question}</div>
                         <div className={s.options}>
                             {
+
+                                livepoll.type === "mc" &&
                                 livepoll?.options.map((option, index) => {
                                     return (
                                         <div key={index} className={s.option}>
@@ -134,6 +124,9 @@ export default function Live() {
                                         </div>
                                     )
                                 })
+                            }
+                            {
+                                livepoll.type === "short" && <></>
                             }
                         </div>
                         {
@@ -148,41 +141,41 @@ export default function Live() {
             }
             {/* Live Poll response section */}
             {/* If the poll is live (Start poll) then we only show how many have responded and after we stop the poll we show the disparity of answers like bar/pie graph */}
-             <div className={s.live}>
-            {
-                livepoll && livepoll.active ?
-                    <div className={s.response}> 
-                        {
-                            livepoll.responses ?
-                            // Creates a new Set to hold unique student IDs
-                            new Set(
-                                // Get an array of all student objects
-                                Object.values(livepoll.responses)
-                                // Flatten the array of student objects into an array of student IDs
-                                .flatMap(response => Object.keys(response))
-                            ).size
-                            :
-                            0
-                        }
-                        {"  "}
-                        Answered
-                    </div>
-                    :
-                    // Shows the bar graph of the responses if the poll is stopped
-                    (data.length > 0 && (
-                        <BarChart
-                            dataset={data}
-                            yAxis={[{ scaleType: 'band', dataKey: 'option' }]} 
-                            series={[{
-                                dataKey: 'responses',
-                                label: 'Number of Responses',
-                            }]}
-                            layout="horizontal"
-                            {...chartSetting}
-                        />
-                    ))
-            }
-            </div> 
+            <div className={s.live}>
+                {
+                    livepoll && livepoll.active ?
+                        <div className={s.response}>
+                            {
+                                livepoll.responses ?
+                                    // Creates a new Set to hold unique student IDs
+                                    new Set(
+                                        // Get an array of all student objects
+                                        Object.values(livepoll.responses)
+                                            // Flatten the array of student objects into an array of student IDs
+                                            .flatMap(response => Object.keys(response))
+                                    ).size
+                                    :
+                                    0
+                            }
+                            {"  "}
+                            Answered
+                        </div>
+                        :
+                        // Shows the bar graph of the responses if the poll is stopped
+                        (data.length > 0 && (
+                            <BarChart
+                                dataset={data}
+                                yAxis={[{ scaleType: 'band', dataKey: 'option' }]}
+                                series={[{
+                                    dataKey: 'responses',
+                                    label: 'Number of Responses',
+                                }]}
+                                layout="horizontal"
+                                {...chartSetting}
+                            />
+                        ))
+                }
+            </div>
         </div>
     )
 }
