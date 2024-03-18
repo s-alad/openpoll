@@ -148,12 +148,12 @@ export default function Live() {
                             {
                                 livepoll.responses ?
                                     // Creates a new Set to hold unique student IDs
-                                    new Set(
-                                        // Get an array of all student objects
-                                        Object.values(livepoll.responses)
-                                            // Flatten the array of student objects into an array of student IDs
-                                            .flatMap(response => Object.keys(response))
-                                    ).size
+                                    Object.values(livepoll.responses).reduce((acc, curr) => {
+                                        Object.keys(curr).forEach((studentId) => {
+                                            acc.add(studentId);
+                                        });
+                                        return acc;
+                                    }, new Set()).size
                                     :
                                     0
                             }
