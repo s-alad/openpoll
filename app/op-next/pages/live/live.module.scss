@@ -41,6 +41,16 @@
                 }
             }
         }
+        
+        .buttonWrapper {
+            display: flex; 
+            justify-content: start; 
+            align-items: center; 
+          
+            .start, .answer {
+              margin-right: 10px; 
+            }
+        }
 
         .start, .stop {
             width: 140px;
@@ -51,6 +61,22 @@
             cursor: pointer;
             border-radius: 16px;
             font-size: 20px;
+            
+            &:hover {
+                background-color: #fff;
+                color: #fbb91b;
+            }
+        }
+
+        .start, .answer {
+            background-color: #fbb91b;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 16px;
+            font-size: 20px;
+            padding: 10px 20px; // Adjust padding to make the buttons larger or smaller
+            margin-left: 20px;
             
             &:hover {
                 background-color: #fff;
