@@ -9,7 +9,6 @@ import s from './live.module.scss';
 import { BarChart } from '@mui/x-charts'
 import { axisClasses } from '@mui/x-charts';
 import Image from "next/image";
-import { transferPollResults } from "../../../../firebase/functions/src/index";
 
 interface LivePoll {
     active: boolean;
@@ -145,7 +144,7 @@ export default function Live() {
             const transferPollResultsFx = httpsCallable(fxns, fxname);
             const result = await transferPollResultsFx({ pollId: pollId, classId: classId });
             console.log(result.data);
-            
+
         
         }
         catch (e) { console.error("Error getting documents: ", e); }
