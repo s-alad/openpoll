@@ -26,13 +26,12 @@ import { push, ref, set } from 'firebase/database';
 export default function CreatePoll() {
 
 	const router = useRouter();
-
 	const classid = router.query.classid
-	console.log(classid);
+
+	const [polltype, setpolltype] = useState<"mc" | "short">("mc");
 
 	async function createpoll(data: createpollformdata) {
 		console.log('form data submitted:', data);
-
 
 		const user = auth.currentUser;
 		const uid = user!.uid;
