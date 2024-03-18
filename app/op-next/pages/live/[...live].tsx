@@ -2,13 +2,14 @@ import { rdb } from "@/firebase/firebaseconfig";
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { equalTo, get, onValue, orderByChild, query, ref, set } from "firebase/database";
 import { collection, doc, getDoc, query as q, where } from "firebase/firestore";
-import { db } from "../../firebase/firebaseconfig";
+import { auth, db, fxns } from "../../firebase/firebaseconfig";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import s from './live.module.scss';
 import { BarChart } from '@mui/x-charts'
 import { axisClasses } from '@mui/x-charts';
 import Image from "next/image";
+import { transferPollResults } from "../../../../firebase/functions/src/index";
 
 interface LivePoll {
     active: boolean;
@@ -36,7 +37,6 @@ export default function Live() {
     const [pollstatus, setPollstatus] = useState<boolean>(false);
 
     const [pollFinalStatus, setPollFinalStatus] = useState<boolean>(false);
-    const transferPollResults = httpsCallable(getFunctions(), 'transferPollResults');
     const [data, setData] = useState<DatasetElementType[]>([]);
     const [pollId, setPollId] = useState<string>("");
     const [correctAnswers, setCorrectAnswers] = useState<string>("");
@@ -140,8 +140,15 @@ export default function Live() {
         console.log(pollsref);
 
         try { await set(pollsref, true); setPollFinalStatus(true); setpollstatus(false);
-            transferPollResults({ pollId: live![1],
-                                  classId: live![0]  })
+            const generate = httpsCallable(fxns, "transferPollResults")
+            
+           await generate({
+                pollId: live![1],
+                classId: live![0]
+            });
+            
+
+        
         }
         catch (e) { console.error("Error getting documents: ", e); }
     }

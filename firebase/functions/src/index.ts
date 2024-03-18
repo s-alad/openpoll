@@ -72,7 +72,7 @@ export const generateClassId = functions.https.onCall(async (data, context) => {
 })
 
 
-exports.transferPollResults = functions.https.onCall(async (data, context) => {
+export const transferPollResults = functions.https.onCall(async (data) => {
     const pollId = data.pollId;
     const classId = data.classId;
     if (!pollId) {
