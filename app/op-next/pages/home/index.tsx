@@ -161,30 +161,32 @@ export default function Home() {
             <main className={s.main}>
                 <div className={s.classes}>
                     <div className={s.details}>
-                        <h2>my classes</h2>
+                        <h2>My Classes</h2>
                         <div className={s.create} onClick={() => { router.push("/create/class") }}>
                             <FontAwesomeIcon icon={faPlus} />
-                            create a class
+                            Create Class
                         </div>
                     </div>
                     {classes.map((classData, index) => (
                         <div className={s.class} key={index}>
                             <div className={`${s.trap} ${s.yellow}`}>
-                                <span>{classData.cid.substring(0,6)}</span>
+                                {/* <span>{classData.cid.substring(0,6)}</span> */}
                             </div>
                             <div className={`${s.content} ${s.yellow}`}>
                                 <div className={s.info}>
-                                    <div className={s.code}>{classData.class.classname}</div>
-                                    <div className={s.name}>{classData.class.description}</div>
+                                    <div className={s.className}>{classData.class.classname}</div>
+                                    {/* <div className={s.name}>{classData.class.description}</div> */}
                                     <div className={s.teacher}>{classData.class.owner.name}</div>
+                                    <div className={s.courseCode}>{classData.cid.substring(0,6)}</div>
                                 </div>
                                 <div className={s.actions}>
                                     <Link
                                         href={{
                                             pathname: '/dashboard/' + classData.cid,
                                         }}
+                                        className={s.link}
                                     >
-                                        <div className={s.join}>enter</div>
+                                        <div className={s.join}>Enter</div>
                                     </Link>
                                 </div>
                             </div>
@@ -196,7 +198,7 @@ export default function Home() {
 
                 <div className={s.classes}>
                     <div className={s.details}>
-                        <h2>classes i'm taking</h2>
+                        <h2>Classes Enrolled</h2>
                         {
                             joinClass ?
                                 <div className={s.join}>
@@ -214,7 +216,7 @@ export default function Home() {
                                     onClick={() => { setJoinClass(true) }}
                                 >
                                     <FontAwesomeIcon icon={faRightToBracket} />
-                                    join a class
+                                    Join Class
                                 </div>
                         }
                     </div>
@@ -226,8 +228,8 @@ export default function Home() {
                                 </div>
                                 <div className={`${s.content} ${s.yellow}`}>
                                     <div className={s.info}>
-                                        <div className={s.code}>{classData.class.classname}</div>
-                                        <div className={s.name}>{classData.class.description}</div>
+                                        <div className={s.className}>{classData.class.classname}</div>
+                                        {/* <div className={s.name}>{classData.class.description}</div> */}
                                         <div className={s.teacher}>{classData.class.owner.name}</div>
                                     </div>
                                     <div className={s.actions}>
@@ -235,8 +237,9 @@ export default function Home() {
                                             href={{
                                                 pathname: '/class/' + classData.cid,
                                             }}
+                                            className={s.link}
                                         >
-                                            <div className={s.join}>enter</div>
+                                            <div className={s.join}>Enter</div>
                                         </Link>
                                     </div>
                                 </div>
