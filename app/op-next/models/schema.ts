@@ -22,5 +22,5 @@ export const createPollSchema: ZodType<createpollformdata> = z
 export const createShortAnswerSchema: ZodType<createshortanswerformdata> = z
     .object({
         question: z.string().min(1, "Question must be at least 2 characters").max(200, "Question must be between 1 and 200 characters"),
-        answer: z.optional(z.string().min(1, "Answer must be at least 2 characters").max(200, "Answer must be between 1 and 200 characters"))
+        answers: z.optional(z.string().min(1, "Answer must be at least 2 characters").max(200, "Answer must be between 1 and 200 characters"))
     })

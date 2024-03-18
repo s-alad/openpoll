@@ -20,7 +20,7 @@ export interface createclassformfield extends defaultformfield {
 
 export type createshortanswerformdata = {
     question: string;
-    answer?: string;
+    answers?: string;
 };
 
 export type ValidCreateShortAnswerFieldNames =
