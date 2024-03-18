@@ -93,6 +93,24 @@
         }
     }
 
+    .answerWrapper {
+        display: flex;
+        flex-direction: column;
+    
+        .answers {
+            text-align: center;
+            margin-bottom: 0px; /* Decrease the bottom margin to bring the bar chart closer */
+            justify-content: center;
+            .content {
+                flex: 1;
+                padding: 15px;
+                color: #000;
+            }
+        }
+        margin-top: 20px;
+    }
+
+
     .live {
         margin-top: 100px;
         width: 80%;

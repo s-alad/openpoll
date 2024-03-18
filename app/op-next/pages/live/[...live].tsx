@@ -58,35 +58,19 @@ export default function Live() {
 
       
     const chartSetting = {
-    xAxis: [{
-        ticks: {
-            beginAtZero: true,
-            callback: function(value: any) {
-                if (value % 1 === 0) {
-                    return value;
+        bottomAxis: [{
+            tick: {
+                callback: function(value: any) {
+                    return Number.isInteger(value) ? value : null;
                 }
-            }
-        }
-    }],
-    yAxis: [{
-        scaleType: 'band', // Adjust the scale type to match the expected type
-        dataKey: 'option', // Set the data key for the y-axis
-        ticks: {
-            beginAtZero: true,
-            callback: (value: any) => {
-                if (value % 1 === 0) {
-                    return value;
-                }
-            }
-        }
-    }],
-    width: 500,
-    height: 300,
-    sx: {
-        [`.${axisClasses.bottom} .${axisClasses.label}`]: {
-            transform: 'translate(-20px, 0)',
-        },
-    },
+            },
+        }],
+        yAxis: [{
+            scaleType: 'band',
+            dataKey: 'option', 
+        }],
+        width: 800,
+        height: 300,
     };
 
     // Uses pollId and classId to get the correct answers from the database
@@ -208,46 +192,25 @@ export default function Live() {
                     </div>
                     :
                     ""
-            }
-            
-            <div>
-                {showAnswers && correctAnswers.length > 0 && (
-                    <div className={s.answers}>
-                        <h2>Correct Answer</h2>
-                        <p>{correctAnswers}</p>
-                    </div>
-                )}
-            </div>
-            {/* Live Poll response section */}
-            {/* If the poll is live (Start poll) then we only show how many have responded and after we stop the poll we show the disparity of answers like bar/pie graph */}
-            <div className={s.live}>
-            {
-                livepoll && livepoll.active ?
-                    <div className={s.response}> 
-                        {
-                            livepoll.responses ?
-                            // Creates a new Set to hold unique student IDs
-                            new Set(
-                                // Get an array of all student objects
-                                Object.values(livepoll.responses)
-                                // Flatten the array of student objects into an array of student IDs
-                                .flatMap(response => Object.keys(response.students))
-                            ).size
-                            :
-                            0
-                        }
-                        {"  "}
-                        Answered
-                    </div>
-                    :
-                    // Shows the bar graph of the responses if the poll is stopped
-                    (data.length > 0 && (
+            }  
+            <div className={s.answerWrapper}>
+                <div>
+                    {showAnswers && correctAnswers.length > 0 && (
+                        <div className={s.answers}>
+                            <h2>Correct Answer</h2>
+                            <p>{correctAnswers}</p>
+                        </div>
+                    )}
+                </div>
+                {showAnswers && livepoll && !livepoll.active && data.length > 0 && (
+                    <div className={s.content}>
                         <BarChart
-                            dataset={data} 
-                            series={[{
-                                dataKey: 'responses',
-                                label: 'Number of Responses',
-                            }]}
+                            dataset={data}
+                            series={[
+                                {
+                                    dataKey: "responses",
+                                },
+                            ]}
                             layout="horizontal"
                             {...chartSetting}
                             sx={{
@@ -266,10 +229,41 @@ export default function Live() {
                                 "& .MuiBarElement-root:nth-child(5)": {
                                     fill: "purple",
                                 },
+                                //change left yAxis label styles
+                                "& .MuiChartsAxis-tickLabel":{
+                                    strokeWidth:"0.4",
+                                    fontSize: "20px !important",
+                                    fontWeight: "bold",
+                                    fontFamily: "Open Sans, sans-serif",
+                                },
                             }}
                         />
-                    ))
-            }
+                    </div>
+                )}
+            </div>
+
+            {/* Live Poll response section */}
+            {/* If the poll is live (Start poll) then we only show how many have responded and after we stop the poll we show the disparity of answers like bar/pie graph */}
+            <div className={s.live}>
+                {livepoll && livepoll.active && (
+                    <div className={s.response}> 
+                        {
+                            livepoll.responses ?
+                            // Creates a new Set to hold unique student IDs
+                            new Set(
+                                // Get an array of all student objects
+                                Object.values(livepoll.responses)
+                                // Flatten the array of student objects into an array of student IDs
+                                .flatMap(response => Object.keys(response.students))
+                            ).size
+                            :
+                            0
+                        }
+                        {"  "}
+                        Answered
+                    </div>
+                )}
+
             </div>
         </div>
     )
