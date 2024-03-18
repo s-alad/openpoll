@@ -1,5 +1,5 @@
 import { z, ZodEnum, ZodType } from "zod"; // Add new import
-import { createclassformdata, createpollformdata } from "./form";
+import { createclassformdata, createpollformdata, createshortanswerformdata } from "./form";
 
 export const createClassSchema: ZodType<createclassformdata> = z
     .object({

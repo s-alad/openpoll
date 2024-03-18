@@ -35,7 +35,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 		signInWithPopup(auth, provider).then(async (result) => {
             const isfirst = getAdditionalUserInfo(result)!.isNewUser;
             if (isfirst) {
-                router.push("/onboard");
+                router.push("/home");
             } else {
                 console.log("pushing", auth); router.push("/home");
             }
