@@ -22,10 +22,6 @@ interface LivePoll {
     }
 }
 
-type DatasetElementType = {
-    [key: string]: string | number | Date | null | undefined;
-}; // MUI X Charts expects this type for the dataset
-
 export default function Live() {
 
     const router = useRouter();
@@ -33,28 +29,10 @@ export default function Live() {
 
     const [livepoll, setLivepoll] = useState<LivePoll>();
     const [pollstatus, setPollstatus] = useState<boolean>(false);
-    const [data, setData] = useState<DatasetElementType[]>([]);
     const [pollId, setPollId] = useState<string>("");
     const [correctAnswers, setCorrectAnswers] = useState<string>("");
     const [classId, setClassId] = useState<string>("");
     const [showAnswers, setShowAnswers] = useState<boolean>(false);
-
-    useEffect(() => {
-        if (livepoll?.options) {
-          const newData = livepoll.options.map(option => {
-            const responseCount = livepoll.responses?.[option.letter]
-              ? Object.keys(livepoll.responses[option.letter]).length
-              : 0;
-            return {
-              option: option.letter, 
-              responses: responseCount, 
-            } as unknown as DatasetElementType; // Cast each object to the expected type
-          });
-    
-          setData(newData as DatasetElementType[]); // Cast the entire array to the expected type
-        }
-      }, [livepoll]); // Update the data whenever livepoll changes
-
 
     // Uses pollId and classId to get the correct answers from the database
     async function getCorrectAnswers(pollId: any) {
@@ -185,9 +163,9 @@ export default function Live() {
                         </div>
                     )}
                 </div>
-                {showAnswers && livepoll && data.length > 0 && (
+                {showAnswers && livepoll  && (
                     <div className={s.content}>
-                        <PollChart data={data} />
+                        <PollChart livepoll={livepoll} />
                     </div>
                 )}
             </div>
