@@ -200,7 +200,7 @@ export default function Live() {
                         </div>
                     )}
                 </div>
-                {showAnswers && livepoll && !livepoll.active && data.length > 0 && (
+                {showAnswers && livepoll && data.length > 0 && (
                     <div className={s.content}>
                         <BarChart
                             dataset={data}
