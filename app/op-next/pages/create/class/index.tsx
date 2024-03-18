@@ -25,11 +25,7 @@ export default function CreateClass() {
         const user = auth.currentUser;
         const uid = user!.uid;
 
-        const generate = await httpsCallable(fxns, "generateClassId");
-        const cid = (await generate()).data as { id: string };
-
         const classdata = {
-            classid: cid.id,
             classname: data.classname,
             description: data.description,
             owner: {
