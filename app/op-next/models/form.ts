@@ -17,6 +17,22 @@ export interface createclassformfield extends defaultformfield {
     name: ValidCreateClassFieldNames;
 };
 
+
+export type createshortanswerformdata = {
+    question: string;
+    answer?: string;
+};
+
+export type ValidCreateShortAnswerFieldNames =
+    | "question"
+    | "answers"
+
+export interface createshortanswerformfield extends defaultformfield {
+    register: UseFormRegister<createshortanswerformdata>;
+    name: ValidCreateShortAnswerFieldNames;
+};
+
+
 export type createpollformdata = {
     question: string;
     options: {
