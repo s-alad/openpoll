@@ -45,8 +45,8 @@ const renderPieChartViews = () => {
                     data
                 }
             ]}
-            width={400}
-            height={200}
+            width={500}
+            height={400}
         />
     ))
 }
@@ -57,10 +57,11 @@ const renderBarChartViews = () => {
             key={index}
             dataset={data}
             yAxis={[{ scaleType: "band", dataKey: "label"}]}
-            series={[{ dataKey: "value", label: "Answers"}]}
+            series={[{ dataKey: "value", label: "# of Answers"}]}
             width={500}
             height={400}
             layout="horizontal"
+            colors={["#4036ee"]}
         />
     ));
 }
@@ -70,7 +71,7 @@ export default function analytics() {
     const classid = router.query.classid;
     
     // 0 = Pie Chart, 1 = Bar Chart, 2 = Scatter
-    const analyticsView = 0
+    const analyticsView = 1;
 
     const [openpolls, setOpenpolls] = useState<Poll[]>([]);
 
@@ -113,13 +114,8 @@ export default function analytics() {
 
             <div className={s.pollAnalyticsView}>
                 {/* Place Poll views here */}
-
-                {/* Pie Chart Views */}
-                {/* TODO: Change Fill color of arcLabel */}
-                {/* {renderPieChartViews()} */}
-
-                {/* Bar Chart Views */}
-                {renderBarChartViews()}
+                {analyticsView == 0 && renderPieChartViews()}
+                {analyticsView == 1 && renderBarChartViews()}
             </div>
         </div>
         </>
