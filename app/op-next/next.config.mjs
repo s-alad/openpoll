@@ -12,6 +12,7 @@ const nextConfig = {
   sassOptions: {
     includePaths: [path.join(__dirname, 'styles')],
   },
+  transpilePackages: ['@mui/x-charts']
 };
 
 export default nextConfig;
