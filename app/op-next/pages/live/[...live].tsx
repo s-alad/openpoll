@@ -140,14 +140,12 @@ export default function Live() {
         console.log(pollsref);
 
         try { await set(pollsref, true); setPollFinalStatus(true); setpollstatus(false);
-            const generate = httpsCallable(fxns, "transferPollResults")
-            
-           await generate({
-                pollId: live![1],
-                classId: live![0]
-            });
-            
+            let fxname = "transferPollResults"
 
+            const transferPollResultsFx = httpsCallable(fxns, fxname);
+            const result = await transferPollResultsFx({ pollId: pollId, classId: classId });
+            console.log(result.data);
+            
         
         }
         catch (e) { console.error("Error getting documents: ", e); }

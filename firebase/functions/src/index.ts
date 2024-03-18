@@ -72,9 +72,11 @@ export const generateClassId = functions.https.onCall(async (data, context) => {
 })
 
 
-export const transferPollResults = functions.https.onCall(async (data) => {
+export const transferPollResults = functions.https.onCall(async (data, context) => {
+
     const pollId = data.pollId;
     const classId = data.classId;
+
     if (!pollId) {
         throw new functions.https.HttpsError('invalid-argument', 'The function must be called with one argument "pollId".');
     }
@@ -86,6 +88,8 @@ export const transferPollResults = functions.https.onCall(async (data) => {
         // Read the poll responses from the Realtime Database
         const pollResponsesSnapshot = await realtimeDatabase.ref("/classes/"+classId+"/polls/"+pollId+"/responses").once('value');
         const pollResponses = pollResponsesSnapshot.val();
+
+        console.log(pollResponses);
 
         // Transfer to Firestore
         if (pollResponses) {
