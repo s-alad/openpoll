@@ -61,7 +61,7 @@ export default function Home() {
                 console.log("Added student with ID: ", studentsCollectionRef.id);
     
                 // Update the enrolled state with the new class without refreshing
-                const newClass = { id: classDoc.id, class: classDoc.data() as Classroom };
+                const newClass = { cid: classDoc.id, class: classDoc.data() as Classroom };
                 setEnrolled([...enrolled, newClass]); // Add the new class to the enrolled state
             } else {
                 console.log("No class found with the provided code.");
