@@ -17,9 +17,7 @@ interface LivePoll {
     }[];
     question: string;
     responses?: {
-        [letter: string]: {
-            [studentid: string]: string;
-        }
+        [studentid: string]: string;
     }
 }
 
@@ -57,21 +55,21 @@ export default function Live() {
       }, [livepoll]); // Update the data whenever livepoll changes
 
       
-    const chartSetting = {
-        bottomAxis: [{
-            tick: {
-                callback: function(value: any) {
-                    return Number.isInteger(value) ? value : null;
-                }
-            },
-        }],
-        yAxis: [{
-            scaleType: 'band',
-            dataKey: 'option', 
-        }],
-        width: 800,
-        height: 300,
-    };
+    // const chartSetting = {
+    //     bottomAxis: [{
+    //         tick: {
+    //             callback: function(value: any) {
+    //                 return Number.isInteger(value) ? value : null;
+    //             }
+    //         },
+    //     }],
+    //     yAxis: [{
+    //         scaleType: 'band',
+    //         dataKey: 'option', 
+    //     }],
+    //     width: 800,
+    //     height: 300,
+    // };
 
     // Uses pollId and classId to get the correct answers from the database
     async function getCorrectAnswers(pollId: any) {
@@ -202,17 +200,20 @@ export default function Live() {
                         </div>
                     )}
                 </div>
-                {showAnswers && livepoll && !livepoll.active && data.length > 0 && (
+                {showAnswers && livepoll && data.length > 0 && (
                     <div className={s.content}>
                         <BarChart
                             dataset={data}
+                            yAxis={[{ scaleType: 'band', dataKey: 'option' }]}
                             series={[
                                 {
                                     dataKey: "responses",
                                 },
                             ]}
                             layout="horizontal"
-                            {...chartSetting}
+                            width={800}
+                            height={300}
+                            bottomAxis={null}
                             sx={{
                                 "& .MuiBarElement-root:nth-child(1)": {
                                     fill: "#FBB91B", // Style the first bar
@@ -244,6 +245,7 @@ export default function Live() {
 
             {/* Live Poll response section */}
             {/* If the poll is live (Start poll) then we only show how many have responded and after we stop the poll we show the disparity of answers like bar/pie graph */}
+
             <div className={s.live}>
                 {livepoll && livepoll.active && (
                     <div className={s.response}> 
@@ -254,7 +256,7 @@ export default function Live() {
                                 // Get an array of all student objects
                                 Object.values(livepoll.responses)
                                 // Flatten the array of student objects into an array of student IDs
-                                .flatMap(response => Object.keys(response.students))
+                                .flatMap(response => Object.keys(response))
                             ).size
                             :
                             0
@@ -262,8 +264,8 @@ export default function Live() {
                         {"  "}
                         Answered
                     </div>
-                )}
 
+                )}
             </div>
         </div>
     )

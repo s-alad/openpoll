@@ -1,0 +1,11 @@
+.class {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+
+    .classAverage {
+        height: 15vh;
+        background-color: #FBB91B;
+    }
+}

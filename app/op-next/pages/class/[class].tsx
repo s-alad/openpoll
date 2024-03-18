@@ -24,7 +24,12 @@ interface LivePoll {
     options: {
         letter: string;
         option: string;
-    }[]
+    }[],
+    responses?: {
+        [letter: string]: {
+            [studentid: string]: [email: string];
+        }
+    }
     question: string;
 }
 
@@ -32,7 +37,7 @@ export default function Class() {
 
     // get the class id from the url
     const router = useRouter();
-    const classid = router.query.classid;
+    const classid = router.query.class;
 
     const { user } = useAuth();
 
@@ -67,26 +72,18 @@ export default function Class() {
 
         // add student to selected options
         for (const letter of selectedOptions) {
-            const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses/${letter}/students`);
+            const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses/${letter}`);
             await update(answerRef, { [user!.uid]: user!.email });
         }
 
         // remove student from non selected options
         for (const letter of nonSelectedOptions) {
-            const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses/${letter}/students/${user!.uid}`);
+            const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses/${letter}/${user!.uid}`);
             await remove(answerRef);
         }
-
-
-
     }
 
-    const {
-        handleSubmit,
-        control,
-        formState: { errors },
-    } = useForm({
-    });
+    const {handleSubmit, control, formState: { errors }} = useForm({});
 
 
     return (
@@ -106,13 +103,19 @@ export default function Class() {
                                                 poll.options.map((option: { option: string, letter: string }) => {
                                                     return (
                                                         <div key={option.letter} className={s.option}>
-
                                                                 <Controller
                                                                     control={control}
                                                                     name={option.letter}
+                                                                    defaultValue={
+                                                                        poll.responses && poll.responses[option.letter] && user!.uid in poll.responses[option.letter]
+                                                                    }
                                                                     render={({ field }) => (
                                                                         <FormControlLabel
-                                                                            control={<Checkbox {...field} />}
+                                                                            control={<Checkbox {...field} 
+                                                                                defaultChecked={
+                                                                                    poll.responses && poll.responses[option.letter] && user!.uid in poll.responses[option.letter]
+                                                                                }
+                                                                            />}
                                                                             label={option.letter}
                                                                         />
                                                                     )}
