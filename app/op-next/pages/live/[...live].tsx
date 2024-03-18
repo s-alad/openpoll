@@ -55,21 +55,21 @@ export default function Live() {
       }, [livepoll]); // Update the data whenever livepoll changes
 
       
-    const chartSetting = {
-        bottomAxis: [{
-            tick: {
-                callback: function(value: any) {
-                    return Number.isInteger(value) ? value : null;
-                }
-            },
-        }],
-        yAxis: [{
-            scaleType: 'band',
-            dataKey: 'option', 
-        }],
-        width: 800,
-        height: 300,
-    };
+    // const chartSetting = {
+    //     bottomAxis: [{
+    //         tick: {
+    //             callback: function(value: any) {
+    //                 return Number.isInteger(value) ? value : null;
+    //             }
+    //         },
+    //     }],
+    //     yAxis: [{
+    //         scaleType: 'band',
+    //         dataKey: 'option', 
+    //     }],
+    //     width: 800,
+    //     height: 300,
+    // };
 
     // Uses pollId and classId to get the correct answers from the database
     async function getCorrectAnswers(pollId: any) {
@@ -204,13 +204,16 @@ export default function Live() {
                     <div className={s.content}>
                         <BarChart
                             dataset={data}
+                            yAxis={[{ scaleType: 'band', dataKey: 'option' }]}
                             series={[
                                 {
                                     dataKey: "responses",
                                 },
                             ]}
                             layout="horizontal"
-                            {...chartSetting}
+                            width={800}
+                            height={300}
+                            bottomAxis={null}
                             sx={{
                                 "& .MuiBarElement-root:nth-child(1)": {
                                     fill: "#FBB91B", // Style the first bar

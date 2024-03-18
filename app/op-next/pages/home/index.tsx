@@ -181,8 +181,8 @@ export default function Home() {
                                 <div className={s.actions}>
                                     <Link
                                         href={{
-                                            pathname: '/class/' + classData.id,
-                                            //query: { classid: classData.id }
+                                            pathname: '/dashboard/' + classData.class.classid,
+                                            query: { classid: classData.id }
                                         }}
                                     >
                                         <div className={s.join}>enter</div>
@@ -234,7 +234,7 @@ export default function Home() {
                                     <div className={s.actions}>
                                         <Link
                                             href={{
-                                                pathname: '/class/' + classData.class.classid,
+                                                pathname: '/dashboard/' + classData.class.classid,
                                                 query: { classid: classData.id }
                                             }}
                                         >
