@@ -43,16 +43,6 @@ export default function Live() {
     const [classId, setClassId] = useState<string>("");
     const [showAnswers, setShowAnswers] = useState<boolean>(false);
 
-    const pathToState = `classes/${live![0]}/polls/${live![1]}/done`
-
-    const stateRef = ref(rdb, pathToState);
-
-    get(stateRef)
-        .then((snapshot) => {
-        if (snapshot.exists()) {
-        setPollFinalStatus(true);
-        }
-    })
 
     useEffect(() => {
         if (livepoll?.options) {
@@ -146,6 +136,17 @@ export default function Live() {
         }
         catch (e) { console.error("Error getting documents: ", e); }
     }
+
+    const pathToState = `classes/${classId}/polls/${pollId}/done`
+
+    const stateRef = ref(rdb, pathToState);
+
+    get(stateRef)
+        .then((snapshot) => {
+        if (snapshot.exists()) {
+        setPollFinalStatus(true);
+        }
+    })
 
     //wait until router is loaded
     useEffect(() => {
