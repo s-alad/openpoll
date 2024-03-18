@@ -9,6 +9,7 @@ import s from './live.module.scss';
 import { BarChart } from '@mui/x-charts'
 import { axisClasses } from '@mui/x-charts';
 import Image from "next/image";
+import PollChart from "@/components/barchart/barchart";
 
 interface LivePoll {
     active: boolean;
@@ -58,22 +59,6 @@ export default function Live() {
         }
       }, [livepoll]); // Update the data whenever livepoll changes
 
-      
-    // const chartSetting = {
-    //     bottomAxis: [{
-    //         tick: {
-    //             callback: function(value: any) {
-    //                 return Number.isInteger(value) ? value : null;
-    //             }
-    //         },
-    //     }],
-    //     yAxis: [{
-    //         scaleType: 'band',
-    //         dataKey: 'option', 
-    //     }],
-    //     width: 800,
-    //     height: 300,
-    // };
 
     // Uses pollId and classId to get the correct answers from the database
     async function getCorrectAnswers(pollId: any) {
@@ -177,7 +162,7 @@ export default function Live() {
     return (
         <div className={s.livepoll}>
             {
-                live ?
+                live && livepoll && livepoll.options ?
                     <div className={s.poll}>
                         <div className={s.question}>{livepoll?.question}</div>
                         <div className={s.options}>
@@ -229,43 +214,7 @@ export default function Live() {
                 </div>
                 {showAnswers && livepoll && data.length > 0 && (
                     <div className={s.content}>
-                        <BarChart
-                            dataset={data}
-                            yAxis={[{ scaleType: 'band', dataKey: 'option' }]}
-                            series={[
-                                {
-                                    dataKey: "responses",
-                                },
-                            ]}
-                            layout="horizontal"
-                            width={800}
-                            height={300}
-                            bottomAxis={null}
-                            sx={{
-                                "& .MuiBarElement-root:nth-child(1)": {
-                                    fill: "#FBB91B", // Style the first bar
-                                },
-                                "& .MuiBarElement-root:nth-child(2)": {
-                                    fill: "#FE6768", // Style the second bar
-                                },
-                                "& .MuiBarElement-root:nth-child(3)": {
-                                    fill: "#9596FF", //
-                                },
-                                "& .MuiBarElement-root:nth-child(4)": {
-                                    fill: "blue", // 
-                                },
-                                "& .MuiBarElement-root:nth-child(5)": {
-                                    fill: "purple",
-                                },
-                                //change left yAxis label styles
-                                "& .MuiChartsAxis-tickLabel":{
-                                    strokeWidth:"0.4",
-                                    fontSize: "20px !important",
-                                    fontWeight: "bold",
-                                    fontFamily: "Open Sans, sans-serif",
-                                },
-                            }}
-                        />
+                        <PollChart data={data} />
                     </div>
                 )}
             </div>
