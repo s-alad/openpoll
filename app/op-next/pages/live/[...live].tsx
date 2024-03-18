@@ -194,12 +194,6 @@ export default function Live() {
                         </div>
 
                         {
-                            pollstatus ?
-                                <button onClick={() => setpollstatus(false)} className={s.stop}>Stop</button>
-                                :
-                                <button onClick={() => setpollstatus(true)} className={s.start}>Start Poll</button>
-                        }
-                        {
                             pollFinalStatus ?
                             <>poll ended</>
                             :
