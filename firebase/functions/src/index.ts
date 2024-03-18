@@ -26,6 +26,21 @@ export const onAccountCreated = functions.auth.user().onCreate(async (user) => {
     }
 });
 
+// function that runs whenever a document is created in the classes collection
+// it takes the classId and adds a field that is the first 6 characters of the classId
+export const onClassCreated = functions.firestore.document("classes/{classId}").onCreate(async (snapshot, context) => {
+    try {
+        const { classId } = context.params;
+        const classid = classId.slice(0, 6);
+        await snapshot.ref.update({
+            classid
+        });
+        console.log(`Class ${classId} added to Firestore.`);
+    } catch (error) {
+        console.error("Error adding class to Firestore:", error);
+    }
+})
+
 // function to generate a unique memorable 5 digit class id
 export const generateClassId = functions.https.onCall(async (data, context) => {
     

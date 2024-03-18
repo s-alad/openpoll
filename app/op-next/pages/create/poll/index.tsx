@@ -1,5 +1,5 @@
 import s from './create.poll.module.scss';
-import { auth, db, fxns } from "../../../firebase/firebaseconfig";
+import { auth, db, fxns, rdb } from "../../../firebase/firebaseconfig";
 import { useRouter } from "next/router";
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import React, { useState, FormEvent, useEffect } from 'react';
@@ -21,6 +21,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
+import { push, ref, set } from 'firebase/database';
 
 export default function CreatePoll() {
 
@@ -51,15 +52,28 @@ export default function CreatePoll() {
 		const pollref = collection(classref, "polls");
 
 		try {
-			await addDoc(pollref, polldata);
-			router.push(`/class/${classid}`);
-		} catch (e) {
-			console.error("Error adding document: ", e);
-		}
+			const docRef = await addDoc(pollref, polldata);
 
 
-		try {
+			// now add the poll to the realtime database with the id of the firestore poll
+			/* const rdbref = ref(rdb, `classes/${classid}/polls`);
+			const newPollRef = push(rdbref);
+			await set(newPollRef, {
+				question: polldata.question,
+				options: polldata.options,
+				active: false,
+			}) */
 
+			const pollid = docRef.id;
+			const rdbref = ref(rdb, `classes/${classid}/polls/${pollid}`);
+			await set(rdbref, {
+				question: polldata.question,
+				options: polldata.options,
+				active: false,
+				responses: []
+			})
+
+			router.back();
 		} catch (e) {
 			console.error("Error adding document: ", e);
 		}

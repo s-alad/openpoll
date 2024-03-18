@@ -7,85 +7,134 @@ import Link from 'next/link';
 import { collection, doc, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase/firebaseconfig';
 import Poll from '@/models/poll';
+import { rdb } from '@/firebase/firebaseconfig'; import { equalTo, onValue, orderByChild, query, ref } from 'firebase/database';
+import {
+    Box,
+    Checkbox,
+    FormControlLabel,
+} from '@mui/material'
+import { Controller, useForm } from 'react-hook-form';
+import { useAuth } from '@/context/authcontext';
+import { update } from 'firebase/database';
+import { remove } from 'firebase/database';
+
+interface LivePoll {
+    id: string;
+    active: boolean;
+    options: {
+        letter: string;
+        option: string;
+    }[],
+    responses?: {
+        [letter: string]: {
+            [studentid: string]: [email: string];
+        }
+    }
+    question: string;
+}
 
 export default function Class() {
 
     // get the class id from the url
     const router = useRouter();
-    const classid = router.query.classid;
+    const classid = router.query.class;
 
-    const [openpolls, setOpenpolls] = useState<Poll[]>([]);
+    const { user } = useAuth();
 
-    async function getpolls() {
-        // collection classes - document class id - collection polls
-        const classref = doc(db, "classes", classid as string);
-        console.log(classref);
-        const pollsref = collection(classref, "polls");
+    const [activePolls, setActivePolls] = useState<LivePoll[]>([]);
 
-        try {
-            const snapshot = await getDocs(pollsref);
-            let openpolls: Poll[] = [];
-            snapshot.forEach((doc) => {
-                const pid = doc.id;
-                const data = doc.data() as Poll;
-                if (!data.classid) return;
-                console.log(pid, data);
-                openpolls.push(data);
-            });
-            setOpenpolls(openpolls);
-        } catch (e) {
-            console.error("Error getting documents: ", e);
+
+    useEffect(() => {
+        const pollsRef = query(ref(rdb, `classes/${classid}/polls`), orderByChild('active'), equalTo(true));
+        const unsubscribe = onValue(pollsRef, (snapshot) => {
+            const polls = snapshot.val();
+            console.log(polls);
+            const activePolls = [];
+            for (const id in polls) {
+                if (polls[id].active) {
+                    activePolls.push({ ...polls[id], id });
+                }
+            }
+            console.log(activePolls);
+            setActivePolls(activePolls);
+        });
+
+        return () => unsubscribe();
+    }, [classid]);
+
+    async function submitPoll(data: any, pollId: string) {
+        console.log(data);
+        
+        // get the data letter that is true
+        const selectedOptions = Object.keys(data).filter((key) => data[key]);
+        const nonSelectedOptions = Object.keys(data).filter((key) => !data[key]);
+        console.log(selectedOptions);
+
+        // add student to selected options
+        for (const letter of selectedOptions) {
+            const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses/${letter}`);
+            await update(answerRef, { [user!.uid]: user!.email });
         }
 
-
+        // remove student from non selected options
+        for (const letter of nonSelectedOptions) {
+            const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses/${letter}/${user!.uid}`);
+            await remove(answerRef);
+        }
     }
 
-    //wait for router to load
-    useEffect(() => {
-        if (classid) {
-            getpolls();
-        }
-    }, [classid]);
+    const {handleSubmit, control, formState: { errors }} = useForm({});
+
 
     return (
         <div className={s.class}>
-            
-            <div className={s.openpolls}>
-                {
-                    openpolls.map((poll, index) => {
-                        return (
-                            <div key={index} className={s.poll}>
-                                <div className={s.details}>
-                                    <div className={s.question}>{poll.question}</div>
-                                    <div>created: {new Date(poll.created.seconds).toLocaleDateString()}</div>
-                                </div>
-                                <div className={s.actions}>
-                                    <button className={s.configure}>configure</button>
-                                    <button className={s.live}>go live</button>
-                                </div>
-                            </div>
-                        )
-                    })
-                }
+            {
+                classid && activePolls.length > 0 ?
+                    <div className={s.openpolls}>
+                        {
+                            activePolls.map((poll) => {
+                                return (
+                                    <form key={poll.id} className={s.poll} onSubmit={
+                                        handleSubmit((data) => submitPoll(data, poll.id))
+                                    }>
+                                        <h1>{poll.question}</h1>
+                                        <div className={s.options}>
+                                            {
+                                                poll.options.map((option: { option: string, letter: string }) => {
+                                                    return (
+                                                        <div key={option.letter} className={s.option}>
+                                                                <Controller
+                                                                    control={control}
+                                                                    name={option.letter}
+                                                                    defaultValue={
+                                                                        poll.responses && poll.responses[option.letter] && user!.uid in poll.responses[option.letter]
+                                                                    }
+                                                                    render={({ field }) => (
+                                                                        <FormControlLabel
+                                                                            control={<Checkbox {...field} 
+                                                                                defaultChecked={
+                                                                                    poll.responses && poll.responses[option.letter] && user!.uid in poll.responses[option.letter]
+                                                                                }
+                                                                            />}
+                                                                            label={option.letter}
+                                                                        />
+                                                                    )}
+                                                                />
 
-            </div>
 
-            <div className={s.stalepolls}>
-
-            </div>
-
-            <div className={s.start}>
-                <Link
-                    href={{
-                        pathname: '/create/poll',
-                        query: { classid: router.query.classid }
-                    }}
-                >
-                <div className={s.add}>
-                    <FontAwesomeIcon icon={faPlus} />
-                </div>
-                </Link>
-            </div>
+                                                            <div className={s.content}>{option.option}</div>
+                                                        </div>
+                                                    )
+                                                })
+                                            }
+                                        </div>
+                                        <button type="submit">Submit</button>
+                                    </form>
+                                )
+                            })
+                        }
+                    </div> : <div className={s.openpolls}>no active polls</div>
+            }
         </div>
     )
 }
