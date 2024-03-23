@@ -1,7 +1,8 @@
 import { rdb } from "@/firebase/firebaseconfig";
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { equalTo, get, onValue, orderByChild, query, ref, set } from "firebase/database";
 import { collection, doc, getDoc, query as q, where } from "firebase/firestore";
-import { db } from "../../firebase/firebaseconfig";
+import { auth, db, fxns } from "../../firebase/firebaseconfig";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import s from './live.module.scss';
@@ -12,6 +13,7 @@ import PollChart from "@/components/barchart/barchart";
 
 interface LivePoll {
     active: boolean;
+    done: boolean,
     options: {
         option: string;
         letter: string;
@@ -29,10 +31,31 @@ export default function Live() {
 
     const [livepoll, setLivepoll] = useState<LivePoll>();
     const [pollstatus, setPollstatus] = useState<boolean>(false);
+
+    const [pollFinalStatus, setPollFinalStatus] = useState<boolean>(false);
+    const [data, setData] = useState<DatasetElementType[]>([]);
+
     const [pollId, setPollId] = useState<string>("");
     const [correctAnswers, setCorrectAnswers] = useState<string>("");
     const [classId, setClassId] = useState<string>("");
     const [showAnswers, setShowAnswers] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (livepoll?.options) {
+            const newData = livepoll.options.map(option => {
+                const responseCount = livepoll.responses?.[option.letter]
+                    ? Object.keys(livepoll.responses[option.letter]).length
+                    : 0;
+                return {
+                    option: option.letter,
+                    responses: responseCount,
+                } as unknown as DatasetElementType; // Cast each object to the expected type
+            });
+
+            setData(newData as DatasetElementType[]); // Cast the entire array to the expected type
+        }
+    }, [livepoll]); // Update the data whenever livepoll changes
+
 
     // Uses pollId and classId to get the correct answers from the database
     async function getCorrectAnswers(pollId: any) {
@@ -41,14 +64,14 @@ export default function Live() {
             console.log('Poll ID is undefined or empty.');
             return;
         }
-    
+
         // Reference to the poll document in the 'polls' collection
-        const pollDocRef = doc(db, "classes", classId,  "polls", pollId);
+        const pollDocRef = doc(db, "classes", classId, "polls", pollId);
         console.log(pollDocRef, "pollDocRef")
         // Get the document from the database
         try {
             const docSnap = await getDoc(pollDocRef);
-    
+
             if (docSnap.exists()) {
                 const pollData = docSnap.data();
                 const answers = pollData.answers;
@@ -93,6 +116,24 @@ export default function Live() {
         catch (e) { console.error("Error getting documents: ", e); }
     }
 
+    async function endPoll() {
+        const pollsref = ref(rdb, `classes/${live![0]}/polls/${live![1]}/done`);
+        console.log(pollsref);
+
+        try {
+            await set(pollsref, true); setPollFinalStatus(true); setpollstatus(false);
+            let fxname = "transferPollResults"
+
+            const transferPollResultsFx = httpsCallable(fxns, fxname);
+            const result = await transferPollResultsFx({ pollId: pollId, classId: classId });
+            console.log(result.data);
+
+
+        }
+        catch (e) { console.error("Error getting documents: ", e); }
+    }
+
+
     //wait until router is loaded
     useEffect(() => {
         if (live) {
@@ -102,6 +143,17 @@ export default function Live() {
             getpoll();
         }
     }, [live]);
+
+    // const pathToState = `classes/${classId}/polls/${pollId}/done`
+
+    // const stateRef = ref(rdb, pathToState);
+
+    // get(stateRef)
+    //     .then((snapshot) => {
+    //     if (snapshot.exists()) {
+    //     setPollFinalStatus(true);
+    //     }
+    // })
 
     useEffect(() => {
         // Need live to be an array and have a length greater than 1
@@ -135,25 +187,36 @@ export default function Live() {
                                 })
                             }
                         </div>
+
+                        {
+                            pollFinalStatus ?
+                                <>poll ended</>
+                                :
+                                <button onClick={() => endPoll()} className={s.stop}>End Poll</button>
+                        }
+
                         <div className={s.buttonWrapper}>
-                            
+
 
                             {
-                                pollstatus ?
-                                    <button onClick={() => setpollstatus(false)} className={s.stop}>Stop</button>
+                                pollFinalStatus ?
+                                    <></>
                                     :
-                                    <button onClick={() => setpollstatus(true)} className={s.start}>Start Poll</button>
+                                    pollstatus ?
+                                        <button onClick={() => setpollstatus(false)} className={s.stop}>Stop</button>
+                                        :
+                                        <button onClick={() => setpollstatus(true)} className={s.start}>Start Poll</button>
+                                    
                             }
-                            
+
                             <button onClick={handleShowAnswers} className={s.answer}>
                                 {showAnswers ? "Hide Answers" : "Show Answers"}
                             </button>
                         </div>
-                        
                     </div>
                     :
                     ""
-            }  
+            }
             <div className={s.answerWrapper}>
                 <div>
                     {showAnswers && correctAnswers.length > 0 && (
@@ -169,24 +232,16 @@ export default function Live() {
                     </div>
                 )}
             </div>
-
-            {/* Live Poll response section */}
+            
             {/* If the poll is live (Start poll) then we only show how many have responded and after we stop the poll we show the disparity of answers like bar/pie graph */}
-
             <div className={s.live}>
                 {livepoll && livepoll.active && (
-                    <div className={s.response}> 
+                    <div className={s.response}>
                         {
                             livepoll.responses ?
-                            // Creates a new Set to hold unique student IDs
-                            new Set(
-                                // Get an array of all student objects
-                                Object.values(livepoll.responses)
-                                // Flatten the array of student objects into an array of student IDs
-                                .flatMap(response => Object.keys(response))
-                            ).size
-                            :
-                            0
+                                new Set(Object.values(livepoll.responses).flatMap(response => Object.keys(response))).size
+                                :
+                                0
                         }
                         {"  "}
                         Answered
