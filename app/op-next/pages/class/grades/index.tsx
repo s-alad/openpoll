@@ -2,18 +2,11 @@ import React, { useState, useEffect } from "react";
 import Classroom from "@/models/class";
 import { useRouter } from "next/router";
 import { useAuth } from "@/context/authcontext";
-import { db, auth } from "../../firebase/firebaseconfig";
+import { db, auth } from "../../../firebase/firebaseconfig";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import s from "./grades.module.scss";
 import Link from "next/link";
-import {
-  faUser,
-  faHome,
-  faPlus,
-  faRightToBracket,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface Class {
   cid: string;
@@ -22,7 +15,6 @@ interface Class {
 
 export default function Grades() {
   const router = useRouter();
-  const { user } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [enrolled, setEnrolled] = useState<Class[]>([]);
@@ -95,11 +87,12 @@ export default function Grades() {
                   <div className={s.teacher}>{classData.class.owner.name}</div>
                 </div>
                 <div className={s.actions}>
-                  <Link
-                    href={{
-                      pathname: "/grades/" + classData.cid,
-                    }}
-                  >
+                    <Link
+                      href={{
+                        pathname: "/class/grades/class/" + classData.cid,
+                        query: { id: classData.cid },
+                      }}
+                    >
                     <div className={s.join}>enter</div>
                   </Link>
                 </div>

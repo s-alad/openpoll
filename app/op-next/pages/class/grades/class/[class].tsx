@@ -1,18 +1,13 @@
+import React, { useState, useEffect } from "react";
+import Classroom from "@/models/class";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUser,
-  faArrowLeftLong,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
-import Link from "next/link";
-import { collection, doc, getDocs } from "firebase/firestore";
-import { db, auth } from "@/firebase/firebaseconfig";
-import Poll from "@/models/poll";
-import { onAuthStateChanged } from "firebase/auth";
-import Loader from "@/components/loader/loader";
 import { useAuth } from "@/context/authcontext";
+import { db, auth } from "../../../../firebase/firebaseconfig";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDocs, collection } from "firebase/firestore";
+import s from "./grades.module.scss";
+import Link from "next/link";
+import Poll from "@/models/poll";
 
 interface PollAndId {
   poll: Poll;
@@ -30,16 +25,16 @@ export default function ClassGrades() {
 
   // get the class id from the url
   const router = useRouter();
-  const classid = router.query.class;
+  const { class: classid } = router.query;
   console.log(classid, "classid");
   const { user } = useAuth();
-  console.log(user, "user");
+  console.log("user", user);
 
   const [openpolls, setOpenpolls] = useState<PollAndId[]>([]);
 
   const [studentAnswers, setStudentAnswers] = useState<PollAndAnswer[]>([]);
 
-  async function getpolls() {
+  async function getPolls() {
     setLoading(true);
     // collection classes - document class id - collection polls
     console.log("get polls");
@@ -54,7 +49,6 @@ export default function ClassGrades() {
         const pid = doc.id;
         const data = doc.data() as Poll;
         if (!data.classid) return;
-        console.log(pid, data);
         openpolls.push({ poll: data, id: pid });
       });
       setOpenpolls(openpolls);
@@ -68,11 +62,8 @@ export default function ClassGrades() {
   async function extractAndCheckAnswers() {
     console.log("extractAndCheckAnswers");
     try {
-      if (!user) {
-        console.error("User not found");
-        return;
-      }
-      const uid = user.uid;
+      const user = auth.currentUser;
+      const uid = user!.uid;
       console.log(uid, "current id");
 
       let results: PollAndAnswer[] = [];
@@ -116,23 +107,29 @@ export default function ClassGrades() {
     }
   }
 
-  async function getGrades() {}
+  
 
-  //wait for router to load
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        if (classid) {
-          getpolls();
-          extractAndCheckAnswers();
-        }
-      }
-    })
-
-    return () => {
-        unsubscribe();
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    if (user) {
+      if (classid) {
+        getPolls();
+        extractAndCheckAnswers(); 
     }
-  }, [classid]);
+    }
+  
+    return () => {
+      unsubscribe();
+    };
+
+}, [classid]);
+
+
+  // useEffect(() => {
+  //   if (openpolls.length > 0) {
+  //     extractAndCheckAnswers();
+  //   }
+  // }, [openpolls]);
+
 
   return <div>ClassGrades</div>;
 }
