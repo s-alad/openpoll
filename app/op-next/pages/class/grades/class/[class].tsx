@@ -4,8 +4,7 @@ import { useRouter } from "next/router";
 import { useAuth } from "@/context/authcontext";
 import { db, auth } from "../../../../firebase/firebaseconfig";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDocs, collection } from "firebase/firestore";
-import s from "./grades.module.scss";
+import { doc, getDocs, collection, query, where } from "firebase/firestore";
 import Link from "next/link";
 import Poll from "@/models/poll";
 
@@ -16,8 +15,10 @@ interface PollAndId {
 
 interface PollAndAnswer {
   pollId: string;
-  response: string;
-  answers: string;
+  question: string;
+  responses: string;
+  answers: string[];
+  isCorrect: boolean;
 }
 
 export default function ClassGrades() {
@@ -31,8 +32,8 @@ export default function ClassGrades() {
   console.log("user", user);
 
   const [openpolls, setOpenpolls] = useState<PollAndId[]>([]);
-
   const [studentAnswers, setStudentAnswers] = useState<PollAndAnswer[]>([]);
+  const [numCorrect, setNumCorrect] = useState(0); // Number of correct answers used as an integer to display how many questions the student got correct
 
   async function getPolls() {
     setLoading(true);
@@ -60,76 +61,89 @@ export default function ClassGrades() {
   }
 
   async function extractAndCheckAnswers() {
-    console.log("extractAndCheckAnswers");
+    console.log("Extracting and checking answers");
     try {
-      const user = auth.currentUser;
-      const uid = user!.uid;
-      console.log(uid, "current id");
-
-      let results: PollAndAnswer[] = [];
-
-      console.log(openpolls, "openpolls");
-      console.log("hit1");
-      openpolls.forEach((pollAndId) => {
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        console.error("No current user found");
+        return;
+      }
+      const uid = currentUser.uid;
+      console.log(`Current user ID: ${uid}`);
+  
+      const results: PollAndAnswer[] = openpolls.map(pollAndId => {
         const { poll, id: pollId } = pollAndId;
-
-        console.log(poll, "hit");
-
-        const correctAnswers = new Set(poll.answers); // Assuming 'poll.answers' is an array of correct answer options (e.g., ['A'])
-
-        let userResponseInfo = {
+        const correctAnswersSet = new Set(poll.answers);
+  
+        // Initialize default user response info
+        let userResponseInfo: PollAndAnswer = {
+          question: poll.question,
           pollId,
-          response: "",
-          answers: poll.answers.join(", "),
+          responses: "",
+          answers: poll.answers,
           isCorrect: false,
         };
-
-        Object.entries(poll.responses || {}).forEach(
-          ([option, userResponses]) => {
-            const responses = userResponses as { [uid: string]: string };
-
-            if (responses[uid]) {
-              userResponseInfo.response = option; // Save the user's response
-              userResponseInfo.isCorrect = correctAnswers.has(option); // Check correctness
-              console.log(userResponseInfo.response, "response");
-            }
-          },
-        );
-
-        results.push(userResponseInfo);
+  
+        // Find the user's response among the poll responses
+        const userResponseEntry = Object.entries(poll.responses || {})
+          .find(([_, userResponses]) => uid in userResponses);
+  
+        if (userResponseEntry) {
+          const [responseOption] = userResponseEntry;
+          userResponseInfo.responses = responseOption; // The option the user chose
+          userResponseInfo.isCorrect = correctAnswersSet.has(responseOption); // Is the option correct?
+        }
+  
+        return userResponseInfo;
       });
-
-      // Update the state with the user's responses and correctness
-      setStudentAnswers(results);
-      console.log(results, "results");
+  
+      setStudentAnswers(results); // Save the results to the state
+      console.log(results, "Results after checking answers");
     } catch (e) {
       console.error("Error while checking answers: ", e);
     }
   }
-
   
 
-  const unsubscribe = onAuthStateChanged(auth, (user) => {
-    if (user) {
-      if (classid) {
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user && classid) {
         getPolls();
-        extractAndCheckAnswers(); 
+        
+      }
+    });
+
+    return () => unsubscribe();
+  }, [classid]);
+
+  useEffect(() => {
+    if (openpolls.length > 0) {
+      extractAndCheckAnswers();
     }
-    }
-  
-    return () => {
-      unsubscribe();
-    };
-
-}, [classid]);
+  }, [openpolls]); // Only run the effect when openpolls changes
 
 
-  // useEffect(() => {
-  //   if (openpolls.length > 0) {
-  //     extractAndCheckAnswers();
-  //   }
-  // }, [openpolls]);
-
-
-  return <div>ClassGrades</div>;
+  return (
+    <div>
+      { studentAnswers.length > 0 ? (
+        <div>
+          <h1>Class Grades</h1>
+          <div>
+            {studentAnswers.map((poll, index) => (
+              <div key={index}>
+                <h2>{poll.question}</h2>
+                <p>Responses: {poll.responses}</p>
+                <p>Correct Answers: {poll.answers.join(", ")}</p>
+                <p>Correct: {poll.isCorrect ? "Yes" : "No"}</p>
+              </div>
+            ))}
+            </div>
+            </div>
+      ) : (
+        <h1>No grades</h1>
+      )}
+   
+          
+    </div>
+  );
 }

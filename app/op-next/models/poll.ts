@@ -8,11 +8,11 @@ interface Poll {
   answers: string[];
   created: any;
   active: boolean;
-  responses: PollResponse;
+  responses?: PollResponse;
 }
 
 interface PollResponse {
-  [option: string]: {};
+  [option: string]: { [uid: string]: string };
 }
 
 export default Poll;
