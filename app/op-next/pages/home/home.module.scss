@@ -16,6 +16,7 @@
             flex: 1;
             align-items: center;
             gap: 40px;
+            border-radius: 5px;
 
             .link {
                 text-decoration: none;
@@ -24,36 +25,40 @@
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                background-color: #9596ff;
                 width: 100%;
-                padding: 20px 60px;
-                h2 {margin: 0;}
+
+                h2 {
+                    font-size: 20px;
+                    margin: 0;
+                }
+
                 .create {
                     color: #fff;
                     border: 2px solid #4036ee;   
                     background-color: #4036ee;
-                    font-size: 18px;
-                    font-weight: 600;
+                    font-size: 20px;
                     cursor: pointer;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     gap: 10px;
                     width: 180px;
-                    height: 40px;
+                    height: 30px;
+                    border-radius: 5px;
                 }
                 .join {
                     color: white;
-                    font-size: 18px;
-                    font-weight: 600;
+                    font-size: 20px;
                     cursor: pointer;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     gap: 10px;
                     width: 180px;
-                    height: 40px;
+                    height: 30px;
                     background-color: #4036ee;
+                    border-radius: 5px;
+
 
                     input {
                         width: 60%;
@@ -83,9 +88,8 @@
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    font-size: 18px;
-                    font-weight: bold;
-                    
+                    margin-left: 3px;
+
                     span {
                         margin-top: 10px;
                         width: 100px;
@@ -100,23 +104,24 @@
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
-                    padding: 0 60px;
-
+                    padding: 0 20px;
+                    border-radius: 5px;
 
                     .info {
                         .className {
-                            font-size: 18px;
-                            font-weight: 600;
+                            font-size: 15px;
+                            font-weight: 400;
+                            padding-bottom: 1%;
                         }
 
-                        .name {
-                            font-size: 18px;
+                        .classDescription {
+                            font-size: 30px;
                             font-weight: 600;
+                            padding-bottom: 1%;
                         }
 
-                        .teacher {
-                            font-size: 18px;
-                            font-weight: 600;
+                        .classDetail {
+                            font-size: 15px;
                         }
                     }
 

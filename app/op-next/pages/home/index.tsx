@@ -175,9 +175,12 @@ export default function Home() {
                             <div className={`${s.content} ${s.yellow}`}>
                                 <div className={s.info}>
                                     <div className={s.className}>{classData.class.classname}</div>
-                                    {/* <div className={s.name}>{classData.class.description}</div> */}
-                                    <div className={s.teacher}>{classData.class.owner.name}</div>
-                                    <div className={s.courseCode}>{classData.cid.substring(0,6)}</div>
+                                    <div className={s.classDescription}>{classData.class.description}</div>
+
+                                    <div className={s.classDetails}>
+                                        <span className={s.teacher}>{classData.class.owner.name}</span>
+                                        <span className={s.courseCode}> | Join Code: {classData.cid.substring(0,6)}</span>
+                                    </div>
                                 </div>
                                 <div className={s.actions}>
                                     <Link
@@ -229,8 +232,12 @@ export default function Home() {
                                 <div className={`${s.content} ${s.yellow}`}>
                                     <div className={s.info}>
                                         <div className={s.className}>{classData.class.classname}</div>
-                                        {/* <div className={s.name}>{classData.class.description}</div> */}
-                                        <div className={s.teacher}>{classData.class.owner.name}</div>
+                                        <div className={s.classDescription}>{classData.class.description}</div>
+
+                                        <div className={s.classDetails}>
+                                            <span className={s.teacher}>{classData.class.owner.name}</span>
+                                            <span className={s.courseCode}> | Join Code: {classData.cid.substring(0,6)}</span>
+                                        </div>
                                     </div>
                                     <div className={s.actions}>
                                         <Link
