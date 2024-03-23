@@ -24,10 +24,6 @@ interface LivePoll {
     }
 }
 
-type DatasetElementType = {
-    [key: string]: string | number | Date | null | undefined;
-}; // MUI X Charts expects this type for the dataset
-
 export default function Live() {
 
     const router = useRouter();
@@ -38,11 +34,11 @@ export default function Live() {
 
     const [pollFinalStatus, setPollFinalStatus] = useState<boolean>(false);
     const [data, setData] = useState<DatasetElementType[]>([]);
+
     const [pollId, setPollId] = useState<string>("");
     const [correctAnswers, setCorrectAnswers] = useState<string>("");
     const [classId, setClassId] = useState<string>("");
     const [showAnswers, setShowAnswers] = useState<boolean>(false);
-
 
     useEffect(() => {
         if (livepoll?.options) {
@@ -230,9 +226,9 @@ export default function Live() {
                         </div>
                     )}
                 </div>
-                {showAnswers && livepoll && data.length > 0 && (
+                {showAnswers && livepoll  && (
                     <div className={s.content}>
-                        <PollChart data={data} />
+                        <PollChart livepoll={livepoll} />
                     </div>
                 )}
             </div>
