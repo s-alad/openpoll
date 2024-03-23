@@ -47,6 +47,7 @@ export default function CreatePoll() {
 			answers: data.answers,
 			created: new Date(),
 			active: false,
+			done: false
 		}
 
 		console.log(polldata);
@@ -73,6 +74,7 @@ export default function CreatePoll() {
 				question: polldata.question,
 				options: polldata.options,
 				active: false,
+				done: false,
 				responses: []
 			})
 
