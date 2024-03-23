@@ -1,0 +1,159 @@
+.home {
+  width: 100%;
+
+  main {
+    padding-top: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: 100%;
+
+    .classes {
+      width: 70%;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      align-items: center;
+      gap: 40px;
+
+      .details {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #9596ff;
+        width: 100%;
+        padding: 20px 60px;
+        h2 {
+          margin: 0;
+        }
+        .create {
+          color: #fff;
+          border: 2px solid #4036ee;
+          background-color: #4036ee;
+          font-size: 18px;
+          font-weight: 600;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          width: 180px;
+          height: 40px;
+        }
+        .join {
+          color: white;
+          font-size: 18px;
+          font-weight: 600;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          width: 180px;
+          height: 40px;
+          background-color: #4036ee;
+
+          input {
+            width: 60%;
+            padding: 0 10px;
+          }
+          button {
+            background-color: white;
+            border: none;
+            cursor: pointer;
+            &:hover {
+              background-color: #fbb91b;
+              color: white;
+            }
+          }
+        }
+      }
+
+      .class {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+
+        .trap {
+          width: 20%;
+          height: 40px;
+          clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 18px;
+          font-weight: bold;
+
+          span {
+            margin-top: 10px;
+            width: 100px;
+            text-align: center;
+            border-bottom: 2px solid #000;
+          }
+        }
+
+        .content {
+          width: 100%;
+          height: 155px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0 60px;
+
+          .info {
+            .code {
+              font-size: 18px;
+              font-weight: 600;
+            }
+
+            .name {
+              font-size: 24px;
+              font-weight: 600;
+            }
+
+            .teacher {
+              font-size: 18px;
+              font-weight: 600;
+            }
+          }
+
+          .actions {
+            .join {
+              width: 200px;
+              height: 50px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              background-color: #4036ee;
+              color: white;
+              border-radius: 32px;
+              font-size: 18px;
+              font-weight: 600;
+              cursor: pointer;
+            }
+          }
+        }
+
+        .actions {
+          display: flex;
+        }
+
+        .yellow {
+          background-color: #fbb91b;
+        }
+
+        .pink {
+          background-color: #ffc9c9;
+        }
+      }
+    }
+
+    .seperator {
+      width: 70%;
+      height: 2px;
+      background-color: #c5cfe5;
+      margin: 40px 0;
+    }
+  }
+}
