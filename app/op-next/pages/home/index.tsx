@@ -164,7 +164,7 @@ export default function Home() {
                         <h2>My Classes</h2>
                         <div className={s.create} onClick={() => { router.push("/create/class") }}>
                             <FontAwesomeIcon icon={faPlus} />
-                            Create Class
+                            Create
                         </div>
                     </div>
                     {classes.map((classData, index) => (
@@ -219,7 +219,7 @@ export default function Home() {
                                     onClick={() => { setJoinClass(true) }}
                                 >
                                     <FontAwesomeIcon icon={faRightToBracket} />
-                                    Join Class
+                                    Join
                                 </div>
                         }
                     </div>
