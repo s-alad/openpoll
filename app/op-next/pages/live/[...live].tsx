@@ -1,7 +1,7 @@
 import { rdb } from "@/firebase/firebaseconfig";
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { equalTo, get, onValue, orderByChild, query, ref, set } from "firebase/database";
-import { collection, doc, getDoc, query as q, where } from "firebase/firestore";
+import { collection, doc, getDoc, query as q, updateDoc } from "firebase/firestore";
 import { auth, db, fxns } from "../../firebase/firebaseconfig";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -33,29 +33,11 @@ export default function Live() {
     const [pollstatus, setPollstatus] = useState<boolean>(false);
 
     const [pollFinalStatus, setPollFinalStatus] = useState<boolean>(false);
-    const [data, setData] = useState<DatasetElementType[]>([]);
 
     const [pollId, setPollId] = useState<string>("");
     const [correctAnswers, setCorrectAnswers] = useState<string>("");
     const [classId, setClassId] = useState<string>("");
     const [showAnswers, setShowAnswers] = useState<boolean>(false);
-
-    useEffect(() => {
-        if (livepoll?.options) {
-            const newData = livepoll.options.map(option => {
-                const responseCount = livepoll.responses?.[option.letter]
-                    ? Object.keys(livepoll.responses[option.letter]).length
-                    : 0;
-                return {
-                    option: option.letter,
-                    responses: responseCount,
-                } as unknown as DatasetElementType; // Cast each object to the expected type
-            });
-
-            setData(newData as DatasetElementType[]); // Cast the entire array to the expected type
-        }
-    }, [livepoll]); // Update the data whenever livepoll changes
-
 
     // Uses pollId and classId to get the correct answers from the database
     async function getCorrectAnswers(pollId: any) {
@@ -121,13 +103,17 @@ export default function Live() {
         console.log(pollsref);
 
         try {
-            await set(pollsref, true); setPollFinalStatus(true); setpollstatus(false);
+            await set(pollsref, true);
+            setPollFinalStatus(true); 
+            setpollstatus(false);
             let fxname = "transferPollResults"
 
             const transferPollResultsFx = httpsCallable(fxns, fxname);
             const result = await transferPollResultsFx({ pollId: pollId, classId: classId });
-            console.log(result.data);
+            console.log(result.data, 'result');
 
+            const firestorePollRef = doc(db, "classes", classId, "polls", pollId);
+            await updateDoc(firestorePollRef, { done: true }); // Assuming 'done' is the field you want to update
 
         }
         catch (e) { console.error("Error getting documents: ", e); }
