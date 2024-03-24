@@ -7,6 +7,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDocs, collection, query, where } from "firebase/firestore";
 import Link from "next/link";
 import Poll from "@/models/poll";
+import s from "./classGrades.module.scss";
 
 interface PollAndId {
   poll: Poll;
@@ -16,6 +17,10 @@ interface PollAndId {
 interface PollAndAnswer {
   pollId: string;
   question: string;
+  options: {
+    letter: string;
+    option: string;
+  }[];
   responses: string;
   answers: string[];
   isCorrect: boolean;
@@ -37,28 +42,27 @@ export default function ClassGrades() {
 
   async function getPolls() {
     setLoading(true);
-    // collection classes - document class id - collection polls
-    console.log("get polls");
-    const classref = doc(db, "classes", classid as string);
-    console.log(classref);
-    const pollsref = collection(classref, "polls");
-
+    const classRef = doc(db, "classes", classid as string);
+    const pollsRef = collection(classRef, "polls");
+  
     try {
-      const snapshot = await getDocs(pollsref);
-      let openpolls: PollAndId[] = [];
+      const snapshot = await getDocs(pollsRef);
+      let completedPolls: PollAndId[] = [];
       snapshot.forEach((doc) => {
         const pid = doc.id;
         const data = doc.data() as Poll;
-        if (!data.classid) return;
-        openpolls.push({ poll: data, id: pid });
+        // Check if the poll is marked as done before adding it to the array
+        if (data.done) {
+          completedPolls.push({ poll: data, id: pid });
+        }
       });
-      setOpenpolls(openpolls);
+      setOpenpolls(completedPolls);
     } catch (e) {
       console.error("Error getting documents: ", e);
     }
-
+  
     setLoading(false);
-  }
+  }  
 
   async function extractAndCheckAnswers() {
     console.log("Extracting and checking answers");
@@ -82,6 +86,7 @@ export default function ClassGrades() {
           responses: "",
           answers: poll.answers,
           isCorrect: false,
+          options: poll.options,
         };
   
         // Find the user's response among the poll responses
@@ -124,26 +129,31 @@ export default function ClassGrades() {
 
 
   return (
-    <div>
-      { studentAnswers.length > 0 ? (
-        <div>
-          <h1>Class Grades</h1>
-          <div>
-            {studentAnswers.map((poll, index) => (
-              <div key={index}>
-                <h2>{poll.question}</h2>
-                <p>Responses: {poll.responses}</p>
-                <p>Correct Answers: {poll.answers.join(", ")}</p>
-                <p>Correct: {poll.isCorrect ? "Yes" : "No"}</p>
-              </div>
-            ))}
+    <div className={s.grades}>
+      {studentAnswers.length > 0 ? (
+        <div className={s.classGrades}>
+          <h1 className={s.question}>Class Grades</h1>
+          {studentAnswers.map((poll, index) => (
+            <div key={index}>
+              <h2>Question: {poll.question}</h2>
+              {poll.options.map((option, index) => {
+                const isUserResponse = poll.responses === option.letter;
+                const isCorrect = poll.answers.includes(option.letter);
+                return (
+                  <div key={index}
+                       className={`${s.answer} ${isUserResponse ? isCorrect ? s.correct : s.incorrect : isCorrect ? s.correct : ''}`}>
+                    <span>{option.letter}: {option.option}</span>
+                    {isUserResponse && <span className={s.answerIndicator}></span>}
+                  </div>
+                );
+              })}
             </div>
-            </div>
+          ))}
+        </div>
       ) : (
         <h1>No grades</h1>
       )}
-   
-          
     </div>
-  );
+  );  
+  
 }
