@@ -9,6 +9,7 @@ interface Poll {
   created: any;
   active: boolean;
   responses?: PollResponse;
+  done?: boolean;
 }
 
 interface PollResponse {
