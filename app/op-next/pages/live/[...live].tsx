@@ -1,7 +1,7 @@
 import { rdb } from "@/firebase/firebaseconfig";
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { equalTo, get, onValue, orderByChild, query, ref, set } from "firebase/database";
-import { collection, doc, getDoc, query as q, where } from "firebase/firestore";
+import { collection, doc, getDoc, query as q, updateDoc } from "firebase/firestore";
 import { auth, db, fxns } from "../../firebase/firebaseconfig";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
