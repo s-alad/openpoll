@@ -146,13 +146,13 @@ export default function Live() {
                                 })
                             }
                             {
-                                livepoll.type === "short" && <>short answer</>
+                                livepoll.type === "short" && <div>short answer</div>
                             }
                         </div>
 
                         {
                             endedstatus ?
-                                <>poll ended</>
+                                <div>poll ended</div>
                                 :
                                 <button onClick={() => endpoll()} className={s.stop}>End Poll</button>
                         }
@@ -179,7 +179,7 @@ export default function Live() {
                     :
                     ""
             }
-            
+
             <div className={s.answerWrapper}>
                 {showAnswers && correctAnswers.length > 0 && (
                     <div className={s.answers}>

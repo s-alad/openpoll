@@ -3,8 +3,8 @@ import { auth, db, fxns, rdb } from "../../../firebase/firebaseconfig";
 import { useRouter } from "next/router";
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import React, { useState, FormEvent, useEffect } from 'react';
-import { createpollformdata, createshortanswerformdata } from "@/models/form";
-import { createPollSchema, createShortAnswerSchema } from "@/models/schema";
+import { createpollformdata, createshortanswerformdata } from "@/validation/form";
+import { createPollSchema, createShortAnswerSchema } from "@/validation/schema";
 import { useForm, UseFormProps, useFieldArray, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,6 +23,7 @@ import Select from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
 import { push, ref, set } from 'firebase/database';
 import ShortAnswerInput from '@/components/short-answer-input/short-answer-input';
+import { TestForm } from '@/components/create-poll-input/test-form';
 
 export default function CreatePoll() {
 
@@ -41,15 +42,17 @@ export default function CreatePoll() {
 		const uid = user!.uid;
 
 		const polldata = {
+			type: "mc",
 			classid: classid,
 			question: data.question,
 			options: data.options,
 			answers: data.answers,
 			created: new Date(),
+			creator: uid,
+			responses: [],
 			active: false,
 			done: false
 		}
-
 		console.log(polldata);
 
 		const classref = doc(db, "classes", classid as string);
@@ -57,26 +60,9 @@ export default function CreatePoll() {
 
 		try {
 			const docRef = await addDoc(pollref, polldata);
-
-
-			// now add the poll to the realtime database with the id of the firestore poll
-			/* const rdbref = ref(rdb, `classes/${classid}/polls`);
-			const newPollRef = push(rdbref);
-			await set(newPollRef, {
-				question: polldata.question,
-				options: polldata.options,
-				active: false,
-			}) */
-
 			const pollid = docRef.id;
 			const rdbref = ref(rdb, `classes/${classid}/polls/${pollid}`);
-			await set(rdbref, {
-				question: polldata.question,
-				options: polldata.options,
-				active: false,
-				done: false,
-				responses: []
-			})
+			await set(rdbref, polldata)
 
 			router.back();
 		} catch (e) {
@@ -115,9 +101,10 @@ export default function CreatePoll() {
 			question: data.question,
 			answers: data.answers,
 			created: new Date(),
+			creator: uid,
 			active: false,
+			done: false
 		}
-
 		console.log(polldata);
 
 		const classref = doc(db, "classes", classid as string);
@@ -125,15 +112,9 @@ export default function CreatePoll() {
 
 		try {
 			const docRef = await addDoc(pollref, polldata);
-			
 			const pollid = docRef.id;
 			const rdbref = ref(rdb, `classes/${classid}/polls/${pollid}`);
-			await set(rdbref, {
-				type: "short",
-				question: polldata.question,
-				active: false,
-				responses: []
-			})
+			await set(rdbref, polldata)
 
 			router.back();
 		} catch (e) {
@@ -280,7 +261,7 @@ export default function CreatePoll() {
 								<button type="submit">Create Poll</button>
 							</form>
 							: 
-							<form onSubmit={handleSubmitshort(createshortanswer)}>
+/* 							<form onSubmit={handleSubmitshort(createshortanswer)}>
 								<ShortAnswerInput
 									type="text"
 									placeholder="Enter your short answer prompt"
@@ -298,7 +279,8 @@ export default function CreatePoll() {
 									description="Answer"
 								/>
 								<button type="submit">Create Short Answer</button>
-							</form>
+							</form> */
+							<TestForm />
 					}
 				</div>
 			</main>
