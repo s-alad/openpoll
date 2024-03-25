@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from "react";
-import Classroom from "@/models/class";
-import { useRouter } from "next/router";
 import { useAuth } from "@/context/authcontext";
-import { db, auth } from "../../../../firebase/firebaseconfig";
-import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDocs, collection, query, where } from "firebase/firestore";
-import Link from "next/link";
 import Poll from "@/models/poll";
+import { onAuthStateChanged } from "firebase/auth";
+import { collection, doc, getDocs } from "firebase/firestore";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { auth, db } from "../../../../firebase/firebaseconfig";
 import s from "./classGrades.module.scss";
 
 interface PollAndId {
@@ -31,7 +29,7 @@ export default function ClassGrades() {
 
   // get the class id from the url
   const router = useRouter();
-  const { class: classid } = router.query;
+  const { classId: classid } = router.query;
   console.log(classid, "classid");
   const { user } = useAuth();
   console.log("user", user);
@@ -43,17 +41,20 @@ export default function ClassGrades() {
   const [totalGrade, setTotalGrade] = useState(0); // Total grade of the student
 
   async function getPolls() {
-    setLoading(true);
+    setLoading(true); 
     const classRef = doc(db, "classes", classid as string);
     const pollsRef = collection(classRef, "polls");
-  
+    console.log("get")
     try {
+      console.log("test")
       const snapshot = await getDocs(pollsRef);
+      console.log("get polls");
       let completedPolls: PollAndId[] = [];
       snapshot.forEach((doc) => {
         const pid = doc.id;
         const data = doc.data() as Poll;
         // Check if the poll is marked as done before adding it to the array
+        
         if (data.done) {
           completedPolls.push({ poll: data, id: pid });
         }
