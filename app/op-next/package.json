@@ -18,8 +18,13 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@hookform/resolvers": "^3.3.4",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "@mui/material": "^5.15.11",
 =======
+=======
+    "@mui/material": "^5.15.11",
+    "@mui/x-charts": "^7.0.0",
+>>>>>>> e2852a6 (oackages)
     "@mui/material": "^5.15.14",
 >>>>>>> 0817197 (answer showing + start poll types)
     "@mui/x-charts": "^7.0.0",
