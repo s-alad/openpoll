@@ -6,8 +6,6 @@ import { auth, db, fxns } from "../../firebase/firebaseconfig";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import s from './live.module.scss';
-import { BarChart } from '@mui/x-charts'
-import { axisClasses } from '@mui/x-charts';
 import Image from "next/image";
 import PollChart from "@/components/barchart/barchart";
 
@@ -27,40 +25,23 @@ interface LivePoll {
 
 export default function Live() {
 
+    // url query
     const router = useRouter();
     const { live } = router.query;
+    const [pollId, setPollId] = useState<string>("");
+    const [classId, setClassId] = useState<string>("");
 
     const [livepoll, setLivepoll] = useState<LivePoll>();
+
     const [pollstatus, setPollstatus] = useState<boolean>(false);
+    const [endedstatus, setEndedStatus] = useState<boolean>(false);
 
-    const [pollFinalStatus, setPollFinalStatus] = useState<boolean>(false);
-    const [data, setData] = useState<DatasetElementType[]>([]);
-
-    const [pollId, setPollId] = useState<string>("");
-    const [correctAnswers, setCorrectAnswers] = useState<string>("");
-    const [classId, setClassId] = useState<string>("");
     const [showAnswers, setShowAnswers] = useState<boolean>(false);
-
-    useEffect(() => {
-        if (livepoll?.options) {
-            const newData = livepoll.options.map(option => {
-                const responseCount = livepoll.responses?.[option.letter]
-                    ? Object.keys(livepoll.responses[option.letter]).length
-                    : 0;
-                return {
-                    option: option.letter,
-                    responses: responseCount,
-                } as unknown as DatasetElementType; // Cast each object to the expected type
-            });
-
-            setData(newData as DatasetElementType[]); // Cast the entire array to the expected type
-        }
-    }, [livepoll]); // Update the data whenever livepoll changes
-
+    const [correctAnswers, setCorrectAnswers] = useState<string[]>([]);
 
     // Uses pollId and classId to get the correct answers from the database
     async function getCorrectAnswers(pollId: any) {
-        // Make sure that 'pollId' is not empty
+
         if (!pollId) {
             console.log('Poll ID is undefined or empty.');
             return;
@@ -77,25 +58,16 @@ export default function Live() {
                 const pollData = docSnap.data();
                 const answers = pollData.answers;
                 console.log(answers, "answers");
-                setCorrectAnswers(answers[0]);
+                setCorrectAnswers(answers);
             }
         } catch (error) {
             console.error("Error fetching document:", error);
         }
     }
 
-    const handleShowAnswers = async () => {
-        // Only fetch answers if they haven't been fetched already
-        if (correctAnswers.length === 0) {
-            await getCorrectAnswers(pollId);
-        }
-        // Toggle the visibility of the answers
-        setShowAnswers(prev => !prev);
-    };
-
+    // gets the poll from the database on page load
     async function getpoll() {
         const pollsref = ref(rdb, `classes/${live![0]}/polls`);
-        console.log(pollsref, "pollsref");
 
         try {
             const snapshot = await get(pollsref);
@@ -105,10 +77,16 @@ export default function Live() {
             const lp = poll[live![1]] as LivePoll;
             console.log(lp);
 
+            if (lp.done) {
+                setEndedStatus(true);
+            } else { setEndedStatus(false); }
+
             setLivepoll(lp);
+
         } catch (e) { console.error("Error getting documents: ", e); }
     }
 
+    // sets the poll status to either active or inactive
     async function setpollstatus(status: boolean) {
         const pollsref = ref(rdb, `classes/${live![0]}/polls/${live![1]}/active`);
         console.log(pollsref);
@@ -117,46 +95,35 @@ export default function Live() {
         catch (e) { console.error("Error getting documents: ", e); }
     }
 
-    async function endPoll() {
+    // completely ends the poll
+    async function endpoll() {
         const pollsref = ref(rdb, `classes/${live![0]}/polls/${live![1]}/done`);
         console.log(pollsref);
 
         try {
-            await set(pollsref, true); setPollFinalStatus(true); setpollstatus(false);
-            let fxname = "transferPollResults"
+            await set(pollsref, true);
+            setEndedStatus(true);
+            setpollstatus(false);
 
-            const transferPollResultsFx = httpsCallable(fxns, fxname);
+            const transferPollResultsFx = httpsCallable(fxns, "transferPollResults");
             const result = await transferPollResultsFx({ pollId: pollId, classId: classId });
             console.log(result.data);
-
-
         }
         catch (e) { console.error("Error getting documents: ", e); }
     }
 
-
+    // gets the poll from the database on page load
     useEffect(() => {
         if (live) {
             console.log(live);
             setPollId(live[1] as string);
             setClassId(live[0] as string);
             getpoll();
+            if (correctAnswers.length === 0) {
+                getCorrectAnswers(live[1] as string);
+            }
         }
-    }, [live]);
 
-    // const pathToState = `classes/${classId}/polls/${pollId}/done`
-
-    useEffect(() => {
-        if (Array.isArray(live) && live.length > 1) {
-            const pollsRef = ref(rdb, `classes/${live[0]}/polls/${live[1]}`);
-            const unsubscribe = onValue(pollsRef, (snapshot) => {
-                const polls = snapshot.val();
-                console.log(polls, "polls");
-                setLivepoll(polls);
-            });
-
-            return () => unsubscribe();
-        }
     }, [live]);
 
     return (
@@ -179,32 +146,32 @@ export default function Live() {
                                 })
                             }
                             {
-                                livepoll.type === "short" && <></>
+                                livepoll.type === "short" && <>short answer</>
                             }
                         </div>
 
                         {
-                            pollFinalStatus ?
+                            endedstatus ?
                                 <>poll ended</>
                                 :
-                                <button onClick={() => endPoll()} className={s.stop}>End Poll</button>
+                                <button onClick={() => endpoll()} className={s.stop}>End Poll</button>
                         }
 
                         <div className={s.buttonWrapper}>
 
 
                             {
-                                pollFinalStatus ?
+                                endedstatus ?
                                     <></>
                                     :
                                     pollstatus ?
                                         <button onClick={() => setpollstatus(false)} className={s.stop}>Stop</button>
                                         :
                                         <button onClick={() => setpollstatus(true)} className={s.start}>Start Poll</button>
-                                    
+
                             }
 
-                            <button onClick={handleShowAnswers} className={s.answer}>
+                            <button onClick={() => setShowAnswers(!showAnswers)} className={s.answer}>
                                 {showAnswers ? "Hide Answers" : "Show Answers"}
                             </button>
                         </div>
@@ -221,64 +188,11 @@ export default function Live() {
                         </div>
                     )}
                 </div>
-                {showAnswers && livepoll  && (
+                {showAnswers && (
                     <div className={s.content}>
                         <PollChart livepoll={livepoll} />
                     </div>
                 )}
-            </div>
-            
-            {/* If the poll is live (Start poll) then we only show how many have responded and after we stop the poll we show the disparity of answers like bar/pie graph */}
-            <div className={s.live}>
-
-                {
-                    livepoll && livepoll.active ?
-                        <div className={s.response}>
-                            {
-                                livepoll.responses ?
-                                    // Creates a new Set to hold unique student IDs
-                                    Object.values(livepoll.responses).reduce((acc, curr) => {
-                                        Object.keys(curr).forEach((studentId) => {
-                                            acc.add(studentId);
-                                        });
-                                        return acc;
-                                    }, new Set()).size
-                                    :
-                                    0
-                            }
-                            {"  "}
-                            Answered
-                        </div>
-                        :
-                        // Shows the bar graph of the responses if the poll is stopped
-                        (data.length > 0 && (
-                            <BarChart
-                                dataset={data}
-                                yAxis={[{ scaleType: 'band', dataKey: 'option' }]}
-                                series={[{
-                                    dataKey: 'responses',
-                                    label: 'Number of Responses',
-                                }]}
-                                layout="horizontal"
-                                {...chartSetting}
-                            />
-                        ))
-                }
-
-                {livepoll && livepoll.active && (
-                    <div className={s.response}>
-                        {
-                            livepoll.responses ?
-                                new Set(Object.values(livepoll.responses).flatMap(response => Object.keys(response))).size
-                                :
-                                0
-                        }
-                        {"  "}
-                        Answered
-                    </div>
-
-                )}
-
             </div>
         </div>
     )
