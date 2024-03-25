@@ -196,7 +196,7 @@ export default function Live() {
                 )}
                 {showAnswers && correctAnswers.length > 0 && (
                     <div className={s.content}>
-                        <PollChart livepoll={livepoll} />
+                        <PollChart pollData={livepoll} />
                     </div>
                 )}
             </div>
