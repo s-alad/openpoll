@@ -18,6 +18,7 @@ interface LivePoll {
         option: string;
         letter: string;
     }[];
+    type: "mc" | "short";
     question: string;
     responses?: {
         [studentid: string]: string;
@@ -134,7 +135,6 @@ export default function Live() {
     }
 
 
-    //wait until router is loaded
     useEffect(() => {
         if (live) {
             console.log(live);
@@ -146,17 +146,7 @@ export default function Live() {
 
     // const pathToState = `classes/${classId}/polls/${pollId}/done`
 
-    // const stateRef = ref(rdb, pathToState);
-
-    // get(stateRef)
-    //     .then((snapshot) => {
-    //     if (snapshot.exists()) {
-    //     setPollFinalStatus(true);
-    //     }
-    // })
-
     useEffect(() => {
-        // Need live to be an array and have a length greater than 1
         if (Array.isArray(live) && live.length > 1) {
             const pollsRef = ref(rdb, `classes/${live[0]}/polls/${live[1]}`);
             const unsubscribe = onValue(pollsRef, (snapshot) => {
@@ -172,11 +162,13 @@ export default function Live() {
     return (
         <div className={s.livepoll}>
             {
-                live && livepoll && livepoll.options ?
+                live && livepoll ?
                     <div className={s.poll}>
                         <div className={s.question}>{livepoll?.question}</div>
                         <div className={s.options}>
                             {
+
+                                livepoll.type === "mc" &&
                                 livepoll?.options.map((option, index) => {
                                     return (
                                         <div key={index} className={s.option}>
@@ -185,6 +177,9 @@ export default function Live() {
                                         </div>
                                     )
                                 })
+                            }
+                            {
+                                livepoll.type === "short" && <></>
                             }
                         </div>
 
@@ -235,6 +230,41 @@ export default function Live() {
             
             {/* If the poll is live (Start poll) then we only show how many have responded and after we stop the poll we show the disparity of answers like bar/pie graph */}
             <div className={s.live}>
+
+                {
+                    livepoll && livepoll.active ?
+                        <div className={s.response}>
+                            {
+                                livepoll.responses ?
+                                    // Creates a new Set to hold unique student IDs
+                                    Object.values(livepoll.responses).reduce((acc, curr) => {
+                                        Object.keys(curr).forEach((studentId) => {
+                                            acc.add(studentId);
+                                        });
+                                        return acc;
+                                    }, new Set()).size
+                                    :
+                                    0
+                            }
+                            {"  "}
+                            Answered
+                        </div>
+                        :
+                        // Shows the bar graph of the responses if the poll is stopped
+                        (data.length > 0 && (
+                            <BarChart
+                                dataset={data}
+                                yAxis={[{ scaleType: 'band', dataKey: 'option' }]}
+                                series={[{
+                                    dataKey: 'responses',
+                                    label: 'Number of Responses',
+                                }]}
+                                layout="horizontal"
+                                {...chartSetting}
+                            />
+                        ))
+                }
+
                 {livepoll && livepoll.active && (
                     <div className={s.response}>
                         {
@@ -248,6 +278,7 @@ export default function Live() {
                     </div>
 
                 )}
+
             </div>
         </div>
     )

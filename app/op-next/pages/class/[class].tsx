@@ -21,6 +21,7 @@ import { remove } from 'firebase/database';
 interface LivePoll {
     id: string;
     active: boolean;
+    type: "mc" | "short";
     options: {
         letter: string;
         option: string;
@@ -64,7 +65,7 @@ export default function Class() {
 
     async function submitPoll(data: any, pollId: string) {
         console.log(data);
-        
+
         // get the data letter that is true
         const selectedOptions = Object.keys(data).filter((key) => data[key]);
         const nonSelectedOptions = Object.keys(data).filter((key) => !data[key]);
@@ -83,7 +84,14 @@ export default function Class() {
         }
     }
 
-    const {handleSubmit, control, formState: { errors }} = useForm({});
+    async function submitShortPoll(data: any, pollId: string) {
+        console.log(data);
+
+        const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses`);
+        await update(answerRef, { [user!.uid]: data.answer });
+    }
+
+    const { handleSubmit, control, formState: { errors } } = useForm({});
 
 
     return (
@@ -93,33 +101,35 @@ export default function Class() {
                     <div className={s.openpolls}>
                         {
                             activePolls.map((poll) => {
-                                return (
+
+                                if (poll.type === "mc") return (
                                     <form key={poll.id} className={s.poll} onSubmit={
                                         handleSubmit((data) => submitPoll(data, poll.id))
                                     }>
                                         <h1>{poll.question}</h1>
+
                                         <div className={s.options}>
                                             {
                                                 poll.options.map((option: { option: string, letter: string }) => {
                                                     return (
                                                         <div key={option.letter} className={s.option}>
-                                                                <Controller
-                                                                    control={control}
-                                                                    name={option.letter}
-                                                                    defaultValue={
-                                                                        poll.responses && poll.responses[option.letter] && user!.uid in poll.responses[option.letter]
-                                                                    }
-                                                                    render={({ field }) => (
-                                                                        <FormControlLabel
-                                                                            control={<Checkbox {...field} 
-                                                                                defaultChecked={
-                                                                                    poll.responses && poll.responses[option.letter] && user!.uid in poll.responses[option.letter]
-                                                                                }
-                                                                            />}
-                                                                            label={option.letter}
-                                                                        />
-                                                                    )}
-                                                                />
+                                                            <Controller
+                                                                control={control}
+                                                                name={option.letter}
+                                                                defaultValue={
+                                                                    poll.responses && poll.responses[option.letter] && user!.uid in poll.responses[option.letter]
+                                                                }
+                                                                render={({ field }) => (
+                                                                    <FormControlLabel
+                                                                        control={<Checkbox {...field}
+                                                                            defaultChecked={
+                                                                                poll.responses && poll.responses[option.letter] && user!.uid in poll.responses[option.letter]
+                                                                            }
+                                                                        />}
+                                                                        label={option.letter}
+                                                                    />
+                                                                )}
+                                                            />
 
 
                                                             <div className={s.content}>{option.option}</div>
@@ -128,6 +138,30 @@ export default function Class() {
                                                 })
                                             }
                                         </div>
+
+                                        <button type="submit">Submit</button>
+                                    </form>
+                                )
+
+                                if (poll.type === "short") return (
+                                    <form key={poll.id} className={s.poll} onSubmit={
+                                        handleSubmit((data) => submitShortPoll(data, poll.id))
+                                    }>
+                                        <h1>{poll.question}</h1>
+
+                                        <div className={s.options}>
+                                            <Controller
+                                                control={control}
+                                                name="answer"
+                                                defaultValue={
+                                                    poll.responses && user!.uid in poll.responses
+                                                }
+                                                render={({ field }) => (
+                                                    <input {...field} />
+                                                )}
+                                            />
+                                        </div>
+
                                         <button type="submit">Submit</button>
                                     </form>
                                 )
