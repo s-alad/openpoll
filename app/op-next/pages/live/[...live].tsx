@@ -39,9 +39,9 @@ export default function Live() {
     const [showAnswers, setShowAnswers] = useState<boolean>(false);
     const [correctAnswers, setCorrectAnswers] = useState<string[]>([]);
 
-    // Uses pollId and classId to get the correct answers from the database
-    async function getCorrectAnswers(pollId: any) {
 
+    // Uses pollId and classId to get the correct answers from the database
+    async function getCorrectAnswers(classId: string, pollId: string) {
         if (!pollId) {
             console.log('Poll ID is undefined or empty.');
             return;
@@ -120,7 +120,7 @@ export default function Live() {
             setClassId(live[0] as string);
             getpoll();
             if (correctAnswers.length === 0) {
-                getCorrectAnswers(live[1] as string);
+                getCorrectAnswers(live[0] as string, live[1] as string);
             }
         }
 
@@ -179,16 +179,15 @@ export default function Live() {
                     :
                     ""
             }
+            
             <div className={s.answerWrapper}>
-                <div>
-                    {showAnswers && correctAnswers.length > 0 && (
-                        <div className={s.answers}>
-                            <h2>Correct Answer</h2>
-                            <p>{correctAnswers}</p>
-                        </div>
-                    )}
-                </div>
-                {showAnswers && (
+                {showAnswers && correctAnswers.length > 0 && (
+                    <div className={s.answers}>
+                        <h2>Correct Answer</h2>
+                        <p>{correctAnswers}</p>
+                    </div>
+                )}
+                {showAnswers && correctAnswers.length > 0 && (
                     <div className={s.content}>
                         <PollChart livepoll={livepoll} />
                     </div>
