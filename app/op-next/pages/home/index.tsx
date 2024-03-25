@@ -174,8 +174,8 @@ export default function Home() {
                             </div>
                             <div className={`${s.content} ${s.yellow}`}>
                                 <div className={s.info}>
-                                    <div className={s.className}>{classData.class.classname}</div>
-                                    <div className={s.classDescription}>{classData.class.description}</div>
+                                    <div className={s.className}>{classData.class.description}</div>
+                                    <div className={s.classDescription}>{classData.class.classname}</div>
 
                                     <div className={s.classDetails}>
                                         <span className={s.teacher}>{classData.class.owner.name}</span>
@@ -231,8 +231,8 @@ export default function Home() {
                                 </div>
                                 <div className={`${s.content} ${s.yellow}`}>
                                     <div className={s.info}>
-                                        <div className={s.className}>{classData.class.classname}</div>
-                                        <div className={s.classDescription}>{classData.class.description}</div>
+                                        <div className={s.className}>{classData.class.description}</div>
+                                        <div className={s.classDescription}>{classData.class.classname}</div>
 
                                         <div className={s.classDetails}>
                                             <span className={s.teacher}>{classData.class.owner.name}</span>
