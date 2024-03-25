@@ -146,7 +146,7 @@ export default function Live() {
                                 })
                             }
                             {
-                                livepoll.type === "short" && <div>short answer</div>
+                                livepoll.type === "short" && <></>
                             }
                         </div>
 
@@ -181,7 +181,7 @@ export default function Live() {
             }
 
             <div className={s.answerWrapper}>
-                {showAnswers && correctAnswers.length > 0 && (
+                {showAnswers && correctAnswers.length > 0 && !pollstatus && (
                     <div className={s.answers}>
                         <h2>Correct Answer</h2>
                         <p>{correctAnswers}</p>
@@ -192,6 +192,20 @@ export default function Live() {
                         <PollChart livepoll={livepoll} />
                     </div>
                 )}
+                {
+                    showAnswers && livepoll?.type === "short" && (
+                        <div className={s.answers}>
+                            <h2>Answers</h2>
+                            {
+                                livepoll?.responses && Object.entries(livepoll.responses).map(([studentid, answer], index) => {
+                                    return (
+                                        <p key={index}>{answer}</p>
+                                    )
+                                })
+                            }
+                        </div>
+                    )
+                }
             </div>
         </div>
     )

@@ -1,9 +1,11 @@
 import React from 'react';
 import { UseFormRegister, FieldValues, Path } from 'react-hook-form';
+import s from './create-poll-input.module.scss';
 
 interface InputProps<TFieldValues extends FieldValues> {
     label: string;
     type: 'text' | 'number' | 'select' | 'checkbox' | 'radio';
+    inputstyle?: "textarea" | "input";
     placeholder?: string;
     name: Path<TFieldValues>;
     register: UseFormRegister<TFieldValues>;
@@ -17,6 +19,9 @@ const StandardInput = <TFieldValues extends FieldValues>({
     label,
     type,
     name,
+    description,
+    placeholder,
+    inputstyle,
     register,
     options = [],
     defaultValue,
@@ -56,19 +61,30 @@ const StandardInput = <TFieldValues extends FieldValues>({
             break;
         default:
             inputElement = (
-                <input
-                    type={type}
-                    {...register(name)}
-                    defaultValue={defaultValue as string | number | undefined}
-                />
+                inputstyle === "textarea" ?
+                    <textarea
+                        placeholder={placeholder}
+                        {...register(name)}
+                        defaultValue={defaultValue}
+                    />
+                    :
+                    <input
+                        type={type}
+                        placeholder={placeholder}
+                        {...register(name)}
+                        defaultValue={defaultValue}
+                    />
             );
     }
 
     return (
-        <div>
-            <label>{label}:</label>
-            {inputElement}
-            {error && <div style={{ color: 'red' }}>{error}</div>}
+
+        <div className={s.createinput}>
+            <label htmlFor={name}>{description ? description : name}:</label>
+            {
+                inputElement
+            }
+            {error && <span className={s.error}>{error}</span>}
         </div>
     );
 };

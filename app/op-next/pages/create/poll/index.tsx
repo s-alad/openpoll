@@ -23,14 +23,14 @@ import Select from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
 import { push, ref, set } from 'firebase/database';
 import ShortAnswerInput from '@/components/short-answer-input/short-answer-input';
-import { TestForm } from '@/components/create-poll-input/test-form';
+import { TestForm } from '@/components/create-poll-form/create-poll-form';
 
 export default function CreatePoll() {
 
 	const router = useRouter();
 	const classid = router.query.classid
 
-	type polltypes = "mc" | "short";
+	type polltypes = "mc" | "short" | "ordering";
 	const [polltype, setpolltype] = useState<polltypes>("mc");
 
 	// mc ========================================
@@ -124,17 +124,63 @@ export default function CreatePoll() {
 
 	}
 
-	const { register: registershort, handleSubmit: handleSubmitshort, control: control2, formState: { errors: errors2 } } = 
-	useForm<createshortanswerformdata>({
-		resolver: zodResolver(createShortAnswerSchema),
+	const { register: registershort, handleSubmit: handleSubmitshort, control: control2, formState: { errors: errors2 } } =
+		useForm<createshortanswerformdata>({
+			resolver: zodResolver(createShortAnswerSchema),
+			defaultValues: {
+				question: "",
+				answers: ""
+			}
+		});
+
+	// ordering ========================================
+
+	const ordercolorselection: { [key: string]: string } = { "1": s.a, "2": s.b, "3": s.c, "4": s.d }
+	const orderinitalpolls = [{ letter: "1", option: "" }, { letter: "1", option: "" }];
+
+	async function createorderpoll(data: createpollformdata) {
+		console.log('form data submitted:', data);
+
+		const user = auth.currentUser;
+		const uid = user!.uid;
+
+		const polldata = {
+			type: "ordering",
+			classid: classid,
+			question: data.question,
+			options: data.options,
+			answers: data.answers,
+			created: new Date(),
+			creator: uid,
+			responses: [],
+			active: false,
+			done: false
+		}
+		console.log(polldata);
+
+		const classref = doc(db, "classes", classid as string);
+		const pollref = collection(classref, "polls");
+
+		try {
+			const docRef = await addDoc(pollref, polldata);
+			const pollid = docRef.id;
+			const rdbref = ref(rdb, `classes/${classid}/polls/${pollid}`);
+			await set(rdbref, polldata)
+
+			router.back();
+		} catch (e) {
+			console.error("Error adding document: ", e);
+		}
+
+	}
+
+	const { register: register2, handleSubmit: handleSubmit2, control: control3, formState: { errors: errors3 } } = useForm<createpollformdata>({
+		resolver: zodResolver(createPollSchema),
 		defaultValues: {
-			question: "",
-			answers: ""
+			options: initalpolls,
+			answers: []
 		}
 	});
-
-
-
 
 	return (
 		<>
@@ -142,7 +188,7 @@ export default function CreatePoll() {
 				<div className={s.create}>
 					<div className={s.selector}>
 						{
-							["mc", "short"].map((type) => {
+							["mc", "short", "ordering"].map((type) => {
 								return (
 									<div
 										className={`${s.type} ${polltype === type ? s.active : ""}`}
@@ -158,7 +204,6 @@ export default function CreatePoll() {
 
 					{
 						polltype === "mc" ?
-
 							<form onSubmit={handleSubmit(createpoll)}>
 								<QuestionInput
 									type="text"
@@ -255,13 +300,11 @@ export default function CreatePoll() {
 										</FormControl>
 									)}
 								/>
-
-
-
 								<button type="submit">Create Poll</button>
 							</form>
-							: 
-/* 							<form onSubmit={handleSubmitshort(createshortanswer)}>
+						:
+						polltype === "short" ?
+							<form onSubmit={handleSubmitshort(createshortanswer)}>
 								<ShortAnswerInput
 									type="text"
 									placeholder="Enter your short answer prompt"
@@ -278,9 +321,55 @@ export default function CreatePoll() {
 									error={errors.answers as any}
 									description="Answer"
 								/>
-								<button type="submit">Create Short Answer</button>
-							</form> */
-							<TestForm />
+								<button type="submit">Create Short Answer</button>{/* <TestForm /> */}
+							</form>
+						:
+						polltype === "ordering" ?
+							<form onSubmit={handleSubmit(createorderpoll)}>
+								<QuestionInput
+									type="text"
+									placeholder="Enter your question"
+									register={register}
+									name="question"
+									error={errors.question}
+									description="Question"
+								/>
+								<div className={s.options}>
+									{
+										fields.map((field, index) => {
+											return (
+												<div className={s.mc} key={field.id}>
+													<div className={s.choice}>
+														<div className={`${s.letter} ${colorselection[field.letter]}`}>{field.letter}</div>
+													</div>
+													<AnswerInput
+														type="text"
+														placeholder="Enter your answer"
+														register={register}
+														name={`options`}
+														error={errors.options?.[index]?.option}
+														index={index}
+													/>
+													{
+														index === fields.length - 1 ?
+															<div className={s.delete} onClick={() => { remove(index); }}>
+																<FontAwesomeIcon icon={faTrash} />
+															</div>
+															: null
+													}
+												</div>
+											)
+										}
+										)}
+									<div className={s.add}>
+										<FontAwesomeIcon icon={faPlus} onClick={
+											() => append({ letter: String.fromCharCode(65 + fields.length), option: "" })
+										} />
+									</div>
+								</div>
+								<button type="submit">Create Poll</button>
+							</form>
+						: ""
 					}
 				</div>
 			</main>

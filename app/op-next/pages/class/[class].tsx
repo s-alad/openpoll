@@ -43,7 +43,7 @@ export default function Class() {
     const { user } = useAuth();
 
     const [activePolls, setActivePolls] = useState<LivePoll[]>([]);
-
+    const [submitted, setSubmitted] = useState<boolean>(false);
 
     useEffect(() => {
         const pollsRef = query(ref(rdb, `classes/${classid}/polls`), orderByChild('active'), equalTo(true));
@@ -149,18 +149,7 @@ export default function Class() {
                                     }>
                                         <h1>{poll.question}</h1>
 
-                                        <div className={s.options}>
-                                            <Controller
-                                                control={control}
-                                                name="answer"
-                                                defaultValue={
-                                                    poll.responses && user!.uid in poll.responses
-                                                }
-                                                render={({ field }) => (
-                                                    <input {...field} />
-                                                )}
-                                            />
-                                        </div>
+                                        <input type="text" {...control.register("answer")} />
 
                                         <button type="submit">Submit</button>
                                     </form>
