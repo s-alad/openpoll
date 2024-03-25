@@ -1,12 +1,19 @@
 import { rdb } from "@/firebase/firebaseconfig";
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { equalTo, get, onValue, orderByChild, query, ref, set } from "firebase/database";
+import { collection, doc, getDoc, query as q, where } from "firebase/firestore";
+import { auth, db, fxns } from "../../firebase/firebaseconfig";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import s from './live.module.scss';
 import { BarChart } from '@mui/x-charts'
+import { axisClasses } from '@mui/x-charts';
+import Image from "next/image";
+import PollChart from "@/components/barchart/barchart";
 
 interface LivePoll {
     active: boolean;
+    done: boolean,
     options: {
         option: string;
         letter: string;
@@ -18,10 +25,6 @@ interface LivePoll {
     }
 }
 
-type DatasetElementType = {
-    [key: string]: string | number | Date | null | undefined;
-}; // MUI X Charts expects this type for the dataset
-
 export default function Live() {
 
     const router = useRouter();
@@ -29,7 +32,14 @@ export default function Live() {
 
     const [livepoll, setLivepoll] = useState<LivePoll>();
     const [pollstatus, setPollstatus] = useState<boolean>(false);
+
+    const [pollFinalStatus, setPollFinalStatus] = useState<boolean>(false);
     const [data, setData] = useState<DatasetElementType[]>([]);
+
+    const [pollId, setPollId] = useState<string>("");
+    const [correctAnswers, setCorrectAnswers] = useState<string>("");
+    const [classId, setClassId] = useState<string>("");
+    const [showAnswers, setShowAnswers] = useState<boolean>(false);
 
     useEffect(() => {
         if (livepoll?.options) {
@@ -47,22 +57,45 @@ export default function Live() {
         }
     }, [livepoll]); // Update the data whenever livepoll changes
 
-    console.log(data, "dataSet")
 
-    const chartSetting = {
-        margin: {
-            top: 50,
-            right: 30,
-            bottom: 20,
-            left: 30,
-        },
-        width: 500,
-        height: 400,
-    }; // Chart settings
+    // Uses pollId and classId to get the correct answers from the database
+    async function getCorrectAnswers(pollId: any) {
+        // Make sure that 'pollId' is not empty
+        if (!pollId) {
+            console.log('Poll ID is undefined or empty.');
+            return;
+        }
+
+        // Reference to the poll document in the 'polls' collection
+        const pollDocRef = doc(db, "classes", classId, "polls", pollId);
+        console.log(pollDocRef, "pollDocRef")
+        // Get the document from the database
+        try {
+            const docSnap = await getDoc(pollDocRef);
+
+            if (docSnap.exists()) {
+                const pollData = docSnap.data();
+                const answers = pollData.answers;
+                console.log(answers, "answers");
+                setCorrectAnswers(answers[0]);
+            }
+        } catch (error) {
+            console.error("Error fetching document:", error);
+        }
+    }
+
+    const handleShowAnswers = async () => {
+        // Only fetch answers if they haven't been fetched already
+        if (correctAnswers.length === 0) {
+            await getCorrectAnswers(pollId);
+        }
+        // Toggle the visibility of the answers
+        setShowAnswers(prev => !prev);
+    };
 
     async function getpoll() {
         const pollsref = ref(rdb, `classes/${live![0]}/polls`);
-        console.log(pollsref);
+        console.log(pollsref, "pollsref");
 
         try {
             const snapshot = await get(pollsref);
@@ -84,21 +117,41 @@ export default function Live() {
         catch (e) { console.error("Error getting documents: ", e); }
     }
 
+    async function endPoll() {
+        const pollsref = ref(rdb, `classes/${live![0]}/polls/${live![1]}/done`);
+        console.log(pollsref);
+
+        try {
+            await set(pollsref, true); setPollFinalStatus(true); setpollstatus(false);
+            let fxname = "transferPollResults"
+
+            const transferPollResultsFx = httpsCallable(fxns, fxname);
+            const result = await transferPollResultsFx({ pollId: pollId, classId: classId });
+            console.log(result.data);
+
+
+        }
+        catch (e) { console.error("Error getting documents: ", e); }
+    }
+
 
     useEffect(() => {
         if (live) {
             console.log(live);
+            setPollId(live[1] as string);
+            setClassId(live[0] as string);
             getpoll();
         }
     }, [live]);
 
+    // const pathToState = `classes/${classId}/polls/${pollId}/done`
 
     useEffect(() => {
         if (Array.isArray(live) && live.length > 1) {
             const pollsRef = ref(rdb, `classes/${live[0]}/polls/${live[1]}`);
             const unsubscribe = onValue(pollsRef, (snapshot) => {
                 const polls = snapshot.val();
-                console.log(polls);
+                console.log(polls, "polls");
                 setLivepoll(polls);
             });
 
@@ -129,19 +182,55 @@ export default function Live() {
                                 livepoll.type === "short" && <></>
                             }
                         </div>
+
                         {
-                            pollstatus ?
-                                <button onClick={() => setpollstatus(false)} className={s.stop}>Stop</button>
+                            pollFinalStatus ?
+                                <>poll ended</>
                                 :
-                                <button onClick={() => setpollstatus(true)} className={s.start}>Start Poll</button>
+                                <button onClick={() => endPoll()} className={s.stop}>End Poll</button>
                         }
+
+                        <div className={s.buttonWrapper}>
+
+
+                            {
+                                pollFinalStatus ?
+                                    <></>
+                                    :
+                                    pollstatus ?
+                                        <button onClick={() => setpollstatus(false)} className={s.stop}>Stop</button>
+                                        :
+                                        <button onClick={() => setpollstatus(true)} className={s.start}>Start Poll</button>
+                                    
+                            }
+
+                            <button onClick={handleShowAnswers} className={s.answer}>
+                                {showAnswers ? "Hide Answers" : "Show Answers"}
+                            </button>
+                        </div>
                     </div>
                     :
                     ""
             }
-            {/* Live Poll response section */}
+            <div className={s.answerWrapper}>
+                <div>
+                    {showAnswers && correctAnswers.length > 0 && (
+                        <div className={s.answers}>
+                            <h2>Correct Answer</h2>
+                            <p>{correctAnswers}</p>
+                        </div>
+                    )}
+                </div>
+                {showAnswers && livepoll  && (
+                    <div className={s.content}>
+                        <PollChart livepoll={livepoll} />
+                    </div>
+                )}
+            </div>
+            
             {/* If the poll is live (Start poll) then we only show how many have responded and after we stop the poll we show the disparity of answers like bar/pie graph */}
             <div className={s.live}>
+
                 {
                     livepoll && livepoll.active ?
                         <div className={s.response}>
@@ -175,6 +264,21 @@ export default function Live() {
                             />
                         ))
                 }
+
+                {livepoll && livepoll.active && (
+                    <div className={s.response}>
+                        {
+                            livepoll.responses ?
+                                new Set(Object.values(livepoll.responses).flatMap(response => Object.keys(response))).size
+                                :
+                                0
+                        }
+                        {"  "}
+                        Answered
+                    </div>
+
+                )}
+
             </div>
         </div>
     )
