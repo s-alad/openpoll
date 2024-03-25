@@ -1,51 +1,47 @@
 import { BarChart } from '@mui/x-charts';
 import { useEffect, useState } from 'react';
-
-interface LivePoll {
-    active: boolean;
-    options: {
-        option: string;
-        letter: string;
-    }[];
-    question: string;
-    responses?: {
-        [studentid: string]: string;
-    };
-}
+import Poll from '@/models/poll';
 
 type DatasetElementType = {
     [key: string]: string | number | Date | null | undefined;
 };
 
-interface PollChartProps {
-    livepoll?: LivePoll;
+interface CommonPoll {
+    options: {
+        option: string;
+        letter: string;
+    }[];
+    responses?: {
+        [key: string]: any; // Assuming this could be different between Poll and LivePoll but structured in a way that the key is what you map over
+    };
 }
 
-export default function PollChart({ livepoll }: PollChartProps) {
+interface PollChartProps {
+    pollData?: CommonPoll;
+}
+
+export default function PollChart({ pollData }: PollChartProps) {
     const [data, setData] = useState<DatasetElementType[]>([]);
-    console.log(livepoll, "livepoll")
-    console.log(livepoll?.options, "livepoll?.options")
 
     useEffect(() => {
-        if (livepoll?.options) {
-          console.log('Effect triggered with livepoll:', livepoll);
-          const newData = livepoll.options.map(option => {
-            const responseCount = livepoll.responses?.[option.letter]
-              ? Object.keys(livepoll.responses[option.letter]).length
-              : 0;
-            return {
-              option: option.letter, 
-              responses: responseCount, 
-            } as unknown as DatasetElementType; // Cast each object to the expected type
-          });
+        if (pollData?.options) {
+            const newData = pollData.options.map(option => {
+                const responseCount = pollData.responses && pollData.responses[option.letter]
+                  ? Object.keys(pollData.responses[option.letter]).length
+                  : 0;
+                return {
+                  option: option.letter, 
+                  responses: responseCount, 
+                } as unknown as DatasetElementType;
+            });
     
-          setData(newData as DatasetElementType[]); // Cast the entire array to the expected type
+            setData(newData);
         }
-      }, [livepoll]); // Update the data whenever livepoll changes
+    }, [pollData]);
 
     return (
         <div>
-            {livepoll && data.length > 0 && (
+            {pollData && data.length > 0 && (
             <BarChart
                 dataset={data}
                 yAxis={[{ scaleType: 'band', dataKey: 'option' }]}
