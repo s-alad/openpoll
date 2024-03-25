@@ -20,5 +20,6 @@
     "run-pty": "^4.1.0"
   },
   "dependencies": {
+    "@mui/x-charts": "^6.19.5"
   }
 }

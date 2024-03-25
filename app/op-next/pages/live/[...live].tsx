@@ -1,7 +1,7 @@
 import { rdb } from "@/firebase/firebaseconfig";
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { equalTo, get, onValue, orderByChild, query, ref, set } from "firebase/database";
-import { collection, doc, getDoc, query as q, where } from "firebase/firestore";
+import { collection, doc, getDoc, query as q, updateDoc } from "firebase/firestore";
 import { auth, db, fxns } from "../../firebase/firebaseconfig";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -36,6 +36,7 @@ export default function Live() {
     const [pollstatus, setPollstatus] = useState<boolean>(false);
     const [endedstatus, setEndedStatus] = useState<boolean>(false);
 
+    const [pollFinalStatus, setPollFinalStatus] = useState<boolean>(false);
     const [showAnswers, setShowAnswers] = useState<boolean>(false);
     const [correctAnswers, setCorrectAnswers] = useState<string[]>([]);
 
@@ -102,12 +103,18 @@ export default function Live() {
 
         try {
             await set(pollsref, true);
-            setEndedStatus(true);
+            setPollFinalStatus(true); 
             setpollstatus(false);
+            let fxname = "transferPollResults"
+            setEndedStatus(true);
 
             const transferPollResultsFx = httpsCallable(fxns, "transferPollResults");
             const result = await transferPollResultsFx({ pollId: pollId, classId: classId });
-            console.log(result.data);
+            console.log(result.data, 'result');
+
+            const firestorePollRef = doc(db, "classes", classId, "polls", pollId);
+            await updateDoc(firestorePollRef, { done: true }); // Assuming 'done' is the field you want to update
+
         }
         catch (e) { console.error("Error getting documents: ", e); }
     }

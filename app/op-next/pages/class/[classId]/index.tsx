@@ -1,22 +1,15 @@
-import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faArrowLeftLong, faPlus } from '@fortawesome/free-solid-svg-icons';
-import s from './class.module.scss';
-import Link from 'next/link';
-import { collection, doc, getDocs } from 'firebase/firestore';
-import { db } from '@/firebase/firebaseconfig';
-import Poll from '@/models/poll';
-import { rdb } from '@/firebase/firebaseconfig'; import { equalTo, onValue, orderByChild, query, ref } from 'firebase/database';
-import {
-    Box,
-    Checkbox,
-    FormControlLabel,
-} from '@mui/material'
-import { Controller, useForm } from 'react-hook-form';
 import { useAuth } from '@/context/authcontext';
-import { update } from 'firebase/database';
-import { remove } from 'firebase/database';
+import { rdb } from '@/firebase/firebaseconfig';
+import {
+    Checkbox,
+    FormControlLabel
+} from '@mui/material';
+import { equalTo, onValue, orderByChild, query, ref, remove, update } from 'firebase/database';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import s from './class.module.scss';
 
 interface LivePoll {
     id: string;
@@ -38,7 +31,8 @@ export default function Class() {
 
     // get the class id from the url
     const router = useRouter();
-    const classid = router.query.class;
+    const classid = router.query.classId;
+    console.log(classid, 'classid')
 
     const { user } = useAuth();
 
@@ -93,9 +87,17 @@ export default function Class() {
 
     const { handleSubmit, control, formState: { errors } } = useForm({});
 
-
     return (
         <div className={s.class}>
+            <Link
+                      href={{
+                        pathname: `/class/${classid}/grades`,
+                        query: { id: classid },
+                      }}
+                      className={s.gradesButton}
+                    >
+                Grades
+            </Link>
             {
                 classid && activePolls.length > 0 ?
                     <div className={s.openpolls}>
@@ -106,6 +108,7 @@ export default function Class() {
                                     <form key={poll.id} className={s.poll} onSubmit={
                                         handleSubmit((data) => submitPoll(data, poll.id))
                                     }>
+                                        
                                         <h1>{poll.question}</h1>
 
                                         <div className={s.options}>
