@@ -12,6 +12,21 @@
     text-align: center;
   }
 
+  .gradeSummary {
+    position: absolute;
+    top: 110px;
+    right: 20px;
+    padding: 10px;
+    
+    word-spacing: 0.5em;
+  
+    line-height: 1.6;
+  
+    span {
+      margin-right: 1px; // Adjust as needed
+    }
+  }
+
   .answer {
       padding: 10px;
       margin: 5px 0;

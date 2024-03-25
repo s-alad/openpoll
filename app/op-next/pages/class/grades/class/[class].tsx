@@ -39,6 +39,8 @@ export default function ClassGrades() {
   const [openpolls, setOpenpolls] = useState<PollAndId[]>([]);
   const [studentAnswers, setStudentAnswers] = useState<PollAndAnswer[]>([]);
   const [numCorrect, setNumCorrect] = useState(0); // Number of correct answers used as an integer to display how many questions the student got correct
+  const [totalQuestions, setTotalQuestions] = useState(0); // Total number of questions in the poll
+  const [totalGrade, setTotalGrade] = useState(0); // Total grade of the student
 
   async function getPolls() {
     setLoading(true);
@@ -73,11 +75,13 @@ export default function ClassGrades() {
         return;
       }
       const uid = currentUser.uid;
-      console.log(`Current user ID: ${uid}`);
+
+      let correctCount = 0;
   
       const results: PollAndAnswer[] = openpolls.map(pollAndId => {
         const { poll, id: pollId } = pollAndId;
         const correctAnswersSet = new Set(poll.answers);
+
   
         // Initialize default user response info
         let userResponseInfo: PollAndAnswer = {
@@ -92,22 +96,32 @@ export default function ClassGrades() {
         // Find the user's response among the poll responses
         const userResponseEntry = Object.entries(poll.responses || {})
           .find(([_, userResponses]) => uid in userResponses);
+        
   
         if (userResponseEntry) {
           const [responseOption] = userResponseEntry;
           userResponseInfo.responses = responseOption; // The option the user chose
           userResponseInfo.isCorrect = correctAnswersSet.has(responseOption); // Is the option correct?
+          if (userResponseInfo.isCorrect) {
+            correctCount++; // Increment local correct count
+          }
         }
   
         return userResponseInfo;
       });
   
       setStudentAnswers(results); // Save the results to the state
-      console.log(results, "Results after checking answers");
+      setNumCorrect(correctCount); 
+      setTotalQuestions(openpolls.length);
+      setTotalGrade((correctCount / openpolls.length) * 100);
     } catch (e) {
       console.error("Error while checking answers: ", e);
     }
   }
+
+  console.log(numCorrect, "numCorrect")
+  console.log(totalQuestions, "totalQuestions")
+  console.log(totalGrade, "totalGrade")
   
 
   useEffect(() => {
@@ -131,25 +145,32 @@ export default function ClassGrades() {
   return (
     <div className={s.grades}>
       {studentAnswers.length > 0 ? (
-        <div className={s.classGrades}>
-          <h1 className={s.question}>Class Grades</h1>
-          {studentAnswers.map((poll, index) => (
-            <div key={index}>
-              <h2>Question: {poll.question}</h2>
-              {poll.options.map((option, index) => {
-                const isUserResponse = poll.responses === option.letter;
-                const isCorrect = poll.answers.includes(option.letter);
-                return (
-                  <div key={index}
-                       className={`${s.answer} ${isUserResponse ? isCorrect ? s.correct : s.incorrect : isCorrect ? s.correct : ''}`}>
-                    <span>{option.letter}: {option.option}</span>
-                    {isUserResponse && <span className={s.answerIndicator}></span>}
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-        </div>
+        <>
+          <div className={s.gradeSummary}>
+            <span>Total Correct: {numCorrect} </span>
+            <span>Total Questions: {totalQuestions} </span>
+            <span>Grade: {totalGrade} </span>
+          </div>
+          <div className={s.classGrades}>
+            <h1 className={s.question}>Class Grades</h1>
+            {studentAnswers.map((poll, index) => (
+              <div key={index}>
+                <h2>Question: {poll.question}</h2>
+                {poll.options.map((option, index) => {
+                  const isUserResponse = poll.responses === option.letter;
+                  const isCorrect = poll.answers.includes(option.letter);
+                  return (
+                    <div key={index}
+                        className={`${s.answer} ${isUserResponse ? isCorrect ? s.correct : s.incorrect : isCorrect ? s.correct : ''}`}>
+                      <span>{option.letter}: {option.option}</span>
+                      {isUserResponse && <span className={s.answerIndicator}></span>}
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </>
       ) : (
         <h1>No grades</h1>
       )}
