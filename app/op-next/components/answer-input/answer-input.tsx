@@ -1,4 +1,4 @@
-import { createpollformfield } from "@/models/form";
+import { createpollformfield } from "@/validation/form";
 
 import s from "./answer-input.module.scss";
 

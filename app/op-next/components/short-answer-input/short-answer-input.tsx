@@ -1,4 +1,4 @@
-import { createclassformfield, createshortanswerformfield } from "@/models/form";
+import { createclassformfield, createshortanswerformfield } from "@/validation/form";
 
 import s from "./short-answer-input.module.scss";
 

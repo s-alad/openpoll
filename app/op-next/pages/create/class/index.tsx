@@ -10,8 +10,8 @@ import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import React, { useState, FormEvent } from 'react';
 import ClassInput from "@/components/class-input/class-input";
 import { useForm } from "react-hook-form";
-import { createclassformdata } from "@/models/form";
-import { createClassSchema } from "@/models/schema";
+import { createclassformdata } from "@/validation/form";
+import { createClassSchema } from "@/validation/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Loader from "@/components/loader/loader";
 
