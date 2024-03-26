@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { auth, db } from "../../../../firebase/firebaseconfig";
 import s from "./classGrades.module.scss";
+import Link from "next/link";
 
 interface PollAndId {
   poll: Poll;
@@ -30,9 +31,7 @@ export default function ClassGrades() {
   // get the class id from the url
   const router = useRouter();
   const { classId: classid } = router.query;
-  console.log(classid, "classid");
   const { user } = useAuth();
-  console.log("user", user);
 
   const [openpolls, setOpenpolls] = useState<PollAndId[]>([]);
   const [studentAnswers, setStudentAnswers] = useState<PollAndAnswer[]>([]);
@@ -44,11 +43,9 @@ export default function ClassGrades() {
     setLoading(true); 
     const classRef = doc(db, "classes", classid as string);
     const pollsRef = collection(classRef, "polls");
-    console.log("get")
     try {
-      console.log("test")
       const snapshot = await getDocs(pollsRef);
-      console.log("get polls");
+      
       let completedPolls: PollAndId[] = [];
       snapshot.forEach((doc) => {
         const pid = doc.id;
@@ -95,14 +92,18 @@ export default function ClassGrades() {
         };
   
         // Find the user's response among the poll responses
-        const userResponseEntry = Object.entries(poll.responses || {})
-          .find(([_, userResponses]) => uid in userResponses);
+        const userResponseEntry = Object.entries(poll.responses || {}).find(
+          ([option, userResponses]) => {
+            const responses = userResponses as { [uid: string]: string };
+            return responses[uid];
+          }
+        );
         
   
         if (userResponseEntry) {
           const [responseOption] = userResponseEntry;
           userResponseInfo.responses = responseOption; // The option the user chose
-          userResponseInfo.isCorrect = correctAnswersSet.has(responseOption); // Is the option correct?
+          userResponseInfo.isCorrect = correctAnswersSet.has(responseOption); 
           if (userResponseInfo.isCorrect) {
             correctCount++; // Increment local correct count
           }
@@ -123,7 +124,7 @@ export default function ClassGrades() {
   console.log(numCorrect, "numCorrect")
   console.log(totalQuestions, "totalQuestions")
   console.log(totalGrade, "totalGrade")
-  
+  console.log(studentAnswers, "studentAnswers")
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -156,6 +157,13 @@ export default function ClassGrades() {
             <h1 className={s.question}>Class Grades</h1>
             {studentAnswers.map((poll, index) => (
               <div key={index}>
+                <Link
+                      href={{
+                        pathname: `/class/${classid}/grades/${poll.pollId}`,
+                        query: { id: classid },
+                      }}> 
+                      {poll.question}
+                </Link>
                 <h2>Question: {poll.question}</h2>
                 {poll.options.map((option, index) => {
                   const isUserResponse = poll.responses === option.letter;

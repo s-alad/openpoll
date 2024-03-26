@@ -13,6 +13,7 @@ import s from './class.module.scss';
 
 interface LivePoll {
     id: string;
+    done: boolean;
     active: boolean;
     type: "mc" | "short";
     options: {
