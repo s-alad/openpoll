@@ -1,20 +1,27 @@
 interface BasePoll {
     type: 'shortAnswer' | 'multipleChoice' | 'attendance';
     question: string;
+    answers: string[];
 }
 
 interface ShortAnswerPoll extends BasePoll {
-    type: 'shortAnswer';
-    answers?: string;
+    type: 'short';
 }
 
 interface MultipleChoicePoll extends BasePoll {
-    type: 'multipleChoice';
+    type: 'mc';
     options: {
         letter: string;
         option: string;
     }[];
-    answers: string[];
+}
+
+interface OrderingPoll extends BasePoll {
+    type: 'ordering';
+    options: {
+        number: string;
+        option: string;
+    }[];
 }
 
 interface Attendance extends BasePoll {

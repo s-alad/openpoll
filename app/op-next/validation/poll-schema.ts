@@ -2,24 +2,23 @@ import { z } from 'zod';
 
 // Define your base poll using z.object to ensure it returns a ZodObject
 const basePollSchema = z.object({
-    type: z.enum(['shortAnswer', 'multipleChoice']),
+    type: z.enum(['short', 'mc']),
     question: z.string().min(1).max(200),
+    answers: z.array(z.string())
 });
 
 // Extend the base schema for the short answer poll
 const shortAnswerSchema = basePollSchema.extend({
-    type: z.literal('shortAnswer'),
-    answers: z.string().min(1).max(200).optional(),
+    type: z.literal('short'),
 });
 
 // Extend the base schema for the multiple choice poll
 const multipleChoiceSchema = basePollSchema.extend({
-    type: z.literal('multipleChoice'),
+    type: z.literal('mc'),
     options: z.array(z.object({
         letter: z.string().min(1),
         option: z.string().min(1).max(200),
     })).min(2).max(10),
-    answers: z.array(z.string()).min(1),
 });
 
 // Extend the base schema for the attendance poll
