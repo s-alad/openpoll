@@ -17,4 +17,5 @@ interface PollResponse {
 }
 
 export default Poll;
+export type { PollResponse };
 
