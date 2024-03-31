@@ -3,13 +3,14 @@ import { auth, db, fxns, rdb } from "../../../firebase/firebaseconfig";
 import { useRouter } from "next/router";
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import React, { useState, FormEvent, useEffect } from 'react';
+<<<<<<< HEAD
 import { createpollformdata, createshortanswerformdata, createattendanceformdata } from "@/validation/form";
 import { createPollSchema, createShortAnswerSchema, createAttendanceSchema } from "@/validation/schema";
+=======
+>>>>>>> 5251451 (PURGE)
 import { useForm, UseFormProps, useFieldArray, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import QuestionInput from '@/components/question-input/question-input';
-import AnswerInput from '@/components/answer-input/answer-input';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMinus, faMinusCircle, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 
@@ -22,20 +23,18 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
 import { push, ref, set } from 'firebase/database';
-import ShortAnswerInput from '@/components/short-answer-input/short-answer-input';
-import { TestForm } from '@/components/create-poll-form/create-poll-form';
+import { PollTypes } from '@/models/poll';
 
 export default function CreatePoll() {
 
 	const router = useRouter();
 	const classid = router.query.classid
 
-	type polltypes = "mc" | "short" | "ordering";
-	const [polltype, setpolltype] = useState<polltypes>("mc");
+	const [polltype, setpolltype] = useState<PollTypes>("mc");
 
 	// mc ========================================
 
-	async function createpoll(data: createpollformdata) {
+	async function createpoll(data: any) {
 		console.log('form data submitted:', data);
 
 		const user = auth.currentUser;
@@ -71,25 +70,9 @@ export default function CreatePoll() {
 
 	}
 
-	const colorselection: { [key: string]: string } = { "A": s.a, "B": s.b, "C": s.c, "D": s.d }
-	const initalpolls = [{ letter: "A", option: "" }, { letter: "B", option: "" }];
-
-	const { register, handleSubmit, control, setError, formState: { errors } } = useForm<createpollformdata>({
-		resolver: zodResolver(createPollSchema),
-		defaultValues: {
-			options: initalpolls,
-			answers: []
-		}
-	});
-
-	const { fields, append, remove, update, } = useFieldArray({
-		control,
-		name: "options"
-	});
-
 	// short ========================================
 
-	async function createshortanswer(data: createshortanswerformdata) {
+	async function createshortanswer(data: any) {
 		console.log('form data submitted:', data);
 
 		const user = auth.currentUser;
@@ -124,21 +107,9 @@ export default function CreatePoll() {
 
 	}
 
-	const { register: registershort, handleSubmit: handleSubmitshort, control: control2, formState: { errors: errors2 } } =
-		useForm<createshortanswerformdata>({
-			resolver: zodResolver(createShortAnswerSchema),
-			defaultValues: {
-				question: "",
-				answers: ""
-			}
-		});
-
 	// ordering ========================================
 
-	const ordercolorselection: { [key: string]: string } = { "1": s.a, "2": s.b, "3": s.c, "4": s.d }
-	const orderinitalpolls = [{ letter: "1", option: "" }, { letter: "1", option: "" }];
-
-	async function createorderpoll(data: createpollformdata) {
+	async function createorderpoll(data: any) {
 		console.log('form data submitted:', data);
 
 		const user = auth.currentUser;
@@ -427,6 +398,7 @@ export default function CreatePoll() {
 							</form>
 						: ""
 					}
+					
 				</div>
 			</main>
 		</>
