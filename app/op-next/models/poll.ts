@@ -16,6 +16,8 @@ interface PollResponse {
   [option: string]: { [uid: string]: string };
 }
 
+type PollTypes = "mc" | "short" | "ordering";
+
 export default Poll;
-export type { PollResponse };
+export type { PollResponse, PollTypes };
 

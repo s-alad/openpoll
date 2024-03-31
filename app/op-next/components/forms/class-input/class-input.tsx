@@ -1,27 +1,27 @@
-import { createpollformfield } from "@/validation/form";
+import { CreateClassFormField } from "@/validation/form";
 
-import s from "./question-input.module.scss";
+import s from "./class-input.module.scss";
 
-interface field extends createpollformfield {
+interface field extends CreateClassFormField {
     inputstyle?: "input" | "textarea"
 }
 
-export default function QuestionInput({ type, inputstyle, description, placeholder, name, register, error, valueAsNumber, disabled, defaultvalue }: field) {
+export default function ClassInput({ type, inputstyle, description, placeholder, name, register, error, disabled, defaultvalue }: field) {
     return (
-        <div className={s.questioninput}>
+        <div className={s.classinput}>
             <label htmlFor={name}>{description ? description : name}:</label>
             {
                 inputstyle === "textarea" ?
                     <textarea
                         placeholder={placeholder}
-                        {...register(name, { valueAsNumber })}
+                        {...register(name)}
                         defaultValue={defaultvalue}
                     />
                     :
                     <input
                         type={type}
                         placeholder={placeholder}
-                        {...register(name, { valueAsNumber })}
+                        {...register(name)}
                         defaultValue={defaultvalue}
                     />
             }
