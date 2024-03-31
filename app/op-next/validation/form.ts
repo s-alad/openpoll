@@ -32,6 +32,20 @@ export interface createshortanswerformfield extends defaultformfield {
     name: ValidCreateShortAnswerFieldNames;
 };
 
+export type createattendanceformdata = {
+    date: Date;
+    attended: string[];
+};
+
+export type ValidCreateAttendanceFieldNames =
+    | "date"
+    | "attended"
+
+export interface createattendanceformfield extends defaultformfield {
+    register: UseFormRegister<createattendanceformdata>;
+    name: ValidCreateAttendanceFieldNames;
+};
+
 
 export type createpollformdata = {
     question: string;

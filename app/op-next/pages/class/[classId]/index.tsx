@@ -14,7 +14,7 @@ import s from './class.module.scss';
 interface LivePoll {
     id: string;
     active: boolean;
-    type: "mc" | "short";
+    type: "mc" | "short" | "attendance";
     options: {
         letter: string;
         option: string;
@@ -83,6 +83,12 @@ export default function Class() {
 
         const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses`);
         await update(answerRef, { [user!.uid]: data.answer });
+    }
+
+    async function submitAttendancePoll(pollId: string) {
+
+        const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses`);
+        await update(answerRef, { [user!.uid]: user!.email });
     }
 
     const { handleSubmit, control, formState: { errors } } = useForm({});
@@ -167,6 +173,21 @@ export default function Class() {
 
                                         <button type="submit">Submit</button>
                                     </form>
+                                )
+
+                                if (poll.type === "attendance") return (
+                                    <div key={poll.id} className={s.poll}>
+                                        <h1>{poll.question}</h1>
+                                        <div className={s.attendanceButtonWrapper}>
+                                            <button
+                                                type="button"
+                                                className={s.attendanceButton}
+                                                onClick={() => submitAttendancePoll(poll.id)}
+                                            >
+                                                I'm Here
+                                            </button>
+                                        </div>
+                                    </div>
                                 )
                             })
                         }
