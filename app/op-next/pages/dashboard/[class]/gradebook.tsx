@@ -6,14 +6,14 @@ import { doc, collection, getDocs, getDoc } from 'firebase/firestore';
 import { db, auth } from '@/firebase/firebaseconfig';
 import { useAuth } from '@/context/authcontext';
 
-interface StudentData {
+interface Student {
     name: string;
     email: string;
     grade: number;
 };
 
-interface PollAndResponse {
-    
+interface StudentsData {
+    [key: string]: Student;
 }
 
 export default function gradebook() {
@@ -22,7 +22,7 @@ export default function gradebook() {
     const { user } = useAuth();
 
     const [authorized, setAuthorized] = useState(false);
-    const [students, setStudents] = useState<StudentData[]>([]);
+    const [students, setStudents] = useState<StudentsData>({});
     const [polls, setPolls] = useState<Poll[]>([]);
 
     // Check if current user is the admin of the class
@@ -43,7 +43,7 @@ export default function gradebook() {
             console.error("Error fetching class");
         }
 
-    }
+    };
 
     // Grab all students and initialize their grades to 0.0
     async function grabStudents() {
@@ -51,20 +51,19 @@ export default function gradebook() {
             const classRef = doc(db, "classes", classId as string);
             const studentRef = collection(classRef, "students");
             const snapshot = await getDocs(studentRef);
-            let students: StudentData[] = [];
+            let students: StudentsData = {};
 
             snapshot.forEach((doc) => {
                 const data = doc.data();
-                const studentItem: StudentData = { name: data.name, email: data.email, grade: 0.0 };
-                
-                students.push(studentItem);
+                const studentItem: Student = { name: data.name, email: data.email, grade: 0.0 };
+                students[doc.id] = studentItem;
             });
 
             setStudents(students);
         } catch (error) {
             console.error("Error grabbing student information");
         }
-    }
+    };
 
     // Grab the polls
     async function getPolls() {
@@ -84,7 +83,7 @@ export default function gradebook() {
         } catch (error) {
             console.error("Error getting Polls");
         }
-    }
+    };
 
     useEffect(() => {
         if (classId && user) {
@@ -92,7 +91,7 @@ export default function gradebook() {
             grabStudents();
             getPolls();
         }
-    }, [classId, user, polls]);
+    }, [classId, user, polls, students]);
 
     return (
         <div>
@@ -100,16 +99,17 @@ export default function gradebook() {
                 <div>
                     <h1>Gradebook for Class: {classId}</h1>
                     <div>
-                        {students.map((student, index) => (
-                            <div key={index}>{student.email} {student.grade}</div>
+                        {Object.keys(students).map((studentId) => (
+                            <div key={studentId}>
+                                {students[studentId].email} {students[studentId].grade}
+                            </div>
                         ))}
-
+    
                         {polls.map((poll, index) => (
                             <div key={index}>{poll.question}: {poll.answers}</div>
                         ))}
                     </div>
-
-                    </div>
+                </div>
             ) : (
                 <h1>Unauthorized to view this gradebook</h1>
             )}
