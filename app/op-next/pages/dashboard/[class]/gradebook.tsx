@@ -5,13 +5,22 @@ import { doc, collection, getDocs, getDoc } from 'firebase/firestore';
 import { db, auth } from '@/firebase/firebaseconfig';
 import { useAuth } from '@/context/authcontext';
 
+interface StudentData {
+    name: string;
+    email: string;
+    grade: number;
+}
+
 export default function gradebook() {
     const router = useRouter();
     const { class: classId } = router.query;
-    const { user } = useAuth()
+    const { user } = useAuth();
 
     const [authorized, setAuthorized] = useState(false);
+    const [students, setStudents] = useState<StudentData[]>([]);
 
+
+    // Check if current user is the admin of the class
     async function checkAuthorization() {
         try {
             const classRef = doc(db, "classes", classId as string);
@@ -31,16 +40,46 @@ export default function gradebook() {
 
     }
 
+    // Grab all students and initialize their grades to 0.0
+    async function grabStudents() {
+        try {
+            const classRef = doc(db, "classes", classId as string);
+            const studentRef = collection(classRef, "students");
+            const snapshot = await getDocs(studentRef);
+            let students: StudentData[] = [];
+
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const studentItem: StudentData = { name: data.name, email: data.email, grade: 0.0 };
+                
+                students.push(studentItem);
+            });
+
+            setStudents(students);
+        } catch (error) {
+            console.log("Error grabbing student information");
+        }
+    }
+
     useEffect(() => {
         if (classId && user) {
-            checkAuthorization()
+            checkAuthorization();
+            grabStudents();
         }
     }, [classId, user]);
 
     return (
         <div>
             {authorized ? (
-                <h1>Gradebook for Class: {classId}</h1>
+                <div>
+                    <h1>Gradebook for Class: {classId}</h1>
+                    <div>
+                        {students.map((student, index) => (
+                            <div key={index}>{student.email}</div>
+                        ))}
+                    </div>
+
+                    </div>
             ) : (
                 <h1>Unauthorized to view this gradebook</h1>
             )}
