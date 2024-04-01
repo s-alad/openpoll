@@ -1,15 +1,3 @@
-// .grades {
-//   display: flex;
-//   flex-direction: column;
-//   align-items: center;
-//   width: 100%;
-//
-//   .container {
-//     display: flex;
-//     justify-content: space-between;
-//   }
-// }
-
 .gradebookContainer {
   padding: 0px 35px;
   display: flex;
@@ -22,16 +10,14 @@
   }
 
   .studentInfo {
-    h1 {
-      text-align: center;
-      color: #333;
+    h3 {
+      font-weight: bold;
     }
     width: 50%;
   }
 
   .studentDetails {
     margin: 3px 0;
-  
   }
 
   .studentStats {
@@ -97,14 +83,100 @@
     }
   }
 
-  .questionsList {
+  .questions {
+    display: flex;
+    flex-direction: column;
+    border: 2.5px solid #000;
+    background: white;
+
+
+    h2 {
+      font-family: "Open Sans";
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 8000;
+      line-height: 64px; /* 266.667% */
+      letter-spacing: -0.25px;
+    }
+
+    .questionOverhead,
     .question {
       display: flex;
-      padding: 10px;
-      border: 1px solid black;
-      border-radius: 5px;
-      margin-bottom: 5px;
+      justify-content: space-between;
       align-items: center;
+      padding: 10px 30px;
+    }
+
+    .questionOverhead > h2,
+    .question > div {
+      flex-grow: 1;
+      text-align: center;
+      &:first-child {
+        flex-grow: 2;
+        text-align: left;
+      }
+    }
+
+    .questionOverhead {
+      display: flex;
+      justify-content: space-between;
+      margin: 0 20px;
+      margin-bottom: -30px;
+      margin-top: -30px;
+    }
+
+    .question {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 3px solid #000;
+      position: relative;
+  
+      &:first-child {
+        border-top: 3px solid #000;
+      }
+      
+      &:last-child {
+        border-bottom: none;
+      }
+  
+
+      .questionLink {
+        text-decoration: none;
+        color: black;
+        font-weight: 1000;
+      }
+
+
+      .responseColumn {
+        display: flex;
+        align-items: center;
+        gap: 10px; 
+      }
+
+      .textDetails {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        font-weight: 800;
+        padding: 0;
+        margin: 0;
+
+        h2 {
+          margin-bottom: 0px;
+        }
+      }
+
+      .correctAnswer {
+        font-size: 15px;
+        margin-bottom: 10px;
+      }
+
+
+      .stat {
+        width: 100px;
+        text-align: center; 
+        padding: 0 10px; // Add padding to prevent text from touching the edges
+      }
     }
   }
 }

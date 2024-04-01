@@ -8,7 +8,7 @@ import { auth, db } from "../../../../firebase/firebaseconfig";
 import s from "./classGrades.module.scss";
 import Link from "next/link";
 import Image from "next/image";
-import { AppBar, Tabs, Tab, Box, Typography } from '@mui/material';
+import { AppBar, Tabs, Tab, Box, Typography } from "@mui/material";
 
 interface PollAndId {
   poll: Poll;
@@ -25,6 +25,7 @@ interface PollAndAnswer {
   responses: string[];
   answers: string[];
   isCorrect: boolean;
+  answered?: boolean;
 }
 
 export default function ClassGrades() {
@@ -45,7 +46,7 @@ export default function ClassGrades() {
   const [value, setValue] = React.useState(0);
 
   // Handler for changing tabs
-  const handleChange = (event: any, newValue:any) => {
+  const handleChange = (event: any, newValue: any) => {
     setValue(newValue);
   };
 
@@ -118,6 +119,7 @@ export default function ClassGrades() {
           answers: poll.answers,
           isCorrect: false,
           options: poll.options,
+          answered: false,
         };
 
         // Find the user's response among the poll responses
@@ -132,6 +134,7 @@ export default function ClassGrades() {
           const [responseOption] = userResponseEntry;
           userResponseInfo.responses = [responseOption]; // The option the user chose
           userResponseInfo.isCorrect = correctAnswersSet.has(responseOption);
+          userResponseInfo.answered = true;
           if (userResponseInfo.isCorrect) {
             correctCount++; // Increment local correct count
           }
@@ -143,7 +146,9 @@ export default function ClassGrades() {
       setStudentAnswers(results); // Save the results to the state
       setNumCorrect(correctCount);
       setTotalQuestions(openpolls.length);
-      setTotalGrade(Math.round((correctCount / openpolls.length) * 100 * 10) / 10);
+      setTotalGrade(
+        Math.round((correctCount / openpolls.length) * 100 * 10) / 10,
+      );
     } catch (e) {
       console.error("Error while checking answers: ", e);
     }
@@ -183,8 +188,8 @@ export default function ClassGrades() {
               <div className={s.studentInfo}>
                 <div className={s.studentDetails}>
                   <h3>Name: {user.displayName}</h3>
-                  <p>ID: {user.uid}</p>
-                  <p>Email: {user.email}</p>
+                  <p><strong>ID: </strong>{user.uid.substring(0, 7)}</p>
+                  <p><strong>Email: </strong>{user.email}</p>
                 </div>
               </div>
               <div className={s.averageScores}>
@@ -195,7 +200,13 @@ export default function ClassGrades() {
                     <span className={s.scoreValue}>{totalGrade}/100</span>
                   </div>
                   <div className={s.progressBarContainer}>
-                    <div className={s.progressBar} style={{ width: `${totalGrade}%`, backgroundColor: 'blue' }}></div>
+                    <div
+                      className={s.progressBar}
+                      style={{
+                        width: `${totalGrade}%`,
+                        backgroundColor: "blue",
+                      }}
+                    ></div>
                   </div>
                 </div>
                 <div className={s.score}>
@@ -204,16 +215,27 @@ export default function ClassGrades() {
                     <span className={s.scoreValue}>100/100</span>
                   </div>
                   <div className={s.progressBarContainer}>
-                    <div className={s.progressBar} style={{ width: '100%', backgroundColor: 'orange' }}></div>
+                    <div
+                      className={s.progressBar}
+                      style={{ width: "100%", backgroundColor: "orange" }}
+                    ></div>
                   </div>
                 </div>
                 <div className={s.score}>
                   <div className={s.scoreCategory}>
                     <span>Correctness</span>
-                    <span className={s.scoreValue}>{numCorrect}/{totalQuestions}</span>
+                    <span className={s.scoreValue}>
+                      {numCorrect}/{totalQuestions}
+                    </span>
                   </div>
                   <div className={s.progressBarContainer}>
-                    <div className={s.progressBar} style={{ width: `${(numCorrect / totalQuestions) * 100}%`, backgroundColor: 'purple' }}></div>
+                    <div
+                      className={s.progressBar}
+                      style={{
+                        width: `${(numCorrect / totalQuestions) * 100}%`,
+                        backgroundColor: "purple",
+                      }}
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -228,7 +250,8 @@ export default function ClassGrades() {
                   height={20}
                   className={s.image}
                 />
-                <h2 className={s.statText}>16/18 Classes Attended</h2> {/* Placeholder */}
+                <h2 className={s.statText}>16/18 Classes Attended</h2>{" "}
+                {/* Placeholder */}
               </div>
               <div className={s.statItem}>
                 <Image
@@ -238,7 +261,9 @@ export default function ClassGrades() {
                   height={24}
                   className={s.image}
                 />
-                <h2 className={s.statText}>/{totalQuestions} Questions Answered</h2>
+                <h2 className={s.statText}>
+                {studentAnswers.filter(answer => answer.answered).length}/{totalQuestions} Questions Answered
+                </h2>
               </div>
               <div className={s.statItem}>
                 <Image
@@ -253,21 +278,25 @@ export default function ClassGrades() {
             </div>
             {/* Question Section */}
 
-            <Box sx={{ width: '100%' }}>
-              <AppBar position="static" color="default" sx={{ background: 'transparent', boxShadow: 'none' }}>
-                <Tabs 
-                  value={value} 
-                  onChange={handleChange} 
+            <Box sx={{ width: "100%" }}>
+              <AppBar
+                position="static"
+                color="default"
+                sx={{ background: "transparent", boxShadow: "none" }}
+              >
+                <Tabs
+                  value={value}
+                  onChange={handleChange}
                   TabIndicatorProps={{
                     style: {
-                      height: '4px',
-                      backgroundColor: 'red',
-                      color: 'red '
+                      height: "4px",
+                      backgroundColor: "red",
+                      color: "red ",
                     },
                   }}
                   sx={{
-                    '.Mui-selected': {
-                      color: 'red',
+                    ".Mui-selected": {
+                      color: "red",
                     },
                   }}
                 >
@@ -276,17 +305,44 @@ export default function ClassGrades() {
                 </Tabs>
               </AppBar>
               <TabPanel value={value} index={0}>
-                <div className={s.questionsList}>
-                  {studentAnswers.map((answer, index) => (
-                    <Box key={index} className={s.question}>
-                      <Box sx={{ flexGrow: 1 }}>
-                        <Link href={`/class/${classid}/grades/${answer.pollId}`} passHref>
-                          <Typography variant="h6">{answer.question}</Typography>
-                        </Link>
-                        <Typography variant="body2">Correct answer is {answer.answers.join(', ')}</Typography>
-                      </Box>
-                    </Box>
-                  ))}
+                <div className={s.questions}>
+                  <div className={s.questionOverhead}>
+                    <h2>Responses</h2>
+                    <h2>Weight</h2>
+                    <h2>Correctness</h2>
+                    <h2>Total</h2>
+                  </div>
+                  <div className={s.questionsList}>
+                    {studentAnswers.map((answer, index) => (
+                      <div className={s.question}>
+                        <div className={s.responseColumn}>
+                          <Image
+                            src="/chat_box.svg"
+                            alt="chat box"
+                            width={20}
+                            height={20}
+                          />
+                          <div className={s.textDetails}>
+                            <Link
+                              href={`/class/${classid}/grades/${answer.pollId}`}
+                              passHref
+                              className={s.questionLink}
+                            >
+                              <h2 className={s.questionText}>
+                                {answer.question}
+                              </h2>
+                            </Link>
+                            <Typography variant="body2" className={s.correctAnswer}>
+                              Correct answer is {answer.answers.join(", ")}
+                            </Typography>
+                          </div>
+                        </div>
+                        <div className={s.stat}>1/1</div>
+                        <div className={s.stat}>0.5/0.5</div>
+                        <div className={s.stat}>1/1</div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </TabPanel>
               <TabPanel value={value} index={1}>
