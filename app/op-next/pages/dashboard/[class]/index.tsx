@@ -69,6 +69,9 @@ export default function Dashboard() {
                                     <div key={index} className={s.poll}>
                                         <div className={s.details}>
                                             <div className={s.question}>{poll.poll.question}</div>
+
+                                            {/* <div>created: {new Date(poll.poll.created.seconds).toLocaleDateString()}</div> */}
+
                                             <div>created: {new Date(poll.poll.created.seconds).toLocaleDateString()}</div>
                                         </div>
                                         <div className={s.actions}>

@@ -16,7 +16,7 @@ interface LivePoll {
         option: string;
         letter: string;
     }[];
-    type: "mc" | "short";
+    type: "mc" | "short" | "attendance";
     question: string;
     responses?: {
         [studentid: string]: string;
@@ -126,7 +126,7 @@ export default function Live() {
             setPollId(live[1] as string);
             setClassId(live[0] as string);
             getpoll();
-            if (correctAnswers.length === 0) {
+            if (correctAnswers && correctAnswers.length === 0) {
                 getCorrectAnswers(live[0] as string, live[1] as string);
             }
         }
@@ -153,7 +153,12 @@ export default function Live() {
                                 })
                             }
                             {
-                                livepoll.type === "short" && <div>short answer</div>
+                                livepoll.type === "short" && <></>
+                            }
+                            {
+                                livepoll.type === "attendance" && (
+                                    <div className={s.codeDisplay}>Code: {pollId.substring(pollId.length - 4)}</div>
+                                )
                             }
                         </div>
 
@@ -188,7 +193,7 @@ export default function Live() {
             }
 
             <div className={s.answerWrapper}>
-                {showAnswers && correctAnswers.length > 0 && (
+                {showAnswers && correctAnswers.length > 0 && !pollstatus && (
                     <div className={s.answers}>
                         <h2>Correct Answer</h2>
                         <p>{correctAnswers}</p>
@@ -199,6 +204,20 @@ export default function Live() {
                         <PollChart pollData={livepoll} />
                     </div>
                 )}
+                {
+                    showAnswers && livepoll?.type === "short" && (
+                        <div className={s.answers}>
+                            <h2>Answers</h2>
+                            {
+                                livepoll?.responses && Object.entries(livepoll.responses).map(([studentid, answer], index) => {
+                                    return (
+                                        <p key={index}>{answer}</p>
+                                    )
+                                })
+                            }
+                        </div>
+                    )
+                }
             </div>
         </div>
     )
