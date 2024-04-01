@@ -66,7 +66,7 @@ export default function gradebook() {
     };
 
     // Grab the polls
-    async function getPolls() {
+    async function getDonePolls() {
         const classRef = doc(db, "classes", classId as string);
         const pollsRef = collection(classRef, "polls");
 
@@ -76,7 +76,9 @@ export default function gradebook() {
             const snapshot = await getDocs(pollsRef);
             snapshot.forEach((doc) => {
                 const data = doc.data() as Poll;
-                openpolls.push(data);
+                if (data.done) {
+                    openpolls.push(data);
+                }
             });
 
             setPolls(openpolls);
@@ -85,11 +87,44 @@ export default function gradebook() {
         }
     };
 
+    const [totalCorrectAnswers, setTotalCorrectAnswers] = useState(0);
+    async function grade() {
+        let tempStudents: StudentsData = { ...students };
+        let numCorrectAnswers = 0;
+
+        try {
+            polls.forEach((poll) => {
+                const answers = poll.answers;
+                numCorrectAnswers += answers.length;
+    
+                answers.forEach((answer) => {
+                    const correctResponses = poll.responses?.[answer];
+    
+                    if (correctResponses) {
+                        const uids = Object.keys(correctResponses);
+                        
+                        uids.forEach((uid) => {
+                            if (tempStudents[uid].grade) {
+                                tempStudents[uid].grade += 1;
+                            }
+                        })
+                    }
+                });
+            });
+            setTotalCorrectAnswers(numCorrectAnswers);
+            setStudents(tempStudents);
+        } catch (error) {
+            console.log("Error grading");
+        }
+    };
+
+
     useEffect(() => {
         if (classId && user) {
             checkAuthorization();
             grabStudents();
-            getPolls();
+            getDonePolls();
+            grade();
         }
     }, [classId, user, polls, students]);
 
