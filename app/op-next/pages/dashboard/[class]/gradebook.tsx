@@ -5,6 +5,7 @@ import Poll from '@/models/poll';
 import { doc, collection, getDocs, getDoc } from 'firebase/firestore';
 import { db, auth } from '@/firebase/firebaseconfig';
 import { useAuth } from '@/context/authcontext';
+import s from "./gradebook.module.scss";
 
 interface Student {
     name: string;
@@ -129,11 +130,11 @@ export default function gradebook() {
     }, [classId, user, polls, students]);
 
     return (
-        <div>
+        <div className={s.gradebook}>
             {authorized ? (
                 <div>
                     <h1>Gradebook for Class: {classId}</h1>
-                    <table>
+                    <table className={s.gradebookTable}>
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
