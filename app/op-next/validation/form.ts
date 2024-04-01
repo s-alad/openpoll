@@ -1,17 +1,19 @@
-import { FieldError, UseFormRegister } from "react-hook-form";
-import { z } from "zod";
-import { createPollSchema } from "./schema";
+import { FieldError, FieldValues, Path, UseFormRegister } from "react-hook-form";
 
 
 export type DefaultFormField = {
     type: string;
     error: FieldError | undefined;
     
+    index?: number;
     placeholder?: string;
     disabled?: boolean;
     defaultvalue?: string | undefined;
-    description?: string;
+    label?: string;
+    inputstyle?: string;
 };
+
+// create class form ----------------------------------------------------------
 
 export type CreateClassFormData = {
     classname: string;
@@ -26,4 +28,31 @@ export type ValidCreateClassFieldNames =
 export interface CreateClassFormField extends DefaultFormField {
     register: UseFormRegister<CreateClassFormData>;
     name: ValidCreateClassFieldNames;
+};
+
+// polls -----------------------------------------------------------------------
+
+// Generic interface for form fields
+export interface GenericFormField<T extends FieldValues> extends DefaultFormField{
+    register: UseFormRegister<T>;
+    name: Path<T>;
+    customregistername?: Path<string>;
+}
+
+// create multiple choice poll form -------------------------------------------
+
+export type CreateMultipleChoicePollFormData = {
+    question: string;
+    options: {
+        letter: string;
+        option: string;
+    }[];
+    answers: string[];
+};
+
+// create short answer poll form ----------------------------------------------
+
+export type CreateShortAnswerFormData = {
+    question: string;
+    answers: string;
 };

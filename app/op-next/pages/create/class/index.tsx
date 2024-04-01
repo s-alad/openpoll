@@ -8,12 +8,12 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 import { useRouter } from "next/router";
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import React, { useState, FormEvent } from 'react';
-import ClassInput from "@/components/forms/class-input/class-input";
 import { useForm } from "react-hook-form";
 import { CreateClassFormData } from "@/validation/form";
 import { createClassSchema } from "@/validation/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Loader from "@/components/loader/loader";
+import Input from "@/ui/input/input";
 
 
 export default function CreateClass() {
@@ -68,15 +68,17 @@ export default function CreateClass() {
                         <div className={s.create}>
                             <div className={`${s.trap} ${s.yellow}`}></div>
                             <form onSubmit={handleSubmit(createclass)}>
-                                <ClassInput
+                                <Input<CreateClassFormData>
+                                    label="Class Name"
                                     type="text"
                                     name="classname"
                                     register={register}
                                     error={errors.classname}
                                 />
 
-                                <ClassInput
-                                    type="text"
+                                <Input<CreateClassFormData>
+                                    label="Description"
+                                    type="textarea"
                                     name="description"
                                     register={register}
                                     error={errors.description}
