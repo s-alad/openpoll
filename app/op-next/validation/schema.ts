@@ -53,13 +53,21 @@ export const createOrderingPollSchema: ZodType<CreateOrderingPollFormData> = z
         question: z.string().min(1, "Question must be at least 2 characters").max(200, "Question must be between 1 and 200 characters"),
         options: z.array(
             z.object({
-                number: z.number(),
+                letter: z.string(),
                 option: z.string().min(1, "Option must be at least 2 characters").max(200, "Option must be between 1 and 200 characters")
             })
         ).min(2, "Poll must have at least 2 options").max(10, "Poll must have at most 10 options"),
+<<<<<<< HEAD
         answer: z.object({
             index: z.number(),
             choice: z.number()
         })
     })
 >>>>>>> a7d8adb (start ordering poll)
+=======
+        answer: z.record(z.object({
+            letter: z.string(),
+            option: z.string(),
+        }))
+    })
+>>>>>>> 73428b0 (add ordering poll)

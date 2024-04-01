@@ -125,11 +125,14 @@ export type CreateShortAnswerPollFormData = {
 export type CreateOrderingPollFormData = {
     question: string;
     options: {
-        number: number;
+        letter: string;
         option: string;
     }[];
     answer: {
-        [index: number]: [choice: number]
+        [key: string]: {
+            letter: string;
+            option: string;
+        };
     }
 };
 >>>>>>> a7d8adb (start ordering poll)
