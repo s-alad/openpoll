@@ -307,13 +307,12 @@ export default function CreatePoll() {
 							</form>
 							:
 							polltype === "attendance" ?
-							
-							<div>
-							<h2>Create Attendance Poll for Today</h2>
-							<button onClick={() => createAttendance({date: new Date(), attended: []})} className={s.submitButton}>
-							  Create Attendance Poll
-							</button>
-						  </div>
+							<div className={`${s.create} ${s.attendance}`}>
+								<h2>Create Attendance Poll for Today</h2>
+								<button onClick={() => createAttendance({date: new Date(), attended: []})} className={s.submitButton}>
+								  Create Attendance Poll
+								</button>
+							</div>
 							  
 								:
 /* 							<form onSubmit={handleSubmitshort(createshortanswer)}>
