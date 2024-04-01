@@ -48,7 +48,7 @@ function SortableItem({ register, index, error, field, end, callback }:
 
 
     return (
-        <div ref={setNodeRef} style={style} {...attributes} {...listeners} className={s.orderable}>
+        <div /* ref={setNodeRef} style={style} {...attributes} {...listeners}  */ style={style} className={s.orderable}>
             <div className={`${s.letter} ${colorselection[field.letter]}`}>{field.letter}</div>
             <Input<CreateOrderingPollFormData>
                 type="text"
@@ -66,7 +66,7 @@ function SortableItem({ register, index, error, field, end, callback }:
                     <FontAwesomeIcon icon={faTrash} />
                 </div>
             }
-            <div className={s.drag}>
+            <div className={s.drag} ref={setNodeRef}  {...attributes} {...listeners}>
                 <FontAwesomeIcon icon={faGripVertical} />
             </div>
         </div>
