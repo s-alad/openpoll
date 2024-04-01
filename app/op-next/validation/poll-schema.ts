@@ -22,11 +22,18 @@ const multipleChoiceSchema = basePollSchema.extend({
     answers: z.array(z.string()).min(1),
 });
 
+// Extend the base schema for the attendance poll
+const attendanceSchema = basePollSchema.extend({
+    type: z.literal('attendance'),
+    attended: z.array(z.string()).min(1),
+});
+
 // Union the short answer and multiple choice schemas to cover all poll types
-export const pollSchema = z.discriminatedUnion('type', [shortAnswerSchema, multipleChoiceSchema]);
+export const pollSchema = z.discriminatedUnion('type', [shortAnswerSchema, multipleChoiceSchema, attendanceSchema]);
 
 // Using ZodType for type annotation
 type BasePoll = z.infer<typeof basePollSchema>;
 type ShortAnswerPoll = z.infer<typeof shortAnswerSchema>;
 type MultipleChoicePoll = z.infer<typeof multipleChoiceSchema>;
+type AttendancePoll = z.infer<typeof attendanceSchema>
 export type PollV = z.infer<typeof pollSchema>;

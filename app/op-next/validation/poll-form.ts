@@ -1,5 +1,5 @@
 interface BasePoll {
-    type: 'shortAnswer' | 'multipleChoice';
+    type: 'shortAnswer' | 'multipleChoice' | 'attendance';
     question: string;
 }
 
@@ -17,4 +17,9 @@ interface MultipleChoicePoll extends BasePoll {
     answers: string[];
 }
 
-type PollValidation = ShortAnswerPoll | MultipleChoicePoll;
+interface Attendance extends BasePoll {
+    type: 'attendance';
+    attended: string[];
+}
+
+type PollValidation = ShortAnswerPoll | MultipleChoicePoll | Attendance;
