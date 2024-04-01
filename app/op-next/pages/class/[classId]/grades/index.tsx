@@ -76,7 +76,6 @@ export default function ClassGrades() {
     const pollsRef = collection(classRef, "polls");
     try {
       const snapshot = await getDocs(pollsRef);
-
       let completedPolls: PollAndId[] = [];
       snapshot.forEach((doc) => {
         const pid = doc.id;
@@ -169,6 +168,8 @@ export default function ClassGrades() {
       extractAndCheckAnswers();
     }
   }, [openpolls]); // Only run the effect when openpolls changes
+
+  console.log(studentAnswers)
 
   return (
     <div>
@@ -333,7 +334,7 @@ export default function ClassGrades() {
                               </h2>
                             </Link>
                             <Typography variant="body2" className={s.correctAnswer}>
-                              Correct answer is {answer.answers.join(", ")}
+                              Correct answer is
                             </Typography>
                           </div>
                         </div>
