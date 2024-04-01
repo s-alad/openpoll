@@ -57,8 +57,13 @@ export default function gradebook() {
 
             snapshot.forEach((doc) => {
                 const data = doc.data();
-                const studentItem: Student = { name: data.name, email: data.email, grade: 0.0 };
-                students[doc.id] = studentItem;
+                
+                // Check if entry is not empty
+                if (Object.keys(data).length != 0) {
+                    const studentItem: Student = { name: data.name, email: data.email, grade: 0.0 };
+                    students[doc.id] = studentItem;
+                    console.log(data);
+                }
             });
 
             setStudents(students);
