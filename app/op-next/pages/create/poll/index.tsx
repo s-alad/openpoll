@@ -55,16 +55,16 @@ export default function CreatePoll() {
 			console.error("Error adding document: ", e);
 		}
 
-	  }
+	}
 
-	  const { register: registerattendance, handleSubmit: handleSubmitattendance, control: control3, formState: { errors: errors3 } } = 
-	useForm<createattendanceformdata>({
-		resolver: zodResolver(createAttendanceSchema),
-		defaultValues: {
-			date: new Date(),
-			attended: []
-		}
-	});
+	const { register: registerattendance, handleSubmit: handleSubmitattendance, control: control3, formState: { errors: errors3 } } =
+		useForm<createattendanceformdata>({
+			resolver: zodResolver(createAttendanceSchema),
+			defaultValues: {
+				date: new Date(),
+				attended: []
+			}
+		});
 
 
 	return (
@@ -75,9 +75,9 @@ export default function CreatePoll() {
 					<div className={s.selector}>
 						{
 							["Multiple Choice", "Short Answer", "Ordering", "Attendance"].map(type => (
-								<div 
-									key={type} 
-									onClick={() => setpolltype(type as PollTypes)} 
+								<div
+									key={type}
+									onClick={() => setpolltype(type as PollTypes)}
 									className={polltype === type ? s.selected : ""}
 								>
 									{type}
@@ -96,11 +96,11 @@ export default function CreatePoll() {
 					}
 					{
 						polltype === "Attendance" && <div>
-						<h2>Create Attendance Poll for Today</h2>
-						<button onClick={() => createAttendance({date: new Date(), attended: []})} className={s.submitButton}>
-						  Create Attendance Poll
-						</button>
-					  </div>
+							<h2>Create Attendance Poll for Today</h2>
+							<button onClick={() => createAttendance({ date: new Date(), attended: [] })} className={s.submitButton}>
+								Create Attendance Poll
+							</button>
+						</div>
 					}
 				</div>
 			</main>
