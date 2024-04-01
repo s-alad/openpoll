@@ -6,6 +6,7 @@ import React, { useState, FormEvent, useEffect } from 'react';
 import { push, ref, set } from 'firebase/database';
 import CreateShortAnswerPoll from '@/forms/create-short-poll/create-short-poll';
 import CreateMultipleChoicePoll from '@/forms/create-mc-poll/create-mc-poll';
+import CreateOrderingPoll from '@/forms/create-ordering-poll/create-ordering-poll';
 
 export default function CreatePoll() {
 
@@ -76,6 +77,9 @@ export default function CreatePoll() {
 					}
 					{
 						polltype === "Short Answer" && <CreateShortAnswerPoll />
+					}
+					{
+						polltype === "Ordering" && <CreateOrderingPoll />
 					}
 				</div>
 			</main>

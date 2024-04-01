@@ -98,7 +98,7 @@ export default function CreateMultipleChoicePoll() {
                 {
                     fields.map((field, index) => {
                         return (
-                            <div className={s.option}>
+                            <div className={s.option} key={index}>
                                 <div className={`${s.letter} ${colorselection[field.letter]}`}>{field.letter}</div>
                                 <Input<CreateMultipleChoicePollFormData>
                                     type={"text"}
@@ -106,7 +106,6 @@ export default function CreateMultipleChoicePoll() {
                                     register={register}
                                     name={`options.${index}.option` as const}
                                     error={errors.options?.[index]?.option}
-                                    index={index}
                                 />
                                 {
                                     index === fields.length - 1 &&

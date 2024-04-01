@@ -52,7 +52,20 @@ export type CreateMultipleChoicePollFormData = {
 
 // create short answer poll form ----------------------------------------------
 
-export type CreateShortAnswerFormData = {
+export type CreateShortAnswerPollFormData = {
     question: string;
-    answers: string;
+    answer: string;
+};
+
+// create ordering poll form
+
+export type CreateOrderingPollFormData = {
+    question: string;
+    options: {
+        number: number;
+        option: string;
+    }[];
+    answer: {
+        [index: number]: [choice: number]
+    }
 };
