@@ -133,17 +133,21 @@ export default function gradebook() {
             {authorized ? (
                 <div>
                     <h1>Gradebook for Class: {classId}</h1>
-                    <div>
+                    <table>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Grade</th>
+                        </tr>
                         {Object.keys(students).map((studentId) => (
-                            <div key={studentId}>
-                                {students[studentId].email} {students[studentId].grade}
-                            </div>
+                            <tr key={studentId}>
+                                <th>{students[studentId].name}</th>
+                                <th>{students[studentId].email}</th>
+                                <th>{students[studentId].grade}</th>
+                            </tr>
                         ))}
-    
-                        {polls.map((poll, index) => (
-                            <div key={index}>{poll.question}: {poll.answers}</div>
-                        ))}
-                    </div>
+
+                    </table>
                 </div>
             ) : (
                 <h1>Unauthorized to view this gradebook</h1>
