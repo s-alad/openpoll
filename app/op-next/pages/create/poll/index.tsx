@@ -11,6 +11,7 @@ import { createPollSchema, createShortAnswerSchema, createAttendanceSchema } fro
 import { push, ref, set } from 'firebase/database';
 import CreateShortAnswerPoll from '@/forms/create-short-poll/create-short-poll';
 import CreateMultipleChoicePoll from '@/forms/create-mc-poll/create-mc-poll';
+import CreateOrderingPoll from '@/forms/create-ordering-poll/create-ordering-poll';
 
 export default function CreatePoll() {
 
@@ -118,7 +119,33 @@ export default function CreatePoll() {
 		<>
 			<main className={s.createpoll}>
 				<div className={s.create}>
+<<<<<<< HEAD
 					
+=======
+
+					<div className={s.selector}>
+						{
+							["Multiple Choice", "Short Answer", "Ordering"].map(type => (
+								<div 
+									key={type} 
+									onClick={() => setpolltype(type as PollTypes)} 
+									className={polltype === type ? s.selected : ""}
+								>
+									{type}
+								</div>
+							))
+						}
+					</div>
+					{
+						polltype === "Multiple Choice" && <CreateMultipleChoicePoll />
+					}
+					{
+						polltype === "Short Answer" && <CreateShortAnswerPoll />
+					}
+					{
+						polltype === "Ordering" && <CreateOrderingPoll />
+					}
+>>>>>>> a7d8adb (start ordering poll)
 				</div>
 			</main>
 		</>

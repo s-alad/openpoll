@@ -112,8 +112,24 @@ export type defaultformfield = {
 
 // create short answer poll form ----------------------------------------------
 
-export type CreateShortAnswerFormData = {
+export type CreateShortAnswerPollFormData = {
     question: string;
-    answers: string;
+    answer: string;
 };
+<<<<<<< HEAD
 >>>>>>> c032a60 (RESTRUCTURE POLLS AND INPUT AND SCHEMA AND A LOT)
+=======
+
+// create ordering poll form
+
+export type CreateOrderingPollFormData = {
+    question: string;
+    options: {
+        number: number;
+        option: string;
+    }[];
+    answer: {
+        [index: number]: [choice: number]
+    }
+};
+>>>>>>> a7d8adb (start ordering poll)

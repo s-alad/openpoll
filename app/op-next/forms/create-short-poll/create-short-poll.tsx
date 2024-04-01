@@ -2,9 +2,9 @@ import React from "react";
 import s from "./create-short-poll.module.scss";
 import Input from "@/ui/input/input";
 import { useFieldArray, useForm } from "react-hook-form";
-import { CreateMultipleChoicePollFormData, CreateShortAnswerFormData } from "@/validation/form";
+import { CreateMultipleChoicePollFormData, CreateShortAnswerPollFormData } from "@/validation/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createMultipleChoicePollData, createShortAnswerSchema } from "@/validation/schema";
+import { createMultipleChoicePollData, createShortAnswerPollSchema } from "@/validation/schema";
 import Button from "@/ui/button/button";
 import { useAuth } from "@/context/authcontext";
 import { addDoc, collection, doc } from "firebase/firestore";
@@ -25,13 +25,13 @@ export default function CreateShortAnswerPoll() {
         control,
         formState: { errors },
         setError,
-    } = useForm<CreateShortAnswerFormData>(
+    } = useForm<CreateShortAnswerPollFormData>(
         {
-            resolver: zodResolver(createShortAnswerSchema),
+            resolver: zodResolver(createShortAnswerPollSchema),
         }
     );
 
-    const onSubmit = async (data: CreateShortAnswerFormData) => {
+    const onSubmit = async (data: CreateShortAnswerPollFormData) => {
         console.log("SUCCESS", data);
 
         console.log('form data submitted:', data);
@@ -42,7 +42,7 @@ export default function CreateShortAnswerPoll() {
 			type: "short",
 			classid: classid,
 			question: data.question,
-			answers: data.answers,
+			answers: data.answer,
 			created: new Date(),
 			creator: uid,
 			active: false,
@@ -68,7 +68,7 @@ export default function CreateShortAnswerPoll() {
     return (
         <form className={s.form} onSubmit={handleSubmit(onSubmit)}>
             
-            <Input<CreateShortAnswerFormData>
+            <Input<CreateShortAnswerPollFormData>
                 type="text"
                 label="Question"
                 name="question"
@@ -77,13 +77,13 @@ export default function CreateShortAnswerPoll() {
                 error={errors.question}
             />
 
-            <Input<CreateShortAnswerFormData>
+            <Input<CreateShortAnswerPollFormData>
                 type="text"
                 label="Answer"
-                name="answers"
+                name="answer"
                 placeholder="Your Answer"
                 register={register}
-                error={errors.answers as any}
+                error={errors.answer as any}
             />
             <Spacer />
             <Button type="submit" text="Submit" />
