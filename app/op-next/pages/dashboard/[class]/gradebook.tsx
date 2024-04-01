@@ -6,6 +6,7 @@ import { doc, collection, getDocs, getDoc } from 'firebase/firestore';
 import { db, auth } from '@/firebase/firebaseconfig';
 import { useAuth } from '@/context/authcontext';
 import s from "./gradebook.module.scss";
+import { onAuthStateChanged } from 'firebase/auth';
 
 interface Student {
     name: string;
@@ -105,29 +106,38 @@ export default function gradebook() {
                         const uids = Object.keys(correctResponses);
                         
                         uids.forEach((uid) => {
-                            if (tempStudents[uid].grade) {
+                            if (tempStudents[uid]) {
                                 tempStudents[uid].grade += 1;
                             }
                         })
                     }
                 });
             });
+            
             setTotalCorrectAnswers(numCorrectAnswers);
             setStudents(tempStudents);
         } catch (error) {
             console.log("Error grading");
         }
     };
-
-
+    
     useEffect(() => {
-        if (classId && user) {
-            checkAuthorization();
-            grabStudents();
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+          if (user && classId) {
             getDonePolls();
-            grade();
+            grabStudents();
+            setAuthorized(true);
+          }
+        });
+    
+        return () => unsubscribe();
+      }, [classId]);
+    
+      useEffect(() => {
+        if (polls.length > 0) {
+          grade();
         }
-    }, [classId, user, polls, students]);
+      }, [polls]);
 
     return (
         <div className={s.gradebook}>

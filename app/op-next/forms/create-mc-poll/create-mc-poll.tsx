@@ -37,7 +37,7 @@ export default function CreateMultipleChoicePoll() {
             resolver: zodResolver(createMultipleChoicePollData),
             defaultValues: {
                 options: initalpolls,
-                answers: ["a"]
+                answers: ["A"]
             }
         }
     );
