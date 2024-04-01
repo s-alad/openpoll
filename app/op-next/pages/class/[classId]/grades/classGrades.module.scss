@@ -1,64 +1,110 @@
-.grades {
+// .grades {
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   width: 100%;
+//
+//   .container {
+//     display: flex;
+//     justify-content: space-between;
+//   }
+// }
+
+.gradebookContainer {
+  padding: 0px 35px;
   display: flex;
   flex-direction: column;
-  padding-top: 50px;
-  align-items: center;
-  width: 100%;
-  
-  .question {
-    font-size: 28px;
-    font-weight: 600;
-    color: black;
-    text-align: center;
+
+  .topSection {
+    display: flex;
+    justify-content: space-between; // This will create space between the student info and average scores
+    margin-bottom: 20px; // Adjust this value as needed to create space before the questions section
   }
 
-  .gradeSummary {
-    position: absolute;
-    top: 110px;
-    right: 20px;
-    padding: 10px;
-    
-    word-spacing: 0.5em;
+  .studentInfo {
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    width: 50%;
+  }
+
+  .studentDetails {
+    margin: 3px 0;
   
-    line-height: 1.6;
+  }
+
+  .studentStats {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    margin-left: 20px;
   
-    span {
-      margin-right: 1px; // Adjust as needed
+    .statItem {
+      display: flex;
+      align-items: center;
+    }
+  
+    .statText {
+      margin-left: 10px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+  
+    .image {
+      flex-shrink: 0; 
+      display: inline-block;
+      margin-right: 10px;
+      margin-left: 30px;
+    }
+  }
+  
+
+  .averageScores {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px; 
+    width: 15%;
+    h2 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    .score {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      .scoreCategory {
+        display: flex;
+        justify-content: space-between;
+        width: 100%; 
+        margin-bottom: 4px;
+      }
+      .progressBarContainer {
+        width: 100%;
+        background-color: #e0e0e0;
+        height: 20px;
+        border-radius: 10px; 
+        .progressBar {
+          height: 20px; 
+          border-radius: 10px;
+        }
+      }
+    }
+    .scoreValue {
+      font-weight: bold;
     }
   }
 
-  .answer {
+  .questionsList {
+    .question {
+      display: flex;
       padding: 10px;
-      margin: 5px 0;
       border: 1px solid black;
-      position: relative;
-    
-      &.correct {
-        background-color: #d4edda;
-        color: #155724;
-      }
-    
-      &.incorrect {
-        background-color: #f8d7da;
-        color: #721c24;
-      }
-    
-      &.selected {
-        border-style: solid;
-      }
-    }
-    
-    .answer-indicator {
-      position: absolute;
-      right: 10px;
-      top: 10px;
-    
-      &.correct {
-        color: green;
-      }
-    
-      &.incorrect {
-        color: red;
-      }
+      border-radius: 5px;
+      margin-bottom: 5px;
+      align-items: center;
     }
   }
+}

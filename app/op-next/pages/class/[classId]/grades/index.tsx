@@ -3,10 +3,12 @@ import Poll from "@/models/poll";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, doc, getDocs } from "firebase/firestore";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { auth, db } from "../../../../firebase/firebaseconfig";
 import s from "./classGrades.module.scss";
 import Link from "next/link";
+import Image from "next/image";
+import { AppBar, Tabs, Tab, Box, Typography } from '@mui/material';
 
 interface PollAndId {
   poll: Poll;
@@ -20,7 +22,7 @@ interface PollAndAnswer {
     letter: string;
     option: string;
   }[];
-  responses: string;
+  responses: string[];
   answers: string[];
   isCorrect: boolean;
 }
@@ -39,19 +41,47 @@ export default function ClassGrades() {
   const [totalQuestions, setTotalQuestions] = useState(0); // Total number of questions in the poll
   const [totalGrade, setTotalGrade] = useState(0); // Total grade of the student
 
+  // TODO: Move Tabs to a separate component
+  const [value, setValue] = React.useState(0);
+
+  // Handler for changing tabs
+  const handleChange = (event: any, newValue:any) => {
+    setValue(newValue);
+  };
+
+  function TabPanel(props: any) {
+    const { children, value, index, ...other } = props;
+
+    return (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`simple-tabpanel-${index}`}
+        aria-labelledby={`simple-tab-${index}`}
+        {...other}
+      >
+        {value === index && (
+          <Box sx={{ p: 3 }}>
+            <Typography>{children}</Typography>
+          </Box>
+        )}
+      </div>
+    );
+  }
+
   async function getPolls() {
-    setLoading(true); 
+    setLoading(true);
     const classRef = doc(db, "classes", classid as string);
     const pollsRef = collection(classRef, "polls");
     try {
       const snapshot = await getDocs(pollsRef);
-      
+
       let completedPolls: PollAndId[] = [];
       snapshot.forEach((doc) => {
         const pid = doc.id;
         const data = doc.data() as Poll;
         // Check if the poll is marked as done before adding it to the array
-        
+
         if (data.done) {
           completedPolls.push({ poll: data, id: pid });
         }
@@ -60,9 +90,9 @@ export default function ClassGrades() {
     } catch (e) {
       console.error("Error getting documents: ", e);
     }
-  
+
     setLoading(false);
-  }  
+  }
 
   async function extractAndCheckAnswers() {
     console.log("Extracting and checking answers");
@@ -75,62 +105,54 @@ export default function ClassGrades() {
       const uid = currentUser.uid;
 
       let correctCount = 0;
-  
-      const results: PollAndAnswer[] = openpolls.map(pollAndId => {
+
+      const results: PollAndAnswer[] = openpolls.map((pollAndId) => {
         const { poll, id: pollId } = pollAndId;
         const correctAnswersSet = new Set(poll.answers);
 
-  
         // Initialize default user response info
         let userResponseInfo: PollAndAnswer = {
           question: poll.question,
           pollId,
-          responses: "",
+          responses: [],
           answers: poll.answers,
           isCorrect: false,
           options: poll.options,
         };
-  
+
         // Find the user's response among the poll responses
         const userResponseEntry = Object.entries(poll.responses || {}).find(
           ([option, userResponses]) => {
             const responses = userResponses as { [uid: string]: string };
             return responses[uid];
-          }
+          },
         );
-        
-  
+
         if (userResponseEntry) {
           const [responseOption] = userResponseEntry;
-          userResponseInfo.responses = responseOption; // The option the user chose
-          userResponseInfo.isCorrect = correctAnswersSet.has(responseOption); 
+          userResponseInfo.responses = [responseOption]; // The option the user chose
+          userResponseInfo.isCorrect = correctAnswersSet.has(responseOption);
           if (userResponseInfo.isCorrect) {
             correctCount++; // Increment local correct count
           }
         }
-  
+
         return userResponseInfo;
       });
-  
+
       setStudentAnswers(results); // Save the results to the state
-      setNumCorrect(correctCount); 
+      setNumCorrect(correctCount);
       setTotalQuestions(openpolls.length);
-      setTotalGrade((correctCount / openpolls.length) * 100);
+      setTotalGrade(Math.round((correctCount / openpolls.length) * 100 * 10) / 10);
     } catch (e) {
       console.error("Error while checking answers: ", e);
     }
   }
 
-  console.log(numCorrect, "numCorrect")
-  console.log(totalQuestions, "totalQuestions")
-  console.log(totalGrade, "totalGrade")
-  console.log(studentAnswers, "studentAnswers")
-
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user && classid) {
         getPolls();
-        
       }
     });
 
@@ -143,47 +165,139 @@ export default function ClassGrades() {
     }
   }, [openpolls]); // Only run the effect when openpolls changes
 
-
   return (
-    <div className={s.grades}>
-      {studentAnswers.length > 0 ? (
+    <div>
+      {studentAnswers.length > 0 && user ? (
         <>
-          <div className={s.gradeSummary}>
-            <span>Total Correct: {numCorrect} </span>
-            <span>Total Questions: {totalQuestions} </span>
-            <span>Grade: {totalGrade} </span>
-          </div>
-          <div className={s.classGrades}>
-            <h1 className={s.question}>Class Grades</h1>
-            {studentAnswers.map((poll, index) => (
-              <div key={index}>
-                <Link
-                      href={{
-                        pathname: `/class/${classid}/grades/${poll.pollId}`,
-                        query: { id: classid },
-                      }}> 
-                      {poll.question}
-                </Link>
-                <h2>Question: {poll.question}</h2>
-                {poll.options.map((option, index) => {
-                  const isUserResponse = poll.responses === option.letter;
-                  const isCorrect = poll.answers.includes(option.letter);
-                  return (
-                    <div key={index}
-                        className={`${s.answer} ${isUserResponse ? isCorrect ? s.correct : s.incorrect : isCorrect ? s.correct : ''}`}>
-                      <span>{option.letter}: {option.option}</span>
-                      {isUserResponse && <span className={s.answerIndicator}></span>}
-                    </div>
-                  );
-                })}
+          <div className={s.gradebookContainer}>
+            <h1
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              Gradebook
+            </h1>
+            <div className={s.topSection}>
+              <div className={s.studentInfo}>
+                <div className={s.studentDetails}>
+                  <h3>Name: {user.displayName}</h3>
+                  <p>ID: {user.uid}</p>
+                  <p>Email: {user.email}</p>
+                </div>
               </div>
-            ))}
+              <div className={s.averageScores}>
+                <h3>Average Scores</h3>
+                <div className={s.score}>
+                  <div className={s.scoreCategory}>
+                    <span>Total</span>
+                    <span className={s.scoreValue}>{totalGrade}/100</span>
+                  </div>
+                  <div className={s.progressBarContainer}>
+                    <div className={s.progressBar} style={{ width: `${totalGrade}%`, backgroundColor: 'blue' }}></div>
+                  </div>
+                </div>
+                <div className={s.score}>
+                  <div className={s.scoreCategory}>
+                    <span>Participation</span>
+                    <span className={s.scoreValue}>100/100</span>
+                  </div>
+                  <div className={s.progressBarContainer}>
+                    <div className={s.progressBar} style={{ width: '100%', backgroundColor: 'orange' }}></div>
+                  </div>
+                </div>
+                <div className={s.score}>
+                  <div className={s.scoreCategory}>
+                    <span>Correctness</span>
+                    <span className={s.scoreValue}>{numCorrect}/{totalQuestions}</span>
+                  </div>
+                  <div className={s.progressBarContainer}>
+                    <div className={s.progressBar} style={{ width: `${(numCorrect / totalQuestions) * 100}%`, backgroundColor: 'purple' }}></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* Section for stats and images */}
+            <div className={s.studentStats}>
+              <div className={s.statItem}>
+                <Image
+                  src="/person.svg"
+                  alt="person"
+                  width={20}
+                  height={20}
+                  className={s.image}
+                />
+                <h2 className={s.statText}>16/18 Classes Attended</h2> {/* Placeholder */}
+              </div>
+              <div className={s.statItem}>
+                <Image
+                  src="/chat_box.svg"
+                  alt="chat box"
+                  width={24}
+                  height={24}
+                  className={s.image}
+                />
+                <h2 className={s.statText}>/{totalQuestions} Questions Answered</h2>
+              </div>
+              <div className={s.statItem}>
+                <Image
+                  src="/checkmark.svg"
+                  alt="check"
+                  width={20}
+                  height={20}
+                  className={s.image}
+                />
+                <h2 className={s.statText}>{numCorrect} Correct</h2>
+              </div>
+            </div>
+            {/* Question Section */}
+
+            <Box sx={{ width: '100%' }}>
+              <AppBar position="static" color="default" sx={{ background: 'transparent', boxShadow: 'none' }}>
+                <Tabs 
+                  value={value} 
+                  onChange={handleChange} 
+                  TabIndicatorProps={{
+                    style: {
+                      height: '4px',
+                      backgroundColor: 'red',
+                      color: 'red '
+                    },
+                  }}
+                  sx={{
+                    '.Mui-selected': {
+                      color: 'red',
+                    },
+                  }}
+                >
+                  <Tab label="Questions" />
+                  <Tab label="Attendance" />
+                </Tabs>
+              </AppBar>
+              <TabPanel value={value} index={0}>
+                <div className={s.questionsList}>
+                  {studentAnswers.map((answer, index) => (
+                    <Box key={index} className={s.question}>
+                      <Box sx={{ flexGrow: 1 }}>
+                        <Link href={`/class/${classid}/grades/${answer.pollId}`} passHref>
+                          <Typography variant="h6">{answer.question}</Typography>
+                        </Link>
+                        <Typography variant="body2">Correct answer is {answer.answers.join(', ')}</Typography>
+                      </Box>
+                    </Box>
+                  ))}
+                </div>
+              </TabPanel>
+              <TabPanel value={value} index={1}>
+                Placeholder text for Attendance
+              </TabPanel>
+            </Box>
           </div>
         </>
       ) : (
         <h1>No grades</h1>
       )}
     </div>
-  );  
-  
+  );
 }
