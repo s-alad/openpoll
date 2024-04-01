@@ -30,6 +30,19 @@ interface LivePoll {
         }
     }
     question: string;
+    id: string;
+    active: boolean;
+    type: "mc" | "short" | "attendance";
+    options: {
+        letter: string;
+        option: string;
+    }[],
+    responses?: {
+        [letter: string]: {
+            [studentid: string]: [email: string];
+        }
+    }
+    question: string;
 }
 
 export default function Class() {
@@ -39,8 +52,16 @@ export default function Class() {
     const classid = router.query.classId;
     console.log(classid, 'classid')
 
+    // get the class id from the url
+    const router = useRouter();
+    const classid = router.query.classId;
+    console.log(classid, 'classid')
+
+    const { user } = useAuth();
     const { user } = useAuth();
 
+    const [activePolls, setActivePolls] = useState<LivePoll[]>([]);
+    const [submitted, setSubmitted] = useState<boolean>(false);
     const [activePolls, setActivePolls] = useState<LivePoll[]>([]);
     const [submitted, setSubmitted] = useState<boolean>(false);
 
@@ -86,8 +107,8 @@ export default function Class() {
       setActivePolls(activePolls);
     });
 
-    return () => unsubscribe();
-  }, [classid]);
+        return () => unsubscribe();
+    }, [classid]);
 
   async function submitPoll(data: any, pollId: string) {
     console.log(data);
@@ -218,6 +239,53 @@ export default function Class() {
                         }
                     </div> : <div className={s.openpolls}>no active polls</div>
             }
+                                                            <div className={s.content}>{option.option}</div>
+                                                        </div>
+                                                    )
+                                                })
+                                            }
+                                        </div>
+
+                                        <button type="submit">Submit</button>
+                                    </form>
+                                )
+
+                                if (poll.type === "short") return (
+                                    <form key={poll.id} className={s.poll} onSubmit={
+                                        handleSubmit((data) => submitShortPoll(data, poll.id))
+                                    }>
+                                        <h1>{poll.question}</h1>
+
+                                        <input type="text" {...control.register("answer")} />
+
+                                        <button type="submit">Submit</button>
+                                    </form>
+                                )
+
+                                if (poll.type === "attendance") return (
+                                    <form key={poll.id} className={s.poll} onSubmit={handleSubmit((data) => submitAttendancePoll(data, poll.id))}>
+                                      <h1>{poll.question}</h1>
+                                      <div className={s.inputGroup}>
+                                        <input
+                                          type="text"
+                                          {...register("attendanceCode", {
+                                            required: "Code is required",
+                                            validate: (value) => value === poll.id.slice(-4) || "Incorrect code"
+                                          })}
+                                          placeholder="Enter Attendance Code"
+                                          className={s.attendanceInput}
+                                        />
+                                        {errors.attendanceCode && <p className={s.errorMessage}>{"wrong code"}</p>}
+                                      </div>
+                                      <button type="submit" className={s.attendanceButton}>
+                                        I'm Here
+                                      </button>
+                                    </form>
+                                  );
+                            })
+                        }
+                    </div> : <div className={s.openpolls}>no active polls</div>
+            }
         </div>
       ) : (
         <div className={s.openpolls}>no active polls</div>
@@ -225,4 +293,3 @@ export default function Class() {
     </div>
   );
 }
-
