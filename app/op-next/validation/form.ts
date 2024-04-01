@@ -1,8 +1,21 @@
-import { FieldError, UseFormRegister } from "react-hook-form";
-import { z } from "zod";
-import { createPollSchema } from "./schema";
+import { FieldError, FieldValues, Path, UseFormRegister } from "react-hook-form";
 
-export type createclassformdata = {
+
+export type DefaultFormField = {
+    type: string;
+    error: FieldError | undefined;
+    
+    index?: number;
+    placeholder?: string;
+    disabled?: boolean;
+    defaultvalue?: string | undefined;
+    label?: string;
+    inputstyle?: string;
+};
+
+// create class form ----------------------------------------------------------
+
+export type CreateClassFormData = {
     classname: string;
     description: string;
 };
@@ -12,28 +25,23 @@ export type ValidCreateClassFieldNames =
     | "description"
 
 
-export interface createclassformfield extends defaultformfield {
-    register: UseFormRegister<createclassformdata>;
+export interface CreateClassFormField extends DefaultFormField {
+    register: UseFormRegister<CreateClassFormData>;
     name: ValidCreateClassFieldNames;
 };
 
+// polls -----------------------------------------------------------------------
 
-export type createshortanswerformdata = {
-    question: string;
-    answers?: string;
-};
+// Generic interface for form fields
+export interface GenericFormField<T extends FieldValues> extends DefaultFormField{
+    register: UseFormRegister<T>;
+    name: Path<T>;
+    customregistername?: Path<string>;
+}
 
-export type ValidCreateShortAnswerFieldNames =
-    | "question"
-    | "answers"
+// create multiple choice poll form -------------------------------------------
 
-export interface createshortanswerformfield extends defaultformfield {
-    register: UseFormRegister<createshortanswerformdata>;
-    name: ValidCreateShortAnswerFieldNames;
-};
-
-
-export type createpollformdata = {
+export type CreateMultipleChoicePollFormData = {
     question: string;
     options: {
         letter: string;
@@ -42,23 +50,32 @@ export type createpollformdata = {
     answers: string[];
 };
 
-export type ValidCreatePollFieldNames =
-    | "question"
-    | "options"
-    | "answers"
+// create short answer poll form ----------------------------------------------
 
-export interface createpollformfield extends defaultformfield {
-    register: UseFormRegister<createpollformdata>;
-    name: ValidCreatePollFieldNames;
+export type CreateShortAnswerPollFormData = {
+    question: string;
+    answer: string;
 };
 
-export type defaultformfield = {
-    type: string;
-    placeholder?: string;
-    error: FieldError | undefined;
-    valueAsNumber?: boolean;
-    disabled?: boolean;
-    defaultvalue?: string | undefined;
-    description?: string;
-    options?: string[] | number[];
+// create ordering poll form
+
+export type CreateOrderingPollFormData = {
+    question: string;
+    options: {
+        letter: string;
+        option: string;
+    }[];
+    answer: {
+        [key: string]: {
+            letter: string;
+            option: string;
+        };
+    }
+};
+
+// create attendance poll form
+
+export type CreateAttendancePollFormData = {
+    date: Date;
+    attended: string[];
 };

@@ -8,12 +8,12 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 import { useRouter } from "next/router";
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import React, { useState, FormEvent } from 'react';
-import ClassInput from "@/components/class-input/class-input";
 import { useForm } from "react-hook-form";
-import { createclassformdata } from "@/validation/form";
+import { CreateClassFormData } from "@/validation/form";
 import { createClassSchema } from "@/validation/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Loader from "@/components/loader/loader";
+import Input from "@/ui/input/input";
 
 
 export default function CreateClass() {
@@ -21,7 +21,7 @@ export default function CreateClass() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
 
-    async function createclass(data: createclassformdata) {
+    async function createclass(data: CreateClassFormData) {
         setLoading(true);
         console.log('form data submitted:', data);
 
@@ -56,7 +56,7 @@ export default function CreateClass() {
         setLoading(false);
     }
 
-    const { register, handleSubmit, setError, formState: { errors } } = useForm<createclassformdata>({
+    const { register, handleSubmit, setError, formState: { errors } } = useForm<CreateClassFormData>({
         resolver: zodResolver(createClassSchema)
     });
 
@@ -68,15 +68,17 @@ export default function CreateClass() {
                         <div className={s.create}>
                             <div className={`${s.trap} ${s.yellow}`}></div>
                             <form onSubmit={handleSubmit(createclass)}>
-                                <ClassInput
+                                <Input<CreateClassFormData>
+                                    label="Class Name"
                                     type="text"
                                     name="classname"
                                     register={register}
                                     error={errors.classname}
                                 />
 
-                                <ClassInput
-                                    type="text"
+                                <Input<CreateClassFormData>
+                                    label="Description"
+                                    type="textarea"
                                     name="description"
                                     register={register}
                                     error={errors.description}

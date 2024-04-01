@@ -1,0 +1,21 @@
+.gradebook {
+    width: 100%;
+    text-align: center;
+
+    .gradebookTable {
+        margin:auto;
+        width: 75%;
+        border: 1px solid black;
+        border-collapse: collapse;
+
+        tr:first-child {
+            background-color: #4036ee;
+            color: white;
+        }
+
+        tr:nth-child(odd):not(:first-child) {
+            /* Apply styles to every odd row */
+            background-color: lightgray; /* Change to your desired color */
+        }
+    }
+}

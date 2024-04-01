@@ -14,7 +14,7 @@ import s from './class.module.scss';
 interface LivePoll {
     id: string;
     active: boolean;
-    type: "mc" | "short";
+    type: "mc" | "short" | "attendance";
     options: {
         letter: string;
         option: string;
@@ -37,7 +37,7 @@ export default function Class() {
     const { user } = useAuth();
 
     const [activePolls, setActivePolls] = useState<LivePoll[]>([]);
-
+    const [submitted, setSubmitted] = useState<boolean>(false);
 
     useEffect(() => {
         const pollsRef = query(ref(rdb, `classes/${classid}/polls`), orderByChild('active'), equalTo(true));
@@ -85,7 +85,13 @@ export default function Class() {
         await update(answerRef, { [user!.uid]: data.answer });
     }
 
-    const { handleSubmit, control, formState: { errors } } = useForm({});
+    async function submitAttendancePoll(data: any, pollId: string) {
+
+        const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses`);
+        await update(answerRef, { [user!.uid]: user!.email });
+    }
+
+    const { handleSubmit, control, register,  formState: { errors } } = useForm({});
 
     return (
         <div className={s.class}>
@@ -152,22 +158,32 @@ export default function Class() {
                                     }>
                                         <h1>{poll.question}</h1>
 
-                                        <div className={s.options}>
-                                            <Controller
-                                                control={control}
-                                                name="answer"
-                                                defaultValue={
-                                                    poll.responses && user!.uid in poll.responses
-                                                }
-                                                render={({ field }) => (
-                                                    <input {...field} />
-                                                )}
-                                            />
-                                        </div>
+                                        <input type="text" {...control.register("answer")} />
 
                                         <button type="submit">Submit</button>
                                     </form>
                                 )
+
+                                if (poll.type === "attendance") return (
+                                    <form key={poll.id} className={s.poll} onSubmit={handleSubmit((data) => submitAttendancePoll(data, poll.id))}>
+                                      <h1>{poll.question}</h1>
+                                      <div className={s.inputGroup}>
+                                        <input
+                                          type="text"
+                                          {...register("attendanceCode", {
+                                            required: "Code is required",
+                                            validate: (value) => value === poll.id.slice(-4) || "Incorrect code"
+                                          })}
+                                          placeholder="Enter Attendance Code"
+                                          className={s.attendanceInput}
+                                        />
+                                        {errors.attendanceCode && <p className={s.errorMessage}>{"wrong code"}</p>}
+                                      </div>
+                                      <button type="submit" className={s.attendanceButton}>
+                                        I'm Here
+                                      </button>
+                                    </form>
+                                  );
                             })
                         }
                     </div> : <div className={s.openpolls}>no active polls</div>
