@@ -1,5 +1,5 @@
 import { z, ZodEnum, ZodType } from "zod"; // Add new import
-import { createattendanceformdata, CreateClassFormData, CreateMultipleChoicePollFormData, CreateOrderingPollFormData, CreateShortAnswerPollFormData } from "./form";
+import { CreateAttendancePollFormData, CreateClassFormData, CreateMultipleChoicePollFormData, CreateOrderingPollFormData, CreateShortAnswerPollFormData } from "./form";
 
 export const createClassSchema: ZodType<CreateClassFormData> = z
     .object({
@@ -25,7 +25,7 @@ export const createShortAnswerPollSchema: ZodType<CreateShortAnswerPollFormData>
         answer: z.string()
     })
 
-export const createAttendanceSchema: ZodType<createattendanceformdata> = z
+export const createAttendanceSchema: ZodType<CreateAttendancePollFormData> = z
 .object({
     date: z.date(),
     attended: z.array(z.string()).min(1, "Poll must have at least 1 answer")

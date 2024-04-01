@@ -30,22 +30,6 @@ export interface CreateClassFormField extends DefaultFormField {
     name: ValidCreateClassFieldNames;
 };
 
-
-export type createattendanceformdata = {
-    date: Date;
-    attended: string[];
-};
-
-export type ValidCreateAttendanceFieldNames =
-    | "date"
-    | "attended"
-
-export interface createattendanceformfield extends DefaultFormField {
-    register: UseFormRegister<createattendanceformdata>;
-    name: ValidCreateAttendanceFieldNames;
-};
-
-
 // polls -----------------------------------------------------------------------
 
 // Generic interface for form fields
@@ -87,4 +71,11 @@ export type CreateOrderingPollFormData = {
             option: string;
         };
     }
+};
+
+// create attendance poll form
+
+export type CreateAttendancePollFormData = {
+    date: Date;
+    attended: string[];
 };

@@ -7,7 +7,7 @@ import { push, ref, set } from 'firebase/database';
 import CreateShortAnswerPoll from '@/forms/create-short-poll/create-short-poll';
 import CreateMultipleChoicePoll from '@/forms/create-mc-poll/create-mc-poll';
 import CreateOrderingPoll from '@/forms/create-ordering-poll/create-ordering-poll';
-import { createattendanceformdata } from '@/validation/form';
+import { CreateAttendancePollFormData } from '@/validation/form';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createAttendanceSchema } from '@/validation/schema';
@@ -22,7 +22,7 @@ export default function CreatePoll() {
 
 	// attendance ============================================
 
-	async function createAttendance(data: createattendanceformdata) {
+	async function createAttendance(data: CreateAttendancePollFormData) {
 		console.log('form data submitted:', data);
 
 		const user = auth.currentUser;
@@ -58,7 +58,7 @@ export default function CreatePoll() {
 	}
 
 	const { register: registerattendance, handleSubmit: handleSubmitattendance, control: control3, formState: { errors: errors3 } } =
-		useForm<createattendanceformdata>({
+		useForm<CreateAttendancePollFormData>({
 			resolver: zodResolver(createAttendanceSchema),
 			defaultValues: {
 				date: new Date(),
