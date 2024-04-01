@@ -1,0 +1,77 @@
+.form {
+    width: 100%;
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    gap: 24px;
+
+    .options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+
+        .option {
+            display: flex;
+            align-items: center;
+            width: 100%;
+
+            .letter, .delete {
+                height: 40px;
+                width: 40px;
+                border-radius: 4px;
+                margin-right: 20px;
+                font-weight: 600;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .delete {
+                cursor: pointer;
+                margin-right: 0;
+                margin-left: 20px;
+                background-color: red;
+            }
+        }
+    }
+
+    .add {
+        height: 40px;
+        width: 40px;
+        border-radius: 4px;
+        margin-right: 20px;
+        font-weight: 600;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        background-color: #fbb91b;
+    }
+
+    .multiselect {
+        width: 300px;
+        label {
+            margin-bottom: 6px;
+            color: #6750A4;
+            font-weight: bold;
+        }
+        
+    }
+}
+
+.a {
+    background-color: #fbb91b;
+}
+.b {
+    background-color: #ffc9c9;
+}
+.c {
+    background-color: #fe6768;
+}
+.d {
+    background-color: #9596ff;
+}

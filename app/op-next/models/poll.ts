@@ -17,8 +17,6 @@ interface PollResponse {
   responses: PollResponse;
 }
 
-type PollTypes = "mc" | "short" | "ordering";
-
 export default Poll;
-export type { PollResponse, PollTypes };
+export type { PollResponse };
 

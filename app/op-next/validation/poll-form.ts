@@ -18,7 +18,7 @@ interface MultipleChoicePoll extends BasePoll {
 
 interface OrderingPoll extends BasePoll {
     type: 'ordering';
-    options: {
+    orders: {
         number: string;
         option: string;
     }[];

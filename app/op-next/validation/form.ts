@@ -1,17 +1,19 @@
-import { FieldError, UseFormRegister } from "react-hook-form";
-import { z } from "zod";
-import { createPollSchema } from "./schema";
+import { FieldError, FieldValues, Path, UseFormRegister } from "react-hook-form";
 
 
 export type DefaultFormField = {
     type: string;
     error: FieldError | undefined;
     
+    index?: number;
     placeholder?: string;
     disabled?: boolean;
     defaultvalue?: string | undefined;
-    description?: string;
+    label?: string;
+    inputstyle?: string;
 };
+
+// create class form ----------------------------------------------------------
 
 export type CreateClassFormData = {
     classname: string;
@@ -28,6 +30,7 @@ export interface CreateClassFormField extends DefaultFormField {
     name: ValidCreateClassFieldNames;
 };
 
+<<<<<<< HEAD
 
 export type createshortanswerformdata = {
     question: string;
@@ -59,10 +62,25 @@ export interface createattendanceformfield extends defaultformfield {
 
 
 export type createpollformdata = {
+=======
+// polls -----------------------------------------------------------------------
+
+// Generic interface for form fields
+export interface GenericFormField<T extends FieldValues> extends DefaultFormField{
+    register: UseFormRegister<T>;
+    name: Path<T>;
+    customregistername?: Path<string>;
+}
+
+// create multiple choice poll form -------------------------------------------
+
+export type CreateMultipleChoicePollFormData = {
+>>>>>>> c032a60 (RESTRUCTURE POLLS AND INPUT AND SCHEMA AND A LOT)
     question: string;
     options: {
         letter: string;
         option: string;
+<<<<<<< HEAD
     }[]
     answers: string[];
 };
@@ -87,3 +105,15 @@ export type defaultformfield = {
     description?: string;
     options?: string[] | number[];
 };
+=======
+    }[];
+    answers: string[];
+};
+
+// create short answer poll form ----------------------------------------------
+
+export type CreateShortAnswerFormData = {
+    question: string;
+    answers: string;
+};
+>>>>>>> c032a60 (RESTRUCTURE POLLS AND INPUT AND SCHEMA AND A LOT)
