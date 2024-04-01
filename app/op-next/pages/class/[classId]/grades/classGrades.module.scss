@@ -1,64 +1,182 @@
-.grades {
+.gradebookContainer {
+  padding: 0px 35px;
   display: flex;
   flex-direction: column;
-  padding-top: 50px;
-  align-items: center;
-  width: 100%;
-  
-  .question {
-    font-size: 28px;
-    font-weight: 600;
-    color: black;
-    text-align: center;
+
+  .topSection {
+    display: flex;
+    justify-content: space-between; // This will create space between the student info and average scores
+    margin-bottom: 20px; // Adjust this value as needed to create space before the questions section
   }
 
-  .gradeSummary {
-    position: absolute;
-    top: 110px;
-    right: 20px;
-    padding: 10px;
-    
-    word-spacing: 0.5em;
+  .studentInfo {
+    h3 {
+      font-weight: bold;
+    }
+    width: 50%;
+  }
+
+  .studentDetails {
+    margin: 3px 0;
+  }
+
+  .studentStats {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    margin-left: 20px;
   
-    line-height: 1.6;
+    .statItem {
+      display: flex;
+      align-items: center;
+    }
   
-    span {
-      margin-right: 1px; // Adjust as needed
+    .statText {
+      margin-left: 10px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+  
+    .image {
+      flex-shrink: 0; 
+      display: inline-block;
+      margin-right: 10px;
+      margin-left: 30px;
+    }
+  }
+  
+
+  .averageScores {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px; 
+    width: 15%;
+    h2 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    .score {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      .scoreCategory {
+        display: flex;
+        justify-content: space-between;
+        width: 100%; 
+        margin-bottom: 4px;
+      }
+      .progressBarContainer {
+        width: 100%;
+        background-color: #e0e0e0;
+        height: 20px;
+        border-radius: 10px; 
+        .progressBar {
+          height: 20px; 
+          border-radius: 10px;
+        }
+      }
+    }
+    .scoreValue {
+      font-weight: bold;
     }
   }
 
-  .answer {
-      padding: 10px;
-      margin: 5px 0;
-      border: 1px solid black;
+  .questions {
+    display: flex;
+    flex-direction: column;
+    border: 2.5px solid #000;
+    background: white;
+
+
+    h2 {
+      font-family: "Open Sans";
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 8000;
+      line-height: 64px; /* 266.667% */
+      letter-spacing: -0.25px;
+    }
+
+    .questionOverhead,
+    .question {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 30px;
+    }
+
+    .questionOverhead > h2,
+    .question > div {
+      flex-grow: 1;
+      text-align: center;
+      &:first-child {
+        flex-grow: 2;
+        text-align: left;
+      }
+    }
+
+    .questionOverhead {
+      display: flex;
+      justify-content: space-between;
+      margin: 0 20px;
+      margin-bottom: -30px;
+      margin-top: -30px;
+    }
+
+    .question {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 3px solid #000;
       position: relative;
-    
-      &.correct {
-        background-color: #d4edda;
-        color: #155724;
+  
+      &:first-child {
+        border-top: 3px solid #000;
       }
-    
-      &.incorrect {
-        background-color: #f8d7da;
-        color: #721c24;
+      
+      &:last-child {
+        border-bottom: none;
       }
-    
-      &.selected {
-        border-style: solid;
+  
+
+      .questionLink {
+        text-decoration: none;
+        color: black;
+        font-weight: 1000;
       }
-    }
-    
-    .answer-indicator {
-      position: absolute;
-      right: 10px;
-      top: 10px;
-    
-      &.correct {
-        color: green;
+
+
+      .responseColumn {
+        display: flex;
+        align-items: center;
+        gap: 10px; 
       }
-    
-      &.incorrect {
-        color: red;
+
+      .textDetails {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        font-weight: 800;
+        padding: 0;
+        margin: 0;
+
+        h2 {
+          margin-bottom: 0px;
+        }
+      }
+
+      .correctAnswer {
+        font-size: 15px;
+        margin-bottom: 10px;
+      }
+
+
+      .stat {
+        width: 100px;
+        text-align: center; 
+        padding: 0 10px; // Add padding to prevent text from touching the edges
       }
     }
   }
+}
