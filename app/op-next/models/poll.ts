@@ -14,7 +14,6 @@ interface Poll {
 
 interface PollResponse {
   [option: string]: { [uid: string]: string };
-  responses: PollResponse;
 }
 
 export default Poll;

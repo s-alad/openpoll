@@ -3,70 +3,22 @@ import { auth, db, fxns, rdb } from "../../../firebase/firebaseconfig";
 import { useRouter } from "next/router";
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import React, { useState, FormEvent, useEffect } from 'react';
-<<<<<<< HEAD
-import { createpollformdata, createshortanswerformdata, createattendanceformdata } from "@/validation/form";
-import { createPollSchema, createShortAnswerSchema, createAttendanceSchema } from "@/validation/schema";
-=======
->>>>>>> 5251451 (PURGE)
 import { push, ref, set } from 'firebase/database';
 import CreateShortAnswerPoll from '@/forms/create-short-poll/create-short-poll';
 import CreateMultipleChoicePoll from '@/forms/create-mc-poll/create-mc-poll';
 import CreateOrderingPoll from '@/forms/create-ordering-poll/create-ordering-poll';
+import { createattendanceformdata } from '@/validation/form';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { createAttendanceSchema } from '@/validation/schema';
 
 export default function CreatePoll() {
 
 	const router = useRouter();
 	const classid = router.query.classid
 
-	type PollTypes = "Multiple Choice" | "Short Answer" | "Ordering";
+	type PollTypes = "Multiple Choice" | "Short Answer" | "Ordering" | "Attendance";
 	const [polltype, setpolltype] = useState<PollTypes>("Multiple Choice");
-
-	// ordering ========================================
-
-	async function createorderpoll(data: any) {
-		console.log('form data submitted:', data);
-
-		const user = auth.currentUser;
-		const uid = user!.uid;
-
-		const polldata = {
-			type: "ordering",
-			classid: classid,
-			question: data.question,
-			options: data.options,
-			answers: data.answers,
-			created: new Date(),
-			creator: uid,
-			responses: [],
-			active: false,
-			done: false
-		}
-		console.log(polldata);
-
-		const classref = doc(db, "classes", classid as string);
-		const pollref = collection(classref, "polls");
-
-		try {
-			const docRef = await addDoc(pollref, polldata);
-			const pollid = docRef.id;
-			const rdbref = ref(rdb, `classes/${classid}/polls/${pollid}`);
-			await set(rdbref, polldata)
-
-			router.back();
-		} catch (e) {
-			console.error("Error adding document: ", e);
-		}
-
-	}
-
-	const { register: register2, handleSubmit: handleSubmit2, control: control3, formState: { errors: errors3 } } = useForm<createpollformdata>({
-		resolver: zodResolver(createPollSchema),
-		defaultValues: {
-			options: initalpolls,
-			answers: []
-		}
-	});
-
 
 	// attendance ============================================
 
@@ -119,13 +71,10 @@ export default function CreatePoll() {
 		<>
 			<main className={s.createpoll}>
 				<div className={s.create}>
-<<<<<<< HEAD
-					
-=======
 
 					<div className={s.selector}>
 						{
-							["Multiple Choice", "Short Answer", "Ordering"].map(type => (
+							["Multiple Choice", "Short Answer", "Ordering", "Attendance"].map(type => (
 								<div 
 									key={type} 
 									onClick={() => setpolltype(type as PollTypes)} 
@@ -145,7 +94,14 @@ export default function CreatePoll() {
 					{
 						polltype === "Ordering" && <CreateOrderingPoll />
 					}
->>>>>>> a7d8adb (start ordering poll)
+					{
+						polltype === "Attendance" && <div>
+						<h2>Create Attendance Poll for Today</h2>
+						<button onClick={() => createAttendance({date: new Date(), attended: []})} className={s.submitButton}>
+						  Create Attendance Poll
+						</button>
+					  </div>
+					}
 				</div>
 			</main>
 		</>

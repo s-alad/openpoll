@@ -19,20 +19,8 @@
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@hookform/resolvers": "^3.3.4",
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "@mui/material": "^5.15.11",
-=======
-=======
-    "@mui/material": "^5.15.11",
     "@mui/x-charts": "^7.0.0",
->>>>>>> e2852a6 (oackages)
-=======
->>>>>>> 73428b0 (add ordering poll)
     "@mui/material": "^5.15.14",
->>>>>>> 0817197 (answer showing + start poll types)
-    "@mui/x-charts": "^7.0.0",
     "@types/uuid": "^9.0.8",
     "firebase": "^10.8.0",
     "next": "14.1.0",

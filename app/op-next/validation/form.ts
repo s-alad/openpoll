@@ -30,21 +30,6 @@ export interface CreateClassFormField extends DefaultFormField {
     name: ValidCreateClassFieldNames;
 };
 
-<<<<<<< HEAD
-
-export type createshortanswerformdata = {
-    question: string;
-    answers?: string;
-};
-
-export type ValidCreateShortAnswerFieldNames =
-    | "question"
-    | "answers"
-
-export interface createshortanswerformfield extends defaultformfield {
-    register: UseFormRegister<createshortanswerformdata>;
-    name: ValidCreateShortAnswerFieldNames;
-};
 
 export type createattendanceformdata = {
     date: Date;
@@ -55,14 +40,12 @@ export type ValidCreateAttendanceFieldNames =
     | "date"
     | "attended"
 
-export interface createattendanceformfield extends defaultformfield {
+export interface createattendanceformfield extends DefaultFormField {
     register: UseFormRegister<createattendanceformdata>;
     name: ValidCreateAttendanceFieldNames;
 };
 
 
-export type createpollformdata = {
-=======
 // polls -----------------------------------------------------------------------
 
 // Generic interface for form fields
@@ -75,38 +58,11 @@ export interface GenericFormField<T extends FieldValues> extends DefaultFormFiel
 // create multiple choice poll form -------------------------------------------
 
 export type CreateMultipleChoicePollFormData = {
->>>>>>> c032a60 (RESTRUCTURE POLLS AND INPUT AND SCHEMA AND A LOT)
     question: string;
     options: {
         letter: string;
         option: string;
-<<<<<<< HEAD
     }[]
-    answers: string[];
-};
-
-export type ValidCreatePollFieldNames =
-    | "question"
-    | "options"
-    | "answers"
-
-export interface createpollformfield extends defaultformfield {
-    register: UseFormRegister<createpollformdata>;
-    name: ValidCreatePollFieldNames;
-};
-
-export type defaultformfield = {
-    type: string;
-    placeholder?: string;
-    error: FieldError | undefined;
-    valueAsNumber?: boolean;
-    disabled?: boolean;
-    defaultvalue?: string | undefined;
-    description?: string;
-    options?: string[] | number[];
-};
-=======
-    }[];
     answers: string[];
 };
 
@@ -116,9 +72,6 @@ export type CreateShortAnswerPollFormData = {
     question: string;
     answer: string;
 };
-<<<<<<< HEAD
->>>>>>> c032a60 (RESTRUCTURE POLLS AND INPUT AND SCHEMA AND A LOT)
-=======
 
 // create ordering poll form
 
@@ -135,4 +88,3 @@ export type CreateOrderingPollFormData = {
         };
     }
 };
->>>>>>> a7d8adb (start ordering poll)
