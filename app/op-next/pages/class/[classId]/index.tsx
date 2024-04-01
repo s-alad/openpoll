@@ -1,35 +1,17 @@
-import { useAuth } from "@/context/authcontext";
-import { rdb } from "@/firebase/firebaseconfig";
-import { Checkbox, FormControlLabel } from "@mui/material";
+import { useAuth } from '@/context/authcontext';
+import { rdb } from '@/firebase/firebaseconfig';
 import {
-  equalTo,
-  onValue,
-  orderByChild,
-  query,
-  ref,
-  remove,
-  update,
-} from "firebase/database";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import s from "./class.module.scss";
+    Checkbox,
+    FormControlLabel
+} from '@mui/material';
+import { equalTo, onValue, orderByChild, query, ref, remove, update } from 'firebase/database';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import s from './class.module.scss';
 
 interface LivePoll {
-    id: string;
-    active: boolean;
-    type: "mc" | "short" | "attendance";
-    options: {
-        letter: string;
-        option: string;
-    }[],
-    responses?: {
-        [letter: string]: {
-            [studentid: string]: [email: string];
-        }
-    }
-    question: string;
     id: string;
     active: boolean;
     type: "mc" | "short" | "attendance";
@@ -52,16 +34,8 @@ export default function Class() {
     const classid = router.query.classId;
     console.log(classid, 'classid')
 
-    // get the class id from the url
-    const router = useRouter();
-    const classid = router.query.classId;
-    console.log(classid, 'classid')
-
-    const { user } = useAuth();
     const { user } = useAuth();
 
-    const [activePolls, setActivePolls] = useState<LivePoll[]>([]);
-    const [submitted, setSubmitted] = useState<boolean>(false);
     const [activePolls, setActivePolls] = useState<LivePoll[]>([]);
     const [submitted, setSubmitted] = useState<boolean>(false);
 
@@ -102,38 +76,13 @@ export default function Class() {
             const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses/${letter}/${user!.uid}`);
             await remove(answerRef);
         }
-      }
-      console.log(activePolls);
-      setActivePolls(activePolls);
-    });
-
-        return () => unsubscribe();
-    }, [classid]);
-
-  async function submitPoll(data: any, pollId: string) {
-    console.log(data);
-
-    // get the data letter that is true
-    const selectedOptions = Object.keys(data).filter((key) => data[key]);
-    const nonSelectedOptions = Object.keys(data).filter((key) => !data[key]);
-    console.log(selectedOptions);
-
-    // add student to selected options
-    for (const letter of selectedOptions) {
-      const answerRef = ref(
-        rdb,
-        `classes/${classid}/polls/${pollId}/responses/${letter}`,
-      );
-      await update(answerRef, { [user!.uid]: user!.email });
     }
 
-    // remove student from non selected options
-    for (const letter of nonSelectedOptions) {
-      const answerRef = ref(
-        rdb,
-        `classes/${classid}/polls/${pollId}/responses/${letter}/${user!.uid}`,
-      );
-      await remove(answerRef);
+    async function submitShortPoll(data: any, pollId: string) {
+        console.log(data);
+
+        const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses`);
+        await update(answerRef, { [user!.uid]: data.answer });
     }
 
     async function submitAttendancePoll(data: any, pollId: string) {
@@ -239,57 +188,6 @@ export default function Class() {
                         }
                     </div> : <div className={s.openpolls}>no active polls</div>
             }
-                                                            <div className={s.content}>{option.option}</div>
-                                                        </div>
-                                                    )
-                                                })
-                                            }
-                                        </div>
-
-                                        <button type="submit">Submit</button>
-                                    </form>
-                                )
-
-                                if (poll.type === "short") return (
-                                    <form key={poll.id} className={s.poll} onSubmit={
-                                        handleSubmit((data) => submitShortPoll(data, poll.id))
-                                    }>
-                                        <h1>{poll.question}</h1>
-
-                                        <input type="text" {...control.register("answer")} />
-
-                                        <button type="submit">Submit</button>
-                                    </form>
-                                )
-
-                                if (poll.type === "attendance") return (
-                                    <form key={poll.id} className={s.poll} onSubmit={handleSubmit((data) => submitAttendancePoll(data, poll.id))}>
-                                      <h1>{poll.question}</h1>
-                                      <div className={s.inputGroup}>
-                                        <input
-                                          type="text"
-                                          {...register("attendanceCode", {
-                                            required: "Code is required",
-                                            validate: (value) => value === poll.id.slice(-4) || "Incorrect code"
-                                          })}
-                                          placeholder="Enter Attendance Code"
-                                          className={s.attendanceInput}
-                                        />
-                                        {errors.attendanceCode && <p className={s.errorMessage}>{"wrong code"}</p>}
-                                      </div>
-                                      <button type="submit" className={s.attendanceButton}>
-                                        I'm Here
-                                      </button>
-                                    </form>
-                                  );
-                            })
-                        }
-                    </div> : <div className={s.openpolls}>no active polls</div>
-            }
         </div>
-      ) : (
-        <div className={s.openpolls}>no active polls</div>
-      )}
-    </div>
-  );
+    )
 }
