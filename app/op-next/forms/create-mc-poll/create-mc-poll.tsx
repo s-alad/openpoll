@@ -2,7 +2,7 @@ import React from "react";
 import s from "./create-mc-poll.module.scss";
 import Input from "@/ui/input/input";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { CreateMultipleChoicePollFormData, CreateShortAnswerFormData } from "@/validation/form";
+import { CreateMultipleChoicePollFormData } from "@/validation/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createMultipleChoicePollData } from "@/validation/schema";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
