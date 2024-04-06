@@ -1,7 +1,7 @@
 import { useAuth } from "@/context/authcontext";
 import Poll from "@/models/poll";
 import { onAuthStateChanged } from "firebase/auth";
-import { collection, doc, getDocs } from "firebase/firestore";
+import { Timestamp, collection, doc, getDocs } from "firebase/firestore";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { auth, db } from "../../../../firebase/firebaseconfig";
@@ -9,6 +9,8 @@ import s from "./classGrades.module.scss";
 import Link from "next/link";
 import Image from "next/image";
 import { AppBar, Tabs, Tab, Box, Typography } from "@mui/material";
+import TopSection from "@/components/grades/topSection/topSection";
+import StudentStats from "@/components/grades/studentStats/studentStats";
 
 interface PollAndId {
   poll: Poll;
@@ -28,6 +30,12 @@ interface PollAndAnswer {
   answered?: boolean;
 }
 
+interface PollAttendance {
+  pollId: string;
+  date: Timestamp;
+  attended: boolean;
+}
+
 export default function ClassGrades() {
   const [loading, setLoading] = useState(false);
 
@@ -41,11 +49,14 @@ export default function ClassGrades() {
   const [numCorrect, setNumCorrect] = useState(0); // Number of correct answers used as an integer to display how many questions the student got correct
   const [totalQuestions, setTotalQuestions] = useState(0); // Total number of questions in the poll
   const [totalGrade, setTotalGrade] = useState(0); // Total grade of the student
+  const [studentAttendance, setStudentAttendance] = useState<PollAttendance[]>([]);
+  const [attendedCount, setAttendedCount] = useState(0);
 
-  // TODO: Move Tabs to a separate component
-  const [value, setValue] = React.useState(0);
+  
 
   // Handler for changing tabs
+  const [value, setValue] = useState(0);
+
   const handleChange = (event: any, newValue: any) => {
     setValue(newValue);
   };
@@ -80,7 +91,6 @@ export default function ClassGrades() {
       snapshot.forEach((doc) => {
         const pid = doc.id;
         const data = doc.data() as Poll;
-        // Check if the poll is marked as done before adding it to the array
 
         if (data.done) {
           completedPolls.push({ poll: data, id: pid });
@@ -94,8 +104,7 @@ export default function ClassGrades() {
     setLoading(false);
   }
 
-  async function extractAndCheckAnswers() {
-    console.log("Extracting and checking answers");
+  async function extractPolls() {
     try {
       const currentUser = auth.currentUser;
       if (!currentUser) {
@@ -105,8 +114,38 @@ export default function ClassGrades() {
       const uid = currentUser.uid;
 
       let correctCount = 0;
+      let attendanceCount = 0;
 
-      const results: PollAndAnswer[] = openpolls.map((pollAndId) => {
+      const attendancePolls = openpolls.filter(poll => poll.poll.type === "attendance");
+      const questionPolls = openpolls.filter(poll => poll.poll.type === "mc");
+
+      console.log(attendancePolls, "attendance polls")
+      console.log(questionPolls, "question polls")
+
+      const attendanceResults: PollAttendance[] = attendancePolls.map((pollAndId) => {
+        const { poll, id: pollId } = pollAndId;
+
+        let userAttendanceInfo: PollAttendance = {
+          pollId,
+          date: poll.date,
+          attended: false,
+        };
+
+        const userAttendanceEntry = Object.entries(poll.responses || {}).find(
+          ([uid, attended]) => {
+            return uid === currentUser.uid;
+          },
+        );
+
+        if (userAttendanceEntry) {
+          userAttendanceInfo.attended = true;
+          attendanceCount++;
+        }
+
+        return userAttendanceInfo;
+      });
+
+      const MCresults: PollAndAnswer[] = questionPolls.map((pollAndId) => {
         const { poll, id: pollId } = pollAndId;
         const correctAnswersSet = new Set(poll.answers);
 
@@ -138,13 +177,16 @@ export default function ClassGrades() {
             correctCount++; // Increment local correct count
           }
         }
+        
 
         return userResponseInfo;
       });
 
-      setStudentAnswers(results); // Save the results to the state
+      setAttendedCount(attendanceCount);
+      setStudentAttendance(attendanceResults);
+      setStudentAnswers(MCresults); // Save the results to the state
       setNumCorrect(correctCount);
-      setTotalQuestions(openpolls.length);
+      setTotalQuestions(questionPolls.length);
       setTotalGrade(
         Math.round((correctCount / openpolls.length) * 100 * 10) / 10,
       );
@@ -165,15 +207,14 @@ export default function ClassGrades() {
 
   useEffect(() => {
     if (openpolls.length > 0) {
-      extractAndCheckAnswers();
+      extractPolls();
     }
   }, [openpolls]); // Only run the effect when openpolls changes
 
-  console.log(studentAnswers)
 
   return (
     <div>
-      {studentAnswers.length > 0 && user ? (
+      {user ? (
         <>
           <div className={s.gradebookContainer}>
             <h1
@@ -185,100 +226,22 @@ export default function ClassGrades() {
             >
               Gradebook
             </h1>
-            <div className={s.topSection}>
-              <div className={s.studentInfo}>
-                <div className={s.studentDetails}>
-                  <h3>Name: {user.displayName}</h3>
-                  <p><strong>ID: </strong>{user.uid.substring(0, 7)}</p>
-                  <p><strong>Email: </strong>{user.email}</p>
-                </div>
-              </div>
-              <div className={s.averageScores}>
-                <h3>Average Scores</h3>
-                <div className={s.score}>
-                  <div className={s.scoreCategory}>
-                    <span>Total</span>
-                    <span className={s.scoreValue}>{totalGrade}/100</span>
-                  </div>
-                  <div className={s.progressBarContainer}>
-                    <div
-                      className={s.progressBar}
-                      style={{
-                        width: `${totalGrade}%`,
-                        backgroundColor: "blue",
-                      }}
-                    ></div>
-                  </div>
-                </div>
-                <div className={s.score}>
-                  <div className={s.scoreCategory}>
-                    <span>Participation</span>
-                    <span className={s.scoreValue}>100/100</span>
-                  </div>
-                  <div className={s.progressBarContainer}>
-                    <div
-                      className={s.progressBar}
-                      style={{ width: "100%", backgroundColor: "orange" }}
-                    ></div>
-                  </div>
-                </div>
-                <div className={s.score}>
-                  <div className={s.scoreCategory}>
-                    <span>Correctness</span>
-                    <span className={s.scoreValue}>
-                      {numCorrect}/{totalQuestions}
-                    </span>
-                  </div>
-                  <div className={s.progressBarContainer}>
-                    <div
-                      className={s.progressBar}
-                      style={{
-                        width: `${(numCorrect / totalQuestions) * 100}%`,
-                        backgroundColor: "purple",
-                      }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <TopSection 
+              totalGrade={totalGrade}
+              attendedCount={attendedCount}
+              studentAttendanceLength={studentAttendance.length}
+              numCorrect={numCorrect}
+              totalQuestions={totalQuestions}
+            />
             {/* Section for stats and images */}
-            <div className={s.studentStats}>
-              <div className={s.statItem}>
-                <Image
-                  src="/person.svg"
-                  alt="person"
-                  width={20}
-                  height={20}
-                  className={s.image}
-                />
-                <h2 className={s.statText}>16/18 Classes Attended</h2>{" "}
-                {/* Placeholder */}
-              </div>
-              <div className={s.statItem}>
-                <Image
-                  src="/chat_box.svg"
-                  alt="chat box"
-                  width={24}
-                  height={24}
-                  className={s.image}
-                />
-                <h2 className={s.statText}>
-                {studentAnswers.filter(answer => answer.answered).length}/{totalQuestions} Questions Answered
-                </h2>
-              </div>
-              <div className={s.statItem}>
-                <Image
-                  src="/checkmark.svg"
-                  alt="check"
-                  width={20}
-                  height={20}
-                  className={s.image}
-                />
-                <h2 className={s.statText}>{numCorrect} Correct</h2>
-              </div>
-            </div>
+            <StudentStats 
+              studentAttendance={studentAttendance.filter(attend => attend.attended).length}
+              studentAttendanceLength={studentAttendance.length}
+              questionsAnswered={studentAnswers.filter(answer => answer.answered).length}
+              totalQuestions={totalQuestions}
+              numCorrect={numCorrect} 
+            />
             {/* Question Section */}
-
             <Box sx={{ width: "100%" }}>
               <AppBar
                 position="static"
@@ -306,8 +269,8 @@ export default function ClassGrades() {
                 </Tabs>
               </AppBar>
               <TabPanel value={value} index={0}>
-                <div className={s.questions}>
-                  <div className={s.questionOverhead}>
+                <div className={s.boxContainer}>
+                  <div className={s.boxOverhead}>
                     <h2>Responses</h2>
                     <h2>Weight</h2>
                     <h2>Correctness</h2>
@@ -315,7 +278,7 @@ export default function ClassGrades() {
                   </div>
                   <div className={s.questionsList}>
                     {studentAnswers.map((answer, index) => (
-                      <div className={s.question}>
+                      <div key={index} className={s.question}>
                         <div className={s.responseColumn}>
                           <Image
                             src="/chat_box.svg"
@@ -334,12 +297,28 @@ export default function ClassGrades() {
                               </h2>
                             </Link>
                             <Typography variant="body2" className={s.correctAnswer}>
-                              Correct answer is
+                              Correct answer is {answer.answers[0]}
                             </Typography>
                           </div>
                         </div>
                         <div className={s.stat}>1/1</div>
-                        <div className={s.stat}>0.5/0.5</div>
+                        <div className={s.stat}>{studentAnswers[index].isCorrect ? 
+                            <Image
+                              src="/checkmark.svg"
+                              alt="check"
+                              width={20}
+                              height={20}
+                              className={s.image}
+                            /> : 
+                            <Image
+                            src="/x-mark.svg"
+                            alt="x"
+                            width={250}
+                            height={25}
+                            className={s.image}
+                            />
+                          }
+                        </div>
                         <div className={s.stat}>1/1</div>
                       </div>
                     ))}
@@ -347,7 +326,44 @@ export default function ClassGrades() {
                 </div>
               </TabPanel>
               <TabPanel value={value} index={1}>
-                Placeholder text for Attendance
+                <div className={s.boxContainer}>
+                  <div className={s.boxOverhead}>
+                    <h2>Date</h2>
+                    <h2>Attended</h2>
+                  </div>
+                  <div>
+                    {studentAttendance.map((attendance, index) => (
+                      <div key={index} className={s.question}>
+                        <div className={s.responseColumn}>
+                          
+                          <div>
+                            <h2>
+                              {attendance.date.toDate().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
+                            </h2>
+                          </div>
+                        </div>
+                        <div className={s.stat}>
+                          {attendance.attended ? 
+                            <Image
+                              src="/checkmark.svg"
+                              alt="check"
+                              width={20}
+                              height={20}
+                              className={s.image}
+                            /> : 
+                            <Image
+                            src="/x-mark.svg"
+                            alt="check"
+                            width={20}
+                            height={20}
+                            className={s.image}
+                            />
+                          }
+                        </div>
+                      </div>
+                    ))}
+                    </div>
+                </div>
               </TabPanel>
             </Box>
           </div>

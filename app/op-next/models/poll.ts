@@ -10,6 +10,8 @@ interface Poll {
   active: boolean;
   responses?: PollResponse;
   done?: boolean;
+  date?: any;
+  type: "mc" | "short" | "attendance";
 }
 
 interface PollResponse {

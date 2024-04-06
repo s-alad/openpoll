@@ -5,8 +5,8 @@
 
   .topSection {
     display: flex;
-    justify-content: space-between; // This will create space between the student info and average scores
-    margin-bottom: 20px; // Adjust this value as needed to create space before the questions section
+    justify-content: space-between;
+    margin-bottom: 20px;
   }
 
   .studentInfo {
@@ -83,7 +83,7 @@
     }
   }
 
-  .questions {
+  .boxContainer {
     display: flex;
     flex-direction: column;
     border: 2.5px solid #000;
@@ -99,7 +99,7 @@
       letter-spacing: -0.25px;
     }
 
-    .questionOverhead,
+    .boxOverhead,
     .question {
       display: flex;
       justify-content: space-between;
@@ -107,7 +107,7 @@
       padding: 10px 30px;
     }
 
-    .questionOverhead > h2,
+    .boxOverhead > h2,
     .question > div {
       flex-grow: 1;
       text-align: center;
@@ -117,7 +117,7 @@
       }
     }
 
-    .questionOverhead {
+    .boxOverhead {
       display: flex;
       justify-content: space-between;
       margin: 0 20px;
