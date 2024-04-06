@@ -10,6 +10,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { AppBar, Tabs, Tab, Box, Typography } from "@mui/material";
 import TopSection from "@/components/grades/topSection/topSection";
+import StudentStats from "@/components/grades/studentStats/studentStats";
 
 interface PollAndId {
   poll: Poll;
@@ -233,41 +234,13 @@ export default function ClassGrades() {
               totalQuestions={totalQuestions}
             />
             {/* Section for stats and images */}
-            <div className={s.studentStats}>
-              <div className={s.statItem}>
-                <Image
-                  src="/person.svg"
-                  alt="person"
-                  width={20}
-                  height={20}
-                  className={s.image}
-                />
-                <h2 className={s.statText}>{studentAttendance.filter(attend => attend.attended).length}/{studentAttendance.length}</h2>
-                {/* Placeholder */}
-              </div>
-              <div className={s.statItem}>
-                <Image
-                  src="/chat_box.svg"
-                  alt="chat box"
-                  width={24}
-                  height={24}
-                  className={s.image}
-                />
-                <h2 className={s.statText}>
-                {studentAnswers.filter(answer => answer.answered).length}/{totalQuestions} Questions Answered
-                </h2>
-              </div>
-              <div className={s.statItem}>
-                <Image
-                  src="/checkmark.svg"
-                  alt="check"
-                  width={20}
-                  height={20}
-                  className={s.image}
-                />
-                <h2 className={s.statText}>{numCorrect} Correct</h2>
-              </div>
-            </div>
+            <StudentStats 
+              studentAttendance={studentAttendance.filter(attend => attend.attended).length}
+              studentAttendanceLength={studentAttendance.length}
+              questionsAnswered={studentAnswers.filter(answer => answer.answered).length}
+              totalQuestions={totalQuestions}
+              numCorrect={numCorrect} 
+            />
             {/* Question Section */}
             <Box sx={{ width: "100%" }}>
               <AppBar
