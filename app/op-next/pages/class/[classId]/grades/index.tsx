@@ -9,6 +9,7 @@ import s from "./classGrades.module.scss";
 import Link from "next/link";
 import Image from "next/image";
 import { AppBar, Tabs, Tab, Box, Typography } from "@mui/material";
+import TopSection from "@/components/grades/topSection/topSection";
 
 interface PollAndId {
   poll: Poll;
@@ -224,64 +225,13 @@ export default function ClassGrades() {
             >
               Gradebook
             </h1>
-            <div className={s.topSection}>
-              <div className={s.studentInfo}>
-                <div className={s.studentDetails}>
-                  <h3>Name: {user.displayName}</h3>
-                  <p><strong>ID: </strong>{user.uid.substring(0, 7)}</p>
-                  <p><strong>Email: </strong>{user.email}</p>
-                </div>
-              </div>
-              <div className={s.averageScores}>
-                <h3>Average Scores</h3>
-                <div className={s.score}>
-                  <div className={s.scoreCategory}>
-                    <span>Total</span>
-                    <span className={s.scoreValue}>{totalGrade}/100</span>
-                  </div>
-                  <div className={s.progressBarContainer}>
-                    <div
-                      className={s.progressBar}
-                      style={{
-                        width: `${totalGrade}%`,
-                        backgroundColor: "blue",
-                      }}
-                    ></div>
-                  </div>
-                </div>
-                <div className={s.score}>
-                  <div className={s.scoreCategory}>
-                    <span>Participation</span>
-                    <span className={s.scoreValue}>{(attendedCount/studentAttendance.length * 100)}/ 100</span>
-                  </div>
-                  <div className={s.progressBarContainer}>
-                    <div
-                      className={s.progressBar}
-                      style={{
-                         width: `${(attendedCount/ studentAttendance.length) * 100}%`, backgroundColor: "orange"
-                         }}
-                    ></div>
-                  </div>
-                </div>
-                <div className={s.score}>
-                  <div className={s.scoreCategory}>
-                    <span>Correctness</span>
-                    <span className={s.scoreValue}>
-                      {numCorrect}/{totalQuestions}
-                    </span>
-                  </div>
-                  <div className={s.progressBarContainer}>
-                    <div
-                      className={s.progressBar}
-                      style={{
-                        width: `${(numCorrect / totalQuestions) * 100}%`,
-                        backgroundColor: "purple",
-                      }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <TopSection 
+              totalGrade={totalGrade}
+              attendedCount={attendedCount}
+              studentAttendanceLength={studentAttendance.length}
+              numCorrect={numCorrect}
+              totalQuestions={totalQuestions}
+            />
             {/* Section for stats and images */}
             <div className={s.studentStats}>
               <div className={s.statItem}>
