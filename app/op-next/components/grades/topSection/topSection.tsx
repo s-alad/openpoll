@@ -38,19 +38,24 @@ export default function TopSection({totalGrade, attendedCount, studentAttendance
                     ></div>
                   </div>
                 </div>
-                <div className={s.score} >
-                  <div className={s.scoreCategory}>
-                    <span>Participation</span>
-                    <span className={s.scoreValue}>{(attendedCount/studentAttendanceLength * 100)}/ 100</span>
-                  </div>
-                  <div className={s.progressBarContainer}>
-                    <div
-                      className={s.progressBar}
-                      style={{
-                         width: `${(attendedCount/ studentAttendanceLength) * 100}%`, backgroundColor: "orange"
-                         }}
-                    ></div>
-                  </div>
+                <div className={s.score}>
+                <div className={s.scoreCategory}>
+                  <span>Participation</span>
+                  <span className={s.scoreValue}>
+                    {studentAttendanceLength !== 0
+                      ? `${(attendedCount / studentAttendanceLength) * 100}`
+                      : '0'} / 100
+                  </span>
+                </div>
+                <div className={s.progressBarContainer}>
+                <div
+                  className={s.progressBar}
+                  style={{
+                    width: `${studentAttendanceLength !== 0 ? (attendedCount / studentAttendanceLength) * 100 : 0}%`,
+                    backgroundColor: 'orange',
+                  }}
+                ></div>
+                </div>
                 </div>
                 <div className={s.score}>
                   <div className={s.scoreCategory}>
