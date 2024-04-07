@@ -4,120 +4,59 @@ import React, { useEffect, useState } from 'react';
 import { collection, doc, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase/firebaseconfig';
 import Poll from "@/models/poll";
-import { PieChart, BarChart } from '@mui/x-charts';
+import RenderBarChart from '@/components/barchart/barchart';
 
-// Value: # of responses, Label: Answers
-const pollAnswer1 = [
-    {label: "A", value: 5},
-    {label: "B", value: 5},
-    {label: "C", value: 5},
-    {label: "D", value: 5},
-]
-
-const pollAnswer2 = [
-    {label: "A", value: 10},
-    {label: "B", value: 5},
-    {label: "C", value: 5},
-    {label: "D", value: 5},
-]
-
-const pollAnswer3 = [
-    {label: "A", value: 10},
-    {label: "B", value: 5},
-    {label: "C", value: 5},
-    {label: "D", value: 5},
-]
-
-// Place all answers here
-const allAnswers = [
-    pollAnswer1,
-    pollAnswer2,
-    pollAnswer3
-]
-
-const renderPieChartViews = () => {
-    return allAnswers.map((data, index) => (
-        <PieChart
-            key={index}
-            series={[
-                {
-                    arcLabel: (item) => `${item.label} (${item.value})`,
-                    data
-                }
-            ]}
-            width={500}
-            height={400}
-        />
-    ))
-}
-
-const renderBarChartViews = () => {
-    return allAnswers.map((data, index) => (
-        <BarChart
-            key={index}
-            dataset={data}
-            yAxis={[{ scaleType: "band", dataKey: "label"}]}
-            series={[{ dataKey: "value", label: "# of Answers"}]}
-            width={500}
-            height={400}
-            layout="horizontal"
-            colors={["#4036ee"]}
-        />
-    ));
-}
-
-export default function analytics() {
+export default function Analytics() {
     const router = useRouter();
-    const classid = router.query.classid;
+    const classid = "Kyfh71LioSJvUPXv7W2v";
     
     // 0 = Pie Chart, 1 = Bar Chart, 2 = Scatter
     const analyticsView = 1;
 
     const [openpolls, setOpenpolls] = useState<Poll[]>([]);
+    const [pollBarchartData, setPollBarchartData] = useState<{ label: string; value: number }[][]>([]);
+    const [loading, setLoading] = useState(true);
 
     async function getpolls() {
         // collection classes - document class id - collection polls
         const classref = doc(db, "classes", classid as string);
-        console.log(classref);
         const pollsref = collection(classref, "polls");
-
+    
         try {
             const snapshot = await getDocs(pollsref);
-            let openpolls: Poll[] = [];
+            let donePolls: Poll[] = [];
+    
             snapshot.forEach((doc) => {
                 const pid = doc.id;
-                const data = doc.data() as Poll;
-                if (!data.classid) return;
-
-                openpolls.push(data);  
+                const poll = doc.data() as Poll;
+                
+                if (poll.done) {
+                    donePolls.push(poll);
+                }
             });
-            setOpenpolls(openpolls);
+    
+            setOpenpolls(donePolls);
+            setLoading(false);
         } catch (e) {
             console.error("Error getting documents: ", e);
         }
     }
-
-
-    //wait for router to load
+    
     useEffect(() => {
-        if (classid) {
-            getpolls();
-        }
-    }, [classid]);
+        getpolls();
+    }, []); // Run only once on component mount
 
     return(
-        <>
         <div className={s.class}>
-            <div className={s.classAverage}>
-            {/* Place whole averages here */}
-            </div>
-
-            <div className={s.pollAnalyticsView}>
-                {/* Place Poll views here */}
-                {renderPieChartViews()}
-                {renderBarChartViews()}
-            </div>
+            {loading ? (
+                <div>Loading...</div>
+            ) : (
+                <div>
+                    {openpolls.map((data, index) => (
+                        <RenderBarChart poll={data} key={index}/>
+                    ))}
+                </div>
+            )}
         </div>
-        </>
     );
 }
