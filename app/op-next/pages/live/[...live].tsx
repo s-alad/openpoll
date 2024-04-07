@@ -6,8 +6,7 @@ import { auth, db, fxns } from "../../firebase/firebaseconfig";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import s from './live.module.scss';
-import Image from "next/image";
-import PollChart from "@/components/barchart/barchart";
+// import PollChart from "@/components/barchart/barchart";
 
 interface LivePoll {
     active: boolean;
@@ -199,11 +198,11 @@ export default function Live() {
                         <p>{correctAnswers}</p>
                     </div>
                 )}
-                {showAnswers && correctAnswers.length > 0 && (
+                {/* {showAnswers && correctAnswers.length > 0 && (
                     <div className={s.content}>
                         <PollChart pollData={livepoll} />
                     </div>
-                )}
+                )} */}
                 {
                     showAnswers && livepoll?.type === "short" && (
                         <div className={s.answers}>

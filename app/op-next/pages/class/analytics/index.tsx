@@ -11,10 +11,8 @@ export default function Analytics() {
     const classid = "Kyfh71LioSJvUPXv7W2v";
     
     // 0 = Pie Chart, 1 = Bar Chart, 2 = Scatter
-    const analyticsView = 1;
 
     const [openpolls, setOpenpolls] = useState<Poll[]>([]);
-    const [pollBarchartData, setPollBarchartData] = useState<{ label: string; value: number }[][]>([]);
     const [loading, setLoading] = useState(true);
 
     async function getpolls() {
