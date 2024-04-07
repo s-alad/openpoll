@@ -51,7 +51,23 @@ export default function RenderBarChart({ poll }: PollChartProps) {
                         width={500}
                         height={400}
                         layout="horizontal"
-                        colors={["#4036ee"]}
+                        sx={{
+                            // Style the bars dynamically based on their index
+                            "& .MuiBarElement-root": {
+                                "&:nth-of-type(1)": { fill: "#FBB91B" },
+                                "&:nth-of-type(2)": { fill: "#FE6768" },
+                                "&:nth-of-type(3)": { fill: "#9596FF" },
+                                "&:nth-of-type(4)": { fill: "blue" },
+                                "&:nth-of-type(5)": { fill: "purple" },
+                            },
+                            // Change left yAxis label styles
+                            "& .MuiChartsAxis-tickLabel": {
+                                strokeWidth: "0.4",
+                                fontSize: "20px",
+                                fontWeight: "bold",
+                                fontFamily: "'Open Sans', sans-serif",
+                            },
+                        }}
                     />
                 </div>
             )}
