@@ -23,7 +23,6 @@ export default function gradebook() {
     const { class: classId } = router.query;
     const { user } = useAuth();
 
-    const [authorized, setAuthorized] = useState(false);
     const [students, setStudents] = useState<StudentsData>({});
     const [polls, setPolls] = useState<Poll[]>([]);
 
@@ -111,7 +110,6 @@ export default function gradebook() {
           if (user && classId) {
             getDonePolls();
             grabStudents();
-            setAuthorized(true);
           }
         });
     

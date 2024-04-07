@@ -1,23 +1,23 @@
-import s from './analytics.module.scss';
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from 'react';
 import { collection, doc, getDocs } from 'firebase/firestore';
-import { db } from '@/firebase/firebaseconfig';
+import { db, auth } from '@/firebase/firebaseconfig';
 import Poll from "@/models/poll";
 import RenderBarChart from '@/components/barchart/barchart';
+import { useAuth } from '@/context/authcontext';
+import { onAuthStateChanged } from 'firebase/auth';
 
-export default function Analytics() {
+export default function analytics() {
     const router = useRouter();
-    const classid = "Kyfh71LioSJvUPXv7W2v";
+    const { class: classId } = router.query;
+    const { user } = useAuth();
     
-    // 0 = Pie Chart, 1 = Bar Chart, 2 = Scatter
-
     const [openpolls, setOpenpolls] = useState<Poll[]>([]);
     const [loading, setLoading] = useState(true);
 
     async function getpolls() {
         // collection classes - document class id - collection polls
-        const classref = doc(db, "classes", classid as string);
+        const classref = doc(db, "classes", classId as string);
         const pollsref = collection(classref, "polls");
     
         try {
@@ -39,13 +39,19 @@ export default function Analytics() {
             console.error("Error getting documents: ", e);
         }
     }
-    
-    useEffect(() => {
-        getpolls();
-    }, []); // Run only once on component mount
 
-    return(
-        <div className={s.class}>
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user && classId) {
+                getpolls();
+            }
+        });
+
+        return () => unsubscribe();
+    }, [classId]);
+
+    return (
+        <div>
             {loading ? (
                 <div>Loading...</div>
             ) : (
