@@ -27,26 +27,6 @@ export default function gradebook() {
     const [students, setStudents] = useState<StudentsData>({});
     const [polls, setPolls] = useState<Poll[]>([]);
 
-    // Check if current user is the admin of the class
-    async function checkAuthorization() {
-        try {
-            const classRef = doc(db, "classes", classId as string);
-            const classSnapshot = await getDoc(classRef);
-
-            if (classSnapshot.exists()) {
-                const classData = classSnapshot.data() as Classroom;
-                if (classData.owner.uid == user?.uid) {
-                    setAuthorized(true);
-                } else {
-                    setAuthorized(false);
-                }
-            }
-        } catch (error) {
-            console.error("Error fetching class");
-        }
-
-    };
-
     // Grab all students and initialize their grades to 0.0
     async function grabStudents() {
         try {
@@ -146,28 +126,27 @@ export default function gradebook() {
 
     return (
         <div className={s.gradebook}>
-            {authorized ? (
-                <div>
-                    <h1>Gradebook for Class: {classId}</h1>
-                    <table className={s.gradebookTable}>
+            <div>
+                <h1>Gradebook for Class: {classId}</h1>
+                <table className={s.gradebookTable}>
+                    <thead>
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Grade</th>
                         </tr>
+                    </thead>
+                    <tbody>
                         {Object.keys(students).map((studentId) => (
                             <tr key={studentId}>
-                                <th>{students[studentId].name}</th>
-                                <th>{students[studentId].email}</th>
-                                <th>{students[studentId].grade}</th>
+                                <td>{students[studentId].name}</td>
+                                <td>{students[studentId].email}</td>
+                                <td>{students[studentId].grade} / {totalCorrectAnswers}</td>
                             </tr>
                         ))}
-
-                    </table>
-                </div>
-            ) : (
-                <h1>Unauthorized to view this gradebook</h1>
-            )}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }

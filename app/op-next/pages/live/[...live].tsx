@@ -6,7 +6,7 @@ import { auth, db, fxns } from "../../firebase/firebaseconfig";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import s from './live.module.scss';
-// import PollChart from "@/components/barchart/barchart";
+import PollChart from "@/components/barchart/barchart";
 
 interface LivePoll {
     active: boolean;
