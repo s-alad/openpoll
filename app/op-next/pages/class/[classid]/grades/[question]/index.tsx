@@ -21,7 +21,7 @@ interface Question {
 export default function index() {
     const router = useRouter();
     const pollId = router.query.question;
-    const classid = router.query.classId;
+    const classid = router.query.classid;
     const { user } = useAuth();
 
     const [question, setQuestion] = useState<Question>();
