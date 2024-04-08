@@ -22,10 +22,12 @@ export default function Dashboard() {
     // get the class id from the url
     const router = useRouter();
     const classid = router.query.class;
+    const className = router.query.className;
+    console.log(className, "class name")
     console.log(classid);
 
-    type PollTypes = "Question" | "Attendance" | "Done"
-    const [polltype, setpolltype] = useState<PollTypes>("Question");
+    type PollTypes = "Questions" | "Attendance" | "Done"
+    const [polltype, setpolltype] = useState<PollTypes>("Questions");
     const [openpolls, setOpenpolls] = useState<PollAndId[]>([]);
     const [attendancePolls, setAttendancePolls] = useState<PollAndId[]>([]);
     const [donePolls, setDonePolls] = useState<PollAndId[]>([]);
@@ -82,12 +84,20 @@ export default function Dashboard() {
     }, [classid]);
 
     return (
-        <>
+        <>  
             <main className={s.dashboard}>
+                <div className={s.classContainer}>
+                    <div className={s.class}> 
+                        {className}
+                    </div>
+                    <div className={s.date}>
+                        {new Date().toLocaleDateString()}
+                    </div>
+                </div>
                 <div className={s.header}>
                     <div className={s.selector}>
                         {
-                            ["Question" , "Attendance" , "Done"].map(type => (
+                            ["Questions" , "Attendance" , "Done"].map(type => (
                                 <div
                                     key={type}
                                     onClick={() => setpolltype(type as PollTypes)}
@@ -99,7 +109,7 @@ export default function Dashboard() {
                         }
                     </div>
                     {
-                        polltype === "Question" && (
+                        polltype === "Questions" && (
                             openpolls.map((poll, index) => {
                                 return (
                                     <div key={index} className={s.poll}>

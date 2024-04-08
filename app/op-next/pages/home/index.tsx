@@ -186,6 +186,7 @@ export default function Home() {
                                     <Link
                                         href={{
                                             pathname: '/dashboard/' + classData.cid,
+                                            query: { className: classData.class.classname }
                                         }}
                                         className={s.link}
                                     >
