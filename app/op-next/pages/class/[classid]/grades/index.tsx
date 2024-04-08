@@ -41,7 +41,7 @@ export default function ClassGrades() {
 
   // get the class id from the url
   const router = useRouter();
-  const { classId: classid } = router.query;
+  const classid = router.query.classid;
   const { user } = useAuth();
 
   const [openpolls, setOpenpolls] = useState<PollAndId[]>([]);

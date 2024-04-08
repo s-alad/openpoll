@@ -6,35 +6,67 @@ import React from "react";
 import s from "./navbar.module.scss";
 import { useAuth } from "@/context/authcontext";
 
-interface Navbar {
-    path: string;
-}
-
-export default function Navbar({ path }: Navbar) {
+export default function Navbar() {
 
     const { user, logout, googlesignin } = useAuth();
     const router = useRouter();
 
-    function matchRouterWithPath() {
-        let staticmatches: { [key: string]: string } = {
-            "/home": "Courses /",
-            "/create/class": "Create a class /",
-            "/create/poll": "Create a poll /",
-        }
-        let dynamicmatches:  { [key: string]: string } = {
-            "/class": `Class / ${(router.query.classId as string ?? "").substring(0, 6)}`,
-            "/dashboard": `Dashboard / ${(router.query.class as string ?? "").substring(0, 6)}`,
-            "/poll": `Poll / ${router.query.poll}`,
-            "/live": `Live / ${router.query.live}`,
+    const wheretogoback: { [key: string]: string } = {
+        "/dashboard/[^/]+/?$": "/home",
+        "/dashboard/([^/]+)/analytics": "/dashboard/$1",
+        "/dashboard/([^/]+)/gradebook": "/dashboard/$1",
+        "/class/[^/]+/?$": "/home",
+        "/class/([^/]+)/grades/([^/]+)": "/class/$1/grades",
+        "/class/([^/]+)/grades": "/class/$1",
+    }
+
+    function goback() {
+        const pathname = router.asPath;
+        for (let key in wheretogoback) {
+            const regex = new RegExp(key);
+            const match = regex.exec(pathname);
+            if (match) {
+                router.push(wheretogoback[key].replace(/\$1/g, match[1]).replace(/\$2/g, match[2]));
+                return;
+            }
         }
 
-        if (staticmatches[router.pathname]) {
-            return staticmatches[router.pathname];
-        }
-        
-        for (let key in dynamicmatches) {
-            if (router.pathname.startsWith(key)) {
-                return dynamicmatches[key];
+        router.back();
+    }
+
+    function matchRouterWithPath() {
+        const router = useRouter();
+
+        const ss = (s: string) => s.substring(0, 6);
+    
+        const routeMatches: Array<{
+            pattern: RegExp,
+            display?: string,
+            displayFunc?: (match: RegExpExecArray) => string
+        }> = [
+            { pattern: /^\/home$/, display: "Courses /" },
+            { pattern: /^\/create\/poll\/([^/]+)$/, displayFunc: (match) => `Dashboard / ${ss(match[1])} / Create A Poll` },
+            { pattern: /^\/create\/class$/, display: "Create a class /" },
+            { pattern: /^\/class\/([^/]+)$/, displayFunc: (match) => `Class / ${ss(match[1])} / Polls` },
+            { pattern: /^\/class\/([^/]+)\/grades$/, displayFunc: (match) => `Class / ${ss(match[1])} / Grades` },
+            { pattern: /^\/class\/([^/]+)\/grades\/([^/]+)$/, displayFunc: (match) => `Class / ${ss(match[1].substring(0, 6))} / Grades / ${ss(match[2])}`} ,
+            { pattern: /^\/dashboard\/([^/]+)$/, displayFunc: (match) => `Dashboard / ${ss(match[1])} / Polls` },
+            { pattern: /^\/dashboard\/([^/]+)\/analytics$/, displayFunc: (match) => `Dashboard / ${ss(match[1])} / Analytics` },
+            { pattern: /^\/dashboard\/([^/]+)\/gradebook$/, displayFunc: (match) => `Dashboard / ${ss(match[1])} / Gradebook` },
+            { pattern: /^\/live\/([^/]+)\/([^/]+)$/, displayFunc: (match) => `Dashboard / ${ss(match[1])} / Live / ${ss(match[2])}`},
+        ];
+    
+        const pathname = router.asPath.split('?')[0]; // Removing query parameters for matching
+    
+        for (const { pattern, display, displayFunc } of routeMatches) {
+            const match = pattern.exec(pathname);
+            if (match) {
+                // If there's a display function, call it with the match object to generate the display string
+                if (displayFunc) {
+                    return displayFunc(match);
+                }
+                // Otherwise, return the static display string
+                return display;
             }
         }
     }
@@ -51,7 +83,7 @@ export default function Navbar({ path }: Navbar) {
                     router.pathname === "/home" ?
                         <FontAwesomeIcon icon={faHome} className={s.back} />
                         :
-                        <FontAwesomeIcon icon={faArrowLeftLong} onClick={() => router.back()} className={s.back} />
+                        <FontAwesomeIcon icon={faArrowLeftLong} onClick={goback} className={s.back} />
                 }
                 {matchRouterWithPath()}
             </div>
