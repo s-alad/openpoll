@@ -135,16 +135,24 @@ export default function Dashboard() {
                                 return (
                                     <div key={index} className={s.poll}>
                                         <div className={s.details}>
-                                            <div className={s.question}>{poll.poll.question}</div>
-                                            <div>created: {new Date(poll.poll.created.seconds).toLocaleDateString()}</div>
+                                            <div className={s.questContainer}>
+                                                <Image
+                                                    src="/question_answer.svg"
+                                                    alt="user"
+                                                    width={40}
+                                                    height={40}
+                                                />
+
+                                                <div className={s.question}>{poll.poll.question}</div>
+                                            </div>
                                         </div>
                                         <div className={s.actions}>
-                                            <button className={s.configure}>configure</button>
+                                            <button className={s.configure}>Configure</button>
                                             <Link
                                                 href={{
                                                     pathname: `/live/${classid}/${poll.id}`,
                                                 }}
-                                            ><button className={s.live}>go live</button></Link>
+                                            ><button className={s.live}>Go Live</button></Link>
                                         </div>
                                     </div>
                                 )

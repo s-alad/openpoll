@@ -112,14 +112,27 @@
 
                 .question {
                     color: #6750A4;
+                    margin-left: 10px;
 
                     /* H2 bold */
                     font-family: "Open Sans";
-                    font-size: 24px;
+                    font-size: 22px;
                     font-style: normal;
                     font-weight: 700;
                     line-height: 64px; /* 266.667% */
                     letter-spacing: -0.25px;
+                }
+
+                .date {
+                    color: #000;
+
+                    /* Button text */
+                    font-family: "Open Sans";
+                    font-size: 14px;
+                    font-style: normal;
+                    font-weight: 500;
+                    line-height: 20px; /* 142.857% */
+                    letter-spacing: 0.1px;
                 }
             }
 
