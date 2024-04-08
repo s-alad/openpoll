@@ -9,7 +9,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 
 export default function analytics() {
     const router = useRouter();
-    const { class: classId } = router.query;
+    const classid = router.query.classid;
     const { user } = useAuth();
     
     const [openpolls, setOpenpolls] = useState<Poll[]>([]);
@@ -17,7 +17,7 @@ export default function analytics() {
 
     async function getpolls() {
         // collection classes - document class id - collection polls
-        const classref = doc(db, "classes", classId as string);
+        const classref = doc(db, "classes", classid as string);
         const pollsref = collection(classref, "polls");
     
         try {
@@ -42,13 +42,13 @@ export default function analytics() {
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (user && classId) {
+            if (user && classid) {
                 getpolls();
             }
         });
 
         return () => unsubscribe();
-    }, [classId]);
+    }, [classid]);
 
     return (
         <div>

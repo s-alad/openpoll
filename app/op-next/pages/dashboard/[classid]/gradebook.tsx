@@ -20,7 +20,7 @@ interface StudentsData {
 
 export default function gradebook() {
     const router = useRouter();
-    const { class: classId } = router.query;
+    const classid = router.query.classid;
     const { user } = useAuth();
 
     const [students, setStudents] = useState<StudentsData>({});
@@ -29,7 +29,7 @@ export default function gradebook() {
     // Grab all students and initialize their grades to 0.0
     async function grabStudents() {
         try {
-            const classRef = doc(db, "classes", classId as string);
+            const classRef = doc(db, "classes", classid as string);
             const studentRef = collection(classRef, "students");
             const snapshot = await getDocs(studentRef);
             let students: StudentsData = {};
@@ -53,7 +53,7 @@ export default function gradebook() {
 
     // Grab the polls
     async function getDonePolls() {
-        const classRef = doc(db, "classes", classId as string);
+        const classRef = doc(db, "classes", classid as string);
         const pollsRef = collection(classRef, "polls");
 
         let openpolls: Poll[] = []
@@ -107,14 +107,14 @@ export default function gradebook() {
     
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-          if (user && classId) {
+          if (user && classid) {
             getDonePolls();
             grabStudents();
           }
         });
     
         return () => unsubscribe();
-      }, [classId]);
+      }, [classid]);
     
       useEffect(() => {
         if (polls.length > 0) {
@@ -125,7 +125,7 @@ export default function gradebook() {
     return (
         <div className={s.gradebook}>
             <div>
-                <h1>Gradebook for Class: {classId}</h1>
+                <h1>Gradebook for Class: {classid}</h1>
                 <table className={s.gradebookTable}>
                     <thead>
                         <tr>

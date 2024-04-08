@@ -17,6 +17,8 @@ export default function CreatePoll() {
 	const router = useRouter();
 	const classid = router.query.classid
 
+	console.log(classid);
+
 	type PollTypes = "Multiple Choice" | "Short Answer" | "Ordering" | "Attendance";
 	const [polltype, setpolltype] = useState<PollTypes>("Multiple Choice");
 
