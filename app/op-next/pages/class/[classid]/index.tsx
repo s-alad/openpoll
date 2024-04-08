@@ -91,7 +91,7 @@ export default function Class() {
         await update(answerRef, { [user!.uid]: user!.email });
     }
 
-    const { handleSubmit, control, register,  formState: { errors } } = useForm({});
+    const { handleSubmit, control, register, formState: { errors } } = useForm({});
 
     return (
         <div className={s.class}>
@@ -105,7 +105,7 @@ export default function Class() {
                                     <form key={poll.id} className={s.poll} onSubmit={
                                         handleSubmit((data) => submitPoll(data, poll.id))
                                     }>
-                                        
+
                                         <h1>{poll.question}</h1>
 
                                         <div className={s.options}>
@@ -157,24 +157,24 @@ export default function Class() {
 
                                 if (poll.type === "attendance") return (
                                     <form key={poll.id} className={s.poll} onSubmit={handleSubmit((data) => submitAttendancePoll(data, poll.id))}>
-                                      <h1>{poll.question}</h1>
-                                      <div className={s.inputGroup}>
-                                        <input
-                                          type="text"
-                                          {...register("attendanceCode", {
-                                            required: "Code is required",
-                                            validate: (value) => value === poll.id.slice(-4) || "Incorrect code"
-                                          })}
-                                          placeholder="Enter Attendance Code"
-                                          className={s.attendanceInput}
-                                        />
-                                        {errors.attendanceCode && <p className={s.errorMessage}>{"wrong code"}</p>}
-                                      </div>
-                                      <button type="submit" className={s.attendanceButton}>
-                                        I'm Here
-                                      </button>
+                                        <h1>{poll.question}</h1>
+                                        <div className={s.inputGroup}>
+                                            <input
+                                                type="text"
+                                                {...register("attendanceCode", {
+                                                    required: "Code is required",
+                                                    validate: (value) => value === poll.id.slice(-4) || "Incorrect code"
+                                                })}
+                                                placeholder="Enter Attendance Code"
+                                                className={s.attendanceInput}
+                                            />
+                                            {errors.attendanceCode && <p className={s.errorMessage}>{"wrong code"}</p>}
+                                        </div>
+                                        <button type="submit" className={s.attendanceButton}>
+                                            I'm Here
+                                        </button>
                                     </form>
-                                  );
+                                );
                             })
                         }
                     </div> : <div className={s.openpolls}>no active polls</div>
