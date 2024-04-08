@@ -31,5 +31,24 @@
                 background-color: #9596FF;
             }
         }
+
+        .attendance {
+            width: 100%;
+            /* min-height: 500px; */
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            gap: 24px;
+            
+            .createattend {
+                color: #6750A4;
+            }
+
+            .date {
+                font-size: 32px;
+            }
+        }
     }
 }

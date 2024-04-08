@@ -6,8 +6,9 @@ import s from './dashboard.module.scss';
 import Link from 'next/link';
 import { collection, doc, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase/firebaseconfig';
-import Poll from '@/models/poll';
+import Poll, { convertPollTypeToText } from '@/models/poll';
 import Loader from '@/components/loader/loader';
+import { PiChatsDuotone, PiChatsFill } from "react-icons/pi";
 
 interface PollAndId {
     poll: Poll;
@@ -64,18 +65,21 @@ export default function Dashboard() {
 
                     <div className={s.openpolls}>
                         {
-                            openpolls.map((poll, index) => {
+                            openpolls.map((poll: PollAndId, index) => {
                                 return (
                                     <div key={index} className={s.poll}>
                                         <div className={s.details}>
-                                            <div className={s.question}>{poll.poll.question}</div>
-
-                                            {/* <div>created: {new Date(poll.poll.created.seconds).toLocaleDateString()}</div> */}
-
-                                            <div>created: {new Date(poll.poll.created.seconds).toLocaleDateString()}</div>
+                                            <div className={s.question}>
+                                                <PiChatsFill />
+                                                {poll.poll.question}
+                                            </div>
+                                            <div className={s.created}>Date created: {new Date(poll.poll.created.seconds).toLocaleDateString()}</div>
+                                            <div className={s.polltype}>
+                                                {convertPollTypeToText(poll.poll.type)}
+                                            </div>
                                         </div>
                                         <div className={s.actions}>
-                                            <button className={s.configure}>configure</button>
+                                            <button className={s.configure}>edit</button>
                                             <Link
                                                 href={{
                                                     pathname: `/live/${classid}/${poll.id}`,

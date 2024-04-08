@@ -14,20 +14,37 @@
         justify-content: center;
 
         .poll {
-            height: 120px;
+            
             width: 70%;
             display: flex;
-            background-color: #4036ee;
-            color: white;
+            background-color: #FFFFFF;
+            color: black;
             padding: 20px 40px;
+            border-radius: 12px;
             .details {
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
                 flex: 1;
-                .question {
+                gap: 12px;
+                .question {   
+                    display: flex;
+                    gap: 12px;
+                    align-items: center;
+                    font-weight: bold;
                     font-size: 28px;
                     font-weight: 600;
+                    color: #6750A4;
+                }
+
+                .polltype {
+                    background-color: #6750A4;
+                    color: white;
+                    border-radius: 4px;
+                    width: min-content;
+                    padding: 4px 8px;
+                    white-space: nowrap;
+
                 }
             }
             .actions {
@@ -39,9 +56,12 @@
                     border-radius: 24px;
                     width: 100px;
                     height: 40px;
+                    transition: all 0.3s;
                 }
                 .live {
-                    background-color: #fff;
+                    background-color: #4036EE;
+                    border: 2px solid #4036EE;
+                    color: #fff;
                     border: none;
                     &:hover {
                         background-color: #fbb91b;
@@ -49,12 +69,12 @@
                     }   
                 }
                 .configure {
-                    border: 2px solid #fff;
+                    border: 2px solid #000;
                     background-color: transparent;
-                    color: #fff;
+                    color: #000;
                     &:hover {
-                        background-color: #fff;
-                        color: #4036ee;
+                        background-color: #fbb91b;
+                        color: #000000;
                     }
                 }
             }

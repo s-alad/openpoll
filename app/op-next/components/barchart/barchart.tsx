@@ -9,16 +9,22 @@ interface PollChartProps {
 export default function RenderBarChart({ poll }: PollChartProps) {
     const [pollData, setPollData] = useState<{ label: string; value: number }[]>([]);
     const [loading, setLoading] = useState(true);
+    const [showChart, setShowChart] = useState(false);
     
     useEffect(() => {
         async function extractPollData() {
             if (!poll) return; // Exit early if poll is not available
-            
+            console.log(poll);
             const options = poll.options;
             const responses = poll.responses;
 
-            if (!responses || !options) return; // Exit early if responses or options are not available
-
+            if (!responses || !options) {
+                setLoading(false); 
+                setShowChart(false);
+                return; // Exit early if responses or options are not available
+            }
+               
+            console.log(options, responses);
             const currentPollData = options.map((currentOption) => {
                 let current_value = 0; // Default value if no one chose the option
                 if (responses[currentOption.option]) {
@@ -30,13 +36,15 @@ export default function RenderBarChart({ poll }: PollChartProps) {
                     value: current_value 
                 };
             });
-
+            setShowChart(true);
             setPollData(currentPollData);
             setLoading(false);
         }
 
         extractPollData();
     }, [poll]);
+
+    if (!showChart) return null;
 
     return (
         <div>
