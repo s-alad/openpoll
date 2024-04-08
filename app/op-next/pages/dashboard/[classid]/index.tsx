@@ -21,7 +21,7 @@ export default function Dashboard() {
 
     // get the class id from the url
     const router = useRouter();
-    const classid = router.query.class;
+    const classid = router.query.classid;
     const className = router.query.className;
     console.log(className, "class name")
     console.log(classid);
