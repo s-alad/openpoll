@@ -6,11 +6,7 @@ import React from "react";
 import s from "./navbar.module.scss";
 import { useAuth } from "@/context/authcontext";
 
-interface Navbar {
-    path: string;
-}
-
-export default function Navbar({ path }: Navbar) {
+export default function Navbar() {
 
     const { user, logout, googlesignin } = useAuth();
     const router = useRouter();

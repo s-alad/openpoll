@@ -1,0 +1,16 @@
+.subnavbar {
+
+    background-color: #c5cfe5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .item {
+        width: 120px;
+        text-align: center;
+        padding-bottom: 6px;
+    }
+    .active {
+        border-bottom: 2px solid red;
+    }
+}
