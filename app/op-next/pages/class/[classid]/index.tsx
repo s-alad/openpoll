@@ -95,15 +95,6 @@ export default function Class() {
 
     return (
         <div className={s.class}>
-            <Link
-                      href={{
-                        pathname: `/class/${classid}/grades`,
-                        query: { id: classid },
-                      }}
-                      className={s.gradesButton}
-                    >
-                Grades
-            </Link>
             {
                 classid && activePolls.length > 0 ?
                     <div className={s.openpolls}>

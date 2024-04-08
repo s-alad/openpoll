@@ -1,46 +1,79 @@
 import React from "react";
 import s from "./subnavbar.module.scss";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 export default function SubNavbar() {
 
     const router = useRouter();
 
-    let show = router.pathname.startsWith("/class") || router.pathname.startsWith("/dashboard")
+    let showdashboard = router.pathname.startsWith("/dashboard")
+    let showclass = router.pathname.startsWith("/class")
 
-    const pathitems = [
+    const regexMatch = router.asPath.match(/\/(dashboard|class)\/([^\/]+)(\/|$)/);
+    const prefix = regexMatch ? regexMatch[1] : null; // 'dashboard' or 'class'
+    const classid = regexMatch ? regexMatch[2] : null;
+    console.log(prefix, classid);
+
+    const dashboardpathitems = [
         {
-            path: "/polls",
+            path: `/dashboard/${classid}`,
             name: "Polls",
-            activeby: "/dashboard"
+            activeby: ["/dashboard/[classid]"]
         },
         {
-            path: "/gradebook",
+            path: `/dashboard/${classid}/gradebook`,
             name: "Gradebook",
-            activeby: "/class"
+            activeby: ["/dashboard/[classid]/gradebook"]
         },
         {
-            path: "/analytics",
+            path: `/dashboard/${classid}/analytics`,
             name: "Analytics",
-            activeby: "/analytics"
+            activeby: ["/dashboard/[classid]/analytics"]
         }
     ]
 
+    const classpathitems = [
+        {
+            path: `/class/${classid}`,
+            name: "Polls",
+            activeby: ["/class/[classid]"]
+        },
+        {
+            path: `/class/${classid}/grades`,
+            name: "Grades",
+            activeby: ["/class/[classid]/grades", "/class/[classid]/grades/[question]"]
+        },
+    ]
 
-    if (!show) {
-        return null;
+    function isActive(activeBy: string[]) {
+        return activeBy.some(pattern => {
+            const regexPattern = pattern
+                .replace(/\[.*?\]/g, '[^/]+') // Replace dynamic segments with regex
+                .replace(/\//g, '\\/') // Escape slashes
+                .replace(/\$/, '\\$'); // Escape end-of-string symbol if present
+            const regex = new RegExp(`^${regexPattern}$`);
+            return regex.test(router.pathname);
+        });
+    };
+
+
+    if (!showdashboard && !showclass) {
+        return <div className={s.subnavbar}></div>;
     }
 
     return (
         <div className={s.subnavbar}>
             {
-                pathitems.map((item, index) => {
+                (showdashboard ? dashboardpathitems : classpathitems).map((item, index) => {
+                    const active = isActive(item.activeby) ? s.active : '';
                     return (
-                        <div key={index} className={`${s.item} ${
-                            router.pathname.startsWith(item.activeby) ? s.active : ""
-                        }`} >
-                            {item.name}
-                        </div>
+                        <Link key={index} href={item.path} passHref>
+                            <div key={index} className={`${s.item} ${active ? s.active : ''
+                                }`} >
+                                {item.name}
+                            </div>
+                        </Link>
                     )
                 })
             }

@@ -96,8 +96,7 @@ export default function Dashboard() {
             <div className={s.start}>
                 <Link
                     href={{
-                        pathname: '/create/poll',
-                        query: { classid: router.query.classid }
+                        pathname: `/create/poll/${classid}`,
                     }}
                 >
                     <div className={s.add}>
