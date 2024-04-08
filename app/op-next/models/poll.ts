@@ -14,10 +14,22 @@ interface Poll {
   type: "mc" | "short" | "attendance";
 }
 
+function convertPollTypeToText(type: "mc" | "short" | "attendance") {
+  switch (type) {
+    case "mc":
+      return "Multiple Choice";
+    case "short":
+      return "Short Answer";
+    case "attendance":
+      return "Attendance";
+  }
+}
+
 interface PollResponse {
   [option: string]: { [uid: string]: string };
 }
 
 export default Poll;
-export type { PollResponse };
+export type { PollResponse};
+export { convertPollTypeToText };
 
