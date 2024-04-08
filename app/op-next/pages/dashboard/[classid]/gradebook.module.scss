@@ -8,14 +8,15 @@
         border: 1px solid black;
         border-collapse: collapse;
 
-        tr:first-child {
+        thead {
             background-color: #4036ee;
             color: white;
         }
 
-        tr:nth-child(odd):not(:first-child) {
-            /* Apply styles to every odd row */
-            background-color: lightgray; /* Change to your desired color */
+        tbody {
+            tr:nth-child(odd) {
+                background-color: lightgray; /* Apply styles to every odd row */
+            }
         }
     }
 }

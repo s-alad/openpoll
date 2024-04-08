@@ -31,7 +31,7 @@ export default function Class() {
 
     // get the class id from the url
     const router = useRouter();
-    const classid = router.query.classId;
+    const classid = router.query.classid;
     console.log(classid, 'classid')
 
     const { user } = useAuth();
@@ -95,15 +95,6 @@ export default function Class() {
 
     return (
         <div className={s.class}>
-            <Link
-                      href={{
-                        pathname: `/class/${classid}/grades`,
-                        query: { id: classid },
-                      }}
-                      className={s.gradesButton}
-                    >
-                Grades
-            </Link>
             {
                 classid && activePolls.length > 0 ?
                     <div className={s.openpolls}>
