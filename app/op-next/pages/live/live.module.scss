@@ -10,30 +10,69 @@
         padding: 40px;
         display: flex;
         flex-direction: column;
-        background-color: #4036ee;
+        background-color: #fff;
+        border-radius: 12px;
         color: black;
         gap: 40px;
+
         .question {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-weight: bold;
             font-size: 28px;
             font-weight: 600;
-            color: white;
-        }   
+            color: #6750A4;
+
+            svg {
+                font-size: 42px;
+            }
+        }
+
         .options {
             display: flex;
             flex-direction: column;
             gap: 20px;
+
             .option {
                 display: flex;
                 gap: 20px;
+
                 .letter {
                     padding: 15px;
                     width: 60px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-    
+                    border-radius: 4px;
                     background-color: orange;
                 }
+
+                // use n-th child to apply different colors to different options, make it cycle through colors so like modulos
+                &:nth-child(4n+1) {
+                    .letter {
+                        background-color: #fe6768;
+                    }
+                }
+
+                &:nth-child(4n+2) {
+                    .letter {
+                        background-color: #ffc9c9;
+                    }
+                }
+
+                &:nth-child(4n+3) {
+                    .letter {
+                        background-color: #fbb91b;
+                    }
+                }
+
+                &:nth-child(4n+4) {
+                    .letter {
+                        background-color: #F2E9E4;
+                    }
+                }
+
                 .content {
                     flex: 1;
                     padding: 15px;
@@ -42,60 +81,43 @@
                 }
             }
         }
-        
-        .buttonWrapper {
-            display: flex; 
-            justify-content: start; 
-            align-items: center; 
-          
-            .start, .answer, .stop {
-              margin-right: 10px; 
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+
+            button {
+                padding: 8px 20px;
+                border-radius: 16px;
+                border: none;
+                min-width: 120px;
+                cursor: pointer;
+            }
+
+            .start {
+                background-color: #46b42a;
+                color: #fff;
+            }
+
+            .stop {
+                background-color: #fe6768;
+                color: #fff;
+            }
+
+            .completed {
+                background-color: #6750A4;
+                color: white;
+                border-radius: 4px;
+                width: min-content;
+                padding: 4px 8px;
+                white-space: nowrap;
             }
         }
 
-        .start, .stop {
-            width: 140px;
-            height: 40px;
-            background-color: #fbb91b;
-            color: black;
-            border: none;
-            cursor: pointer;
-            border-radius: 16px;
-            font-size: 20px;
-            
-            &:hover {
-                background-color: #fff;
-                color: #000000;
-            }
-        }
-
-        .start, .answer {
-            background-color: #fbb91b;
-            color: black;
-            border: none;
-            cursor: pointer;
-            border-radius: 16px;
-            font-size: 20px;
-            padding: 10px 20px; // Adjust padding to make the buttons larger or smaller
-
-            
-            &:hover {
-                background-color: #fff;
-                color: #000000;
-            }
-        }
-
-        .stop {
-            background-color: red;
-            &:hover {
-                background-color: #fff;
-                color: red;
-            }
-        }
 
         .codeDisplay {
             font-size: 20px;
-            
+
             font-weight: bold;
             color: #F2E9E4; // A light color for contrast against the dark background
             background-color: #2b2b8f; // A contrasting background to make it pop
@@ -110,20 +132,43 @@
         }
     }
 
+    .answers {
+        margin-top: 40px;
+        width: 80%;
+        display: flex;
+        flex-direction: column;
+        color: black;
+
+        .answer {
+            padding: 8px 20px;
+            border-radius: 16px;
+            border: none;
+            min-width: 120px;
+            width: min-content;
+            white-space: nowrap;
+            background-color: #4036ee;
+            color: #fff;
+            cursor: pointer;
+        }
+    }
+
     .answerWrapper {
         display: flex;
         flex-direction: column;
-    
+
         .answers {
             text-align: center;
-            margin-bottom: 0px; /* Decrease the bottom margin to bring the bar chart closer */
+            margin-bottom: 0px;
+            /* Decrease the bottom margin to bring the bar chart closer */
             justify-content: center;
+
             .content {
                 flex: 1;
                 padding: 15px;
                 color: #000;
             }
         }
+
         margin-top: 20px;
     }
 
@@ -133,7 +178,7 @@
         width: 80%;
         display: flex;
         flex-direction: column;
-        padding: 40px;  
+        padding: 40px;
         // background-color: #4036ee;
 
         .response {

@@ -7,20 +7,8 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import s from './live.module.scss';
 import PollChart from "@/components/barchart/barchart";
-
-interface LivePoll {
-    active: boolean;
-    done: boolean,
-    options: {
-        option: string;
-        letter: string;
-    }[];
-    type: "mc" | "short" | "attendance";
-    question: string;
-    responses?: {
-        [studentid: string]: string;
-    }
-}
+import { PiChatsFill } from "react-icons/pi";
+import Poll from "@/models/poll";
 
 export default function Live() {
 
@@ -30,7 +18,7 @@ export default function Live() {
     const [pollId, setPollId] = useState<string>("");
     const [classId, setClassId] = useState<string>("");
 
-    const [livepoll, setLivepoll] = useState<LivePoll>();
+    const [livepoll, setLivepoll] = useState<Poll>();
 
     const [pollstatus, setPollstatus] = useState<boolean>(false);
     const [endedstatus, setEndedStatus] = useState<boolean>(false);
@@ -74,7 +62,7 @@ export default function Live() {
             const poll = snapshot.val();
             if (!poll) return;
 
-            const lp = poll[live![1]] as LivePoll;
+            const lp = poll[live![1]] as Poll;
             console.log(lp);
 
             if (lp.done) {
@@ -102,7 +90,7 @@ export default function Live() {
 
         try {
             await set(pollsref, true);
-            setPollFinalStatus(true); 
+            setPollFinalStatus(true);
             setpollstatus(false);
             let fxname = "transferPollResults"
             setEndedStatus(true);
@@ -137,7 +125,10 @@ export default function Live() {
             {
                 live && livepoll ?
                     <div className={s.poll}>
-                        <div className={s.question}>{livepoll?.question}</div>
+                        <div className={s.question}>
+                            <PiChatsFill />
+                            {livepoll?.question}
+                        </div>
                         <div className={s.options}>
                             {
 
@@ -161,35 +152,35 @@ export default function Live() {
                             }
                         </div>
 
-                        {
-                            endedstatus ?
-                                <div>poll ended</div>
-                                :
-                                <button onClick={() => endpoll()} className={s.stop}>End Poll</button>
-                        }
-
-                        <div className={s.buttonWrapper}>
-
-
+                        <div className={s.actions}>
                             {
-                                endedstatus ?
-                                    <></>
-                                    :
+                                endedstatus ? null : (
                                     pollstatus ?
                                         <button onClick={() => setpollstatus(false)} className={s.stop}>Stop</button>
                                         :
-                                        <button onClick={() => setpollstatus(true)} className={s.start}>Start Poll</button>
-
+                                        <button onClick={() => setpollstatus(true)} className={s.start}>Start Poll</button>)
                             }
 
-                            <button onClick={() => setShowAnswers(!showAnswers)} className={s.answer}>
-                                {showAnswers ? "Hide Answers" : "Show Answers"}
-                            </button>
+                            {
+                                endedstatus ?
+                                    <div className={s.completed}>poll completed</div>
+                                    :
+                                    <button onClick={() => endpoll()} className={s.stop}>Complete Poll</button>
+                            }
                         </div>
                     </div>
                     :
                     ""
             }
+
+            <div className={s.answers}>
+                {
+                    <button onClick={() => setShowAnswers(!showAnswers)} className={s.answer}>
+                        {showAnswers ? "Hide Answers" : "Show Answers"}
+                    </button>
+                }
+
+            </div>
 
             <div className={s.answerWrapper}>
                 {showAnswers && correctAnswers.length > 0 && !pollstatus && (
@@ -198,11 +189,11 @@ export default function Live() {
                         <p>{correctAnswers}</p>
                     </div>
                 )}
-                {/* {showAnswers && correctAnswers.length > 0 && (
+                {showAnswers && correctAnswers.length > 0 && (
                     <div className={s.content}>
-                        <PollChart pollData={livepoll} />
+                        <PollChart poll={livepoll} />
                     </div>
-                )} */}
+                )}
                 {
                     showAnswers && livepoll?.type === "short" && (
                         <div className={s.answers}>
@@ -210,7 +201,7 @@ export default function Live() {
                             {
                                 livepoll?.responses && Object.entries(livepoll.responses).map(([studentid, answer], index) => {
                                     return (
-                                        <p key={index}>{answer}</p>
+                                        <p key={index}>{answer.toString()}</p>
                                     )
                                 })
                             }
