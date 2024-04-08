@@ -10,6 +10,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import s from './class.module.scss';
+import Button from '@/ui/button/button';
 
 interface LivePoll {
     id: string;
@@ -156,9 +157,11 @@ export default function Class() {
                                 )
 
                                 if (poll.type === "attendance") return (
-                                    <form key={poll.id} className={s.poll} onSubmit={handleSubmit((data) => submitAttendancePoll(data, poll.id))}>
-                                        <h1>{poll.question}</h1>
-                                        <div className={s.inputGroup}>
+                                    <form key={poll.id} className={`${s.poll} ${s.attendance}`} 
+                                        onSubmit={handleSubmit((data) => submitAttendancePoll(data, poll.id))}
+                                    >
+                                        <div className={s.question}>{poll.question}</div>
+                                        <div className={s.attendanceinput}>
                                             <input
                                                 type="text"
                                                 {...register("attendanceCode", {
@@ -170,9 +173,7 @@ export default function Class() {
                                             />
                                             {errors.attendanceCode && <p className={s.errorMessage}>{"wrong code"}</p>}
                                         </div>
-                                        <button type="submit" className={s.attendanceButton}>
-                                            I'm Here
-                                        </button>
+                                        <Button type='submit' text='I am here' />
                                     </form>
                                 );
                             })
