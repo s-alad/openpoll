@@ -173,14 +173,16 @@ export default function Live() {
                     ""
             }
 
-            <div className={s.answers}>
+            {
+                livepoll && livepoll.type != "attendance" && 
+                <div className={s.answers}>
                 {
                     <button onClick={() => setShowAnswers(!showAnswers)} className={s.answer}>
                         {showAnswers ? "Hide Answers" : "Show Answers"}
                     </button>
                 }
-
             </div>
+            }
 
             <div className={s.answerWrapper}>
                 {showAnswers && correctAnswers.length > 0 && !pollstatus && (

@@ -120,15 +120,12 @@
 
             font-weight: bold;
             color: #F2E9E4; // A light color for contrast against the dark background
-            background-color: #2b2b8f; // A contrasting background to make it pop
+            background-color: #4036ee; // A contrasting background to make it pop
             padding: 10px 20px;
             border-radius: 8px;
             margin-top: 20px; // Add some space above the code display
             display: inline-block; // Make the background fit the content
-            justify-content: center; // Center horizontally
-            align-items: center; // Center vertically
             width: fit-content; // Adjust width to fit the content
-            margin: 0 auto; // Center the entire element within its parent
         }
     }
 

@@ -11,6 +11,8 @@ import { CreateAttendancePollFormData } from '@/validation/form';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createAttendanceSchema } from '@/validation/schema';
+import Button from '@/ui/button/button';
+import Spacer from '@/components/spacer/spacer';
 
 export default function CreatePoll() {
 
@@ -97,11 +99,18 @@ export default function CreatePoll() {
 						polltype === "Ordering" && <CreateOrderingPoll />
 					}
 					{
-						polltype === "Attendance" && <div>
-							<h2>Create Attendance Poll for Today</h2>
-							<button onClick={() => createAttendance({ date: new Date(), attended: [] })} className={s.submitButton}>
-								Create Attendance Poll
-							</button>
+						polltype === "Attendance" && 
+						<div className={s.attendance}>
+							<div className={s.createattend}>Create Attendance Poll for Today</div>
+							<div className={s.date}>{new Date().toLocaleDateString()}</div>
+							<Spacer />
+							<Button type="submit" text="Create Attendance Poll"
+								onClick={
+									() => createAttendance({
+										date: new Date(),
+										attended: []
+									})
+								}/>
 						</div>
 					}
 				</div>
