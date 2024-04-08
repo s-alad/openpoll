@@ -140,7 +140,7 @@ export default function Class() {
                                             }
                                         </div>
 
-                                        <button type="submit">Submit</button>
+                                        <Button type='submit' text='Submit' />
                                     </form>
                                 )
 
@@ -150,9 +150,9 @@ export default function Class() {
                                     }>
                                         <h1>{poll.question}</h1>
 
-                                        <input type="text" {...control.register("answer")} />
+                                        <input type="text" {...control.register("answer")} className={s.shortinput}/>
 
-                                        <button type="submit">Submit</button>
+                                        <Button type='submit' text='Submit' />
                                     </form>
                                 )
 

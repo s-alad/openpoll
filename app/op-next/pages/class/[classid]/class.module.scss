@@ -19,6 +19,11 @@
             color: black;
             border-radius: 12px;
             padding: 20px 40px;
+            gap: 20px;
+
+                h1 {
+                    margin: 0;
+                }
 
                 .question {
                     font-size: 28px;
@@ -43,11 +48,14 @@
                     }
                 }
 
-        }
+                .shortinput {
+                    width: 100%;
+                        border: 2px solid #4036ee;
+                        border-radius: 4px;
+                        
+                        padding: 10px;
+                }
 
-        .attendance {
-            gap: 20px;
-            display: flex;
         }
     }
 }
