@@ -5,19 +5,23 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 40px;
-    padding-top: 30px;
-    padding-bottom: 5px;
     background-color: #c5cfe5;
 
-    .path {
-        font-size: 22px;
-        font-weight: 600;
+    .navbarLeftItems {
+        display: flex;
+        align-items: center;
+        
+        .path {
+            font-size: 22px;
+            font-weight: 600;
+            margin-left: 20px;
 
         .back {
             margin-right: 12px;
             cursor: pointer;
             width: 30px;
         }
+    }
     }
     
     .person {
@@ -28,5 +32,6 @@
         justify-content: center;
         border: 3px solid black;
         border-radius: 50%;
+        cursor: pointer;
     }
 }
