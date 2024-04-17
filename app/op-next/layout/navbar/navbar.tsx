@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { faArrowLeftLong, faHome, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeftLong, faHome, faUser, faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/router";
 import React from "react";
@@ -97,12 +97,12 @@ export default function Navbar() {
                 </div>
             </div>
 
-            <div className={s.person}
-                onClick={() => {
-                    logout();
-                }}
-            >
-                <FontAwesomeIcon icon={faUser} />
+            <div className={s.navbarRightItems} onClick={() => {logout();}}>
+                <div className={s.person}>
+                    <FontAwesomeIcon icon={faUserCircle} size='2x'/>
+                </div>
+
+                <div className={s.personName}>{user?.displayName}</div>
             </div>
         </nav>
     )
