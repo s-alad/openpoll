@@ -9,7 +9,7 @@
 
         width: 100%;
 
-        .classes {
+        .myClasses {
             width: 70%;
             display: flex;
             flex-direction: column;
@@ -76,83 +76,89 @@
                 }
             }
 
-            .class {
+            .classes {
                 display: flex;
                 flex-direction: column;
                 width: 100%;
-
-                .trap {
-                    width: 20%;
-                    height: 24px;
-                    clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+                
+                .class {
                     display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    margin-left: 3px;
-
-                    span {
-                        margin-top: 10px;
-                        width: 100px;
-                        text-align: center;
-                        border-bottom: 2px solid #000;
-                    }
-                }
-
-                .content {
+                    flex-direction: column;
                     width: 100%;
-                    height: 130px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    padding: 0 20px;
-                    border-radius: 5px;
-
-                    .info {
-                        .className {
-                            font-size: 15px;
-                            font-weight: 400;
-                            padding-bottom: 1%;
-                        }
-
-                        .classDescription {
-                            font-size: 30px;
-                            font-weight: 600;
-                            padding-bottom: 1%;
-                        }
-
-                        .classDetail {
-                            font-size: 15px;
+                    margin-top: 10px;
+    
+                    .trap {
+                        width: 20%;
+                        height: 24px;
+                        clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin-left: 3px;
+    
+                        span {
+                            width: 100px;
+                            text-align: center;
+                            border-bottom: 2px solid #000;
                         }
                     }
-
+    
+                    .content {
+                        width: 100%;
+                        height: 130px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        padding: 0 20px;
+                        border-radius: 5px;
+    
+                        .info {
+                            .className {
+                                font-size: 15px;
+                                font-weight: 400;
+                                padding-bottom: 1%;
+                            }
+    
+                            .classDescription {
+                                font-size: 30px;
+                                font-weight: 600;
+                                padding-bottom: 1%;
+                            }
+    
+                            .classDetail {
+                                font-size: 15px;
+                            }
+                        }
+    
+                        .actions {
+                            .join {
+                                width: 180px;
+                                height: 50px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                background-color: #4036ee;
+                                color: white;
+                                border-radius: 32px;
+                                font-size: 18px;
+                                font-weight: 600;
+                                cursor: pointer;
+                            }
+                        }
+                    }
+    
                     .actions {
-                        .join {
-                            width: 180px;
-                            height: 50px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            background-color: #4036ee;
-                            color: white;
-                            border-radius: 32px;
-                            font-size: 18px;
-                            font-weight: 600;
-                            cursor: pointer;
-                        }
+                        display: flex;
+    
                     }
-                }
-
-                .actions {
-                    display: flex;
-
-                }
-
-                .yellow {
-                    background-color: #FBB91B;
-                }
-
-                .pink {
-                    background-color: #ffc9c9;
+    
+                    .yellow {
+                        background-color: #FBB91B;
+                    }
+    
+                    .pink {
+                        background-color: #ffc9c9;
+                    }
                 }
             }
         }
