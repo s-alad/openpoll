@@ -60,6 +60,7 @@ export default function analytics() {
                     {openpolls.map((data, index) => (
                         <div className={s.pollContainer}>
                             <div className={s.pollQuestion}>{index + 1}. {data.question}</div>
+                            <div>Correct Answers: {data.answers}</div>
 
                             <RenderBarChart poll={data} key={index}/>
                         </div>
