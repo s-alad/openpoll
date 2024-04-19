@@ -143,6 +143,11 @@
                                 font-size: 18px;
                                 font-weight: 600;
                                 cursor: pointer;
+                                &:hover {
+                                    transition: all 0.3s;
+                                    background-color: #9596FF;
+                                    color: #000000;
+                                }   
                             }
                         }
                     }

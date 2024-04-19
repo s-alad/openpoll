@@ -245,7 +245,7 @@ export default function Home() {
                             {enrolled.map((classData, index) => (
                                     <div className={s.class} key={index}>
                                         <div className={`${s.trap} ${s.yellow}`}>
-                                            <span>{classData.cid.substring(0,6)}</span>
+                                            {/* <span>{classData.cid.substring(0,6)}</span> */}
                                         </div>
                                         <div className={`${s.content} ${s.yellow}`}>
                                             <div className={s.info}>
