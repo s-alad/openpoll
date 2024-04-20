@@ -13,6 +13,24 @@
         align-items: center;
         justify-content: center;
 
+        .selector {
+            display: flex;
+            .selectee {
+                align-items: center;
+                font-size: 20px;
+                font-weight: 500;
+                color: #000;
+                border-radius: 10px;
+                cursor: pointer;
+                font-weight: bold
+            }
+            .selected {
+                background-color: #9596FF;
+                border: 2px solid #6750A4;
+            }
+            
+        }
+
         .poll {
             
             width: 70%;

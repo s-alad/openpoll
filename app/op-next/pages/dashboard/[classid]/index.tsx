@@ -26,6 +26,8 @@ export default function Dashboard() {
     console.log(classid);
 
     const [openpolls, setOpenpolls] = useState<PollAndId[]>([]);
+    type PollTypes = "Multiple Choice" | "Short Answer" | "Ordering" | "Attendance";
+    const [selectedType, setSelectedType] = useState<PollTypes>("Multiple Choice");
 
     async function getpolls() {
         setLoading(true);
@@ -64,11 +66,24 @@ export default function Dashboard() {
             {
                 loading ? <Loader/> :
 
-                    <>
-                        <div className={s.selector}>
+                    <div className={s.openpolls}>
 
+                        <div className={s.selector}>
+                            {
+                                ["Multiple Choice", "Short Answer", "Ordering", "Attendance"].map((type, index) => {
+                                    return (
+                                        <div
+                                            key={index}
+                                            className={`${s.selectee} ${selectedType === type ? s.selected : ""}`}
+                                            onClick={() => setSelectedType(type as PollTypes)}
+                                        >
+                                            {type}
+                                        </div>
+                                    )
+                                })
+                            }
                         </div>
-                        <div className={s.openpolls}>
+
                         {
                             openpolls.map((poll: PollAndId, index) => {
                                 return (
@@ -96,7 +111,6 @@ export default function Dashboard() {
                             })
                         }
                     </div>
-                    </>
             }
 
             <div className={s.start}>
