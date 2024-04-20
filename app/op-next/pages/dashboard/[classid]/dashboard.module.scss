@@ -3,7 +3,7 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
-    
+
     .openpolls {
         padding-top: 100px;
         width: 100%;
@@ -17,6 +17,7 @@
             display: flex;
             width: 70%;
             height: 50px;
+
             .selectee {
                 flex: 1 1;
                 display: flex;
@@ -30,28 +31,31 @@
                 font-weight: bold;
                 border: 2px solid transparent;
             }
+
             .selected {
                 background-color: #9596FF;
                 border: 2px solid #6750A4;
             }
-            
+
         }
 
         .poll {
-            
+
             width: 70%;
             display: flex;
             background-color: #FFFFFF;
             color: black;
             padding: 20px 40px;
             border-radius: 12px;
+
             .details {
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
                 flex: 1;
                 gap: 12px;
-                .question {   
+
+                .question {
                     display: flex;
                     gap: 12px;
                     align-items: center;
@@ -71,10 +75,12 @@
 
                 }
             }
+
             .actions {
                 display: flex;
                 align-items: center;
                 gap: 20px;
+
                 button {
                     cursor: pointer;
                     border-radius: 24px;
@@ -82,20 +88,24 @@
                     height: 40px;
                     transition: all 0.3s;
                 }
+
                 .live {
                     background-color: #4036EE;
                     border: 2px solid #4036EE;
                     color: #fff;
                     border: none;
+
                     &:hover {
                         background-color: #fbb91b;
                         color: #000000;
-                    }   
+                    }
                 }
+
                 .configure {
                     border: 2px solid #000;
                     background-color: transparent;
                     color: #000;
+
                     &:hover {
                         background-color: #fbb91b;
                         color: #000000;
@@ -114,7 +124,7 @@
         justify-content: center;
 
         .add {
-            cursor: pointer;
+            /*             cursor: pointer;
             width: 50px;
             height: 50px;
             display: flex;
@@ -123,7 +133,16 @@
             font-size: 32px;
             font-weight: 600;
             border-radius: 50%;
-            border: 4px solid black;
+            border: 4px solid black; */
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 35px;
+            height: 35px;
+            flex-shrink: 0;
+            background: var(--open-poll-tertiary, #FBB91B);
+            box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
         }
     }
 }
