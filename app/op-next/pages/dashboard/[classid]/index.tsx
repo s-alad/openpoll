@@ -8,6 +8,7 @@ import { collection, doc, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase/firebaseconfig';
 import Poll, { convertPollTypeToText } from '@/models/poll';
 import Loader from '@/components/loader/loader';
+import Image from 'next/image';
 import { PiChatsDuotone, PiChatsFill } from "react-icons/pi";
 
 interface PollAndId {
@@ -59,11 +60,15 @@ export default function Dashboard() {
     }, [classid]);
 
     return (
-        <div className={s.class}>
+        <div className={s.dashboard}>
             {
                 loading ? <Loader/> :
 
-                    <div className={s.openpolls}>
+                    <>
+                        <div className={s.selector}>
+
+                        </div>
+                        <div className={s.openpolls}>
                         {
                             openpolls.map((poll: PollAndId, index) => {
                                 return (
@@ -91,11 +96,8 @@ export default function Dashboard() {
                             })
                         }
                     </div>
+                    </>
             }
-
-            <div className={s.stalepolls}>
-
-            </div>
 
             <div className={s.start}>
                 <Link
