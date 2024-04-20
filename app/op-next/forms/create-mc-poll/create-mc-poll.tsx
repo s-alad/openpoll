@@ -10,14 +10,26 @@ import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Button from "@/ui/button/button";
 import { Box, Chip, FormControl, MenuItem, OutlinedInput, Select } from "@mui/material";
 import { useAuth } from "@/context/authcontext";
-import { addDoc, collection, doc } from "firebase/firestore";
-import { ref, set } from "firebase/database";
+import { deleteDoc, addDoc, collection, doc } from "firebase/firestore";
+import { remove, ref, set } from "firebase/database";
 import { db, rdb } from "@/firebase/firebaseconfig";
 import { useRouter } from "next/router";
 import Spacer from "@/components/spacer/spacer";
 
 
-export default function CreateMultipleChoicePoll() {
+interface PollData {
+    pollid: string;
+    type: string;
+    question: string;
+    options: {}[];
+    answers: string[];
+  }
+
+  interface CreateMultipleChoicePollProps {
+    pollData?: PollData; // Make pollData optional
+  }
+
+export default function CreateMultipleChoicePoll({ pollData }: CreateMultipleChoicePollProps) {
 
     const { user } = useAuth();
     const router = useRouter();
@@ -36,8 +48,9 @@ export default function CreateMultipleChoicePoll() {
         {
             resolver: zodResolver(createMultipleChoicePollData),
             defaultValues: {
-                options: initalpolls,
-                answers: ["A"]
+                question: pollData?.question ?? "",  // Ensures the question is pre-filled if pollData exists
+                options: pollData?.options ?? initalpolls,
+                answers: pollData?.answers ?? ["A"]
             }
         }
     );
@@ -48,6 +61,11 @@ export default function CreateMultipleChoicePoll() {
     });
 
     const onSubmit = async (data: CreateMultipleChoicePollFormData) => {
+
+        if (pollData?.pollid) {
+            await deleteOldPoll(pollData.pollid, classid);
+        }    
+
         console.log("SUCCESS", data);
         console.log('form data submitted:', data);
 
@@ -81,6 +99,21 @@ export default function CreateMultipleChoicePoll() {
 			console.error("Error adding document: ", e);
 		}
     }
+
+    const deleteOldPoll = async (pollId: string, classId: string) => {
+        // Reference to the Firestore document
+        const pollRef = doc(db, `classes/${classId}/polls`, pollId);
+        // Reference to the Realtime Database path    
+        try {
+            // Delete from Firestore
+            await deleteDoc(pollRef);
+            console.log("Poll deleted from Firestore successfully");
+    
+        } catch (error) {
+            console.error("Error deleting poll:", error);
+        }
+    };
+    
 
     return (
         <form className={s.form} onSubmit={handleSubmit(onSubmit)}>
