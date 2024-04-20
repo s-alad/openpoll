@@ -129,7 +129,15 @@ export default function Dashboard() {
                         <FontAwesomeIcon icon={faPlus} />
                     </div>
                 </Link>
+
+                <Image 
+                    src="/dashboard-bg.png"
+                    alt="logo"
+                    width={591}
+                    height={529}
+                />
             </div>
+
         </div>
     )
 }
