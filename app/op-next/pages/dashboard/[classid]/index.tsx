@@ -143,12 +143,15 @@ export default function Dashboard() {
                             })
                         }
 
-                        <Image
-                            src="/dashboard-bg.png"
-                            alt="logo"
-                            width={591}
-                            height={529}
-                        />
+                        {
+                            openpolls.filter(poll => poll.poll.type === selectedType).length < 1 ?
+                                <Image
+                                    src="/dashboard-bg.png"
+                                    alt="logo"
+                                    width={591}
+                                    height={529}
+                                /> : null
+                        }
                     </div>
             }
 
