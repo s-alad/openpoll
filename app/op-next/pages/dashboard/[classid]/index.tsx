@@ -8,7 +8,9 @@ import { collection, doc, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase/firebaseconfig';
 import Poll, { convertPollTypeToText } from '@/models/poll';
 import Loader from '@/components/loader/loader';
+import Image from 'next/image';
 import { PiChatsDuotone, PiChatsFill } from "react-icons/pi";
+import { getClassnameFromId } from '@/models/class';
 
 interface PollAndId {
     poll: Poll;
@@ -22,9 +24,17 @@ export default function Dashboard() {
     // get the class id from the url
     const router = useRouter();
     const classid = router.query.classid;
-    console.log(classid);
+    const [classname, setClassname] = useState<string>("");
 
     const [openpolls, setOpenpolls] = useState<PollAndId[]>([]);
+    type PollTypes = "mc" | "short" | "order" | "attendance";
+    let polllookup: { [key: string]: string } = {
+        "mc": "Multiple Choice",
+        "short": "Short Answer",
+        "order": "Ordering",
+        "attendance": "Attendance"
+    }
+    const [selectedType, setSelectedType] = useState<PollTypes>("mc");
 
     async function getpolls() {
         setLoading(true);
@@ -47,7 +57,7 @@ export default function Dashboard() {
         } catch (e) {
             console.error("Error getting documents: ", e);
         }
-        
+
         setLoading(false);
     }
 
@@ -55,17 +65,59 @@ export default function Dashboard() {
     useEffect(() => {
         if (classid) {
             getpolls();
+            const classname = getClassnameFromId(classid as string);
+            classname.then((name) => {
+                setClassname(name);
+            });
         }
     }, [classid]);
 
     return (
-        <div className={s.class}>
+        <div className={s.dashboard}>
             {
-                loading ? <Loader/> :
+                loading ? <Loader /> :
 
                     <div className={s.openpolls}>
+
+                        <div className={s.info}>
+                            <div className={s.classinfo}>
+                                <div className={s.classname}>
+                                    {classname}
+                                </div>
+                                <div className={s.date}>
+                                    {new Date().toLocaleDateString()}
+                                </div>
+                            </div>
+
+                            <Link
+                                href={{
+                                    pathname: `/create/poll/${classid}`,
+                                }}
+                            >
+                                <div className={s.add}>
+                                    <FontAwesomeIcon icon={faPlus} />
+                                </div>
+                            </Link>
+                        </div>
+
+                        <div className={s.selector}>
+                            {
+                                Object.keys(polllookup).map((type, index) => {
+                                    return (
+                                        <div
+                                            key={index}
+                                            className={`${s.selectee} ${selectedType === type ? s.selected : ""}`}
+                                            onClick={() => setSelectedType(type as PollTypes)}
+                                        >
+                                            {polllookup[type] as string}
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
+
                         {
-                            openpolls.map((poll: PollAndId, index) => {
+                            openpolls.filter(poll => poll.poll.type === selectedType).map((poll, index) => {
                                 return (
                                     <div key={index} className={s.poll}>
                                         <div className={s.details}>
@@ -73,7 +125,7 @@ export default function Dashboard() {
                                                 <PiChatsFill />
                                                 {poll.poll.question}
                                             </div>
-                                            <div className={s.created}>Date created: {new Date(poll.poll.created.seconds).toLocaleDateString()}</div>
+                                            <div className={s.created}>created: {new Date(poll.poll.created.seconds).toLocaleDateString()}</div>
                                             <div className={s.polltype}>
                                                 {convertPollTypeToText(poll.poll.type)}
                                             </div>
@@ -90,24 +142,19 @@ export default function Dashboard() {
                                 )
                             })
                         }
+
+                        {
+                            openpolls.filter(poll => poll.poll.type === selectedType).length < 1 ?
+                                <Image
+                                    src="/dashboard-bg.png"
+                                    alt="logo"
+                                    width={591}
+                                    height={529}
+                                /> : null
+                        }
                     </div>
             }
 
-            <div className={s.stalepolls}>
-
-            </div>
-
-            <div className={s.start}>
-                <Link
-                    href={{
-                        pathname: `/create/poll/${classid}`,
-                    }}
-                >
-                    <div className={s.add}>
-                        <FontAwesomeIcon icon={faPlus} />
-                    </div>
-                </Link>
-            </div>
         </div>
     )
 }
