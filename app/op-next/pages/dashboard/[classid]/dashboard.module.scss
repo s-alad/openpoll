@@ -15,14 +15,20 @@
 
         .selector {
             display: flex;
+            width: 70%;
+            height: 50px;
             .selectee {
+                flex: 1 1;
+                display: flex;
+                justify-content: center;
                 align-items: center;
                 font-size: 20px;
                 font-weight: 500;
                 color: #000;
                 border-radius: 10px;
                 cursor: pointer;
-                font-weight: bold
+                font-weight: bold;
+                border: 2px solid transparent;
             }
             .selected {
                 background-color: #9596FF;

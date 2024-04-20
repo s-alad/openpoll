@@ -26,8 +26,14 @@ export default function Dashboard() {
     console.log(classid);
 
     const [openpolls, setOpenpolls] = useState<PollAndId[]>([]);
-    type PollTypes = "Multiple Choice" | "Short Answer" | "Ordering" | "Attendance";
-    const [selectedType, setSelectedType] = useState<PollTypes>("Multiple Choice");
+    type PollTypes = "mc" | "short" | "order" | "attendance";
+    let polllookup: { [key: string]: string } = {
+        "mc": "Multiple Choice",
+        "short": "Short Answer",
+        "order": "Ordering",
+        "attendance": "Attendance"
+    }
+    const [selectedType, setSelectedType] = useState<PollTypes>("mc");
 
     async function getpolls() {
         setLoading(true);
@@ -70,14 +76,14 @@ export default function Dashboard() {
 
                         <div className={s.selector}>
                             {
-                                ["Multiple Choice", "Short Answer", "Ordering", "Attendance"].map((type, index) => {
+                                Object.keys(polllookup).map((type, index) => {
                                     return (
                                         <div
                                             key={index}
                                             className={`${s.selectee} ${selectedType === type ? s.selected : ""}`}
                                             onClick={() => setSelectedType(type as PollTypes)}
                                         >
-                                            {type}
+                                            {polllookup[type] as string}
                                         </div>
                                     )
                                 })
@@ -85,7 +91,7 @@ export default function Dashboard() {
                         </div>
 
                         {
-                            openpolls.map((poll: PollAndId, index) => {
+                            openpolls.filter(poll => poll.poll.type === selectedType).map((poll, index) => {
                                 return (
                                     <div key={index} className={s.poll}>
                                         <div className={s.details}>
