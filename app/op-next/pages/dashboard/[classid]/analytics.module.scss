@@ -1,0 +1,15 @@
+.class {
+    width: 100%;
+    
+    .pollContainer {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+        margin-top: 2vh;
+
+        .pollQuestion {
+            font-size: 20px;
+        }
+    }
+}

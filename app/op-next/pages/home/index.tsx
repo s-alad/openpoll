@@ -12,6 +12,7 @@ import { useAuth } from "@/context/authcontext";
 import Unauthorized from "@/components/unauthorized/unauthorized";
 import { useGlobal } from "@/context/globalcontext";
 import Link from "next/link";
+import Image from "next/image";
 
 interface Class {
     cid: string;
@@ -159,7 +160,7 @@ export default function Home() {
     return (
         <div className={s.home}>
             <main className={s.main}>
-                <div className={s.classes}>
+                <div className={s.myClasses}>
                     <div className={s.details}>
                         <h2>My Classes</h2>
                         <div className={s.create} onClick={() => { router.push("/create/class") }}>
@@ -167,39 +168,55 @@ export default function Home() {
                             Create
                         </div>
                     </div>
-                    {classes.map((classData, index) => (
-                        <div className={s.class} key={index}>
-                            <div className={`${s.trap} ${s.yellow}`}>
-                                {/* <span>{classData.cid.substring(0,6)}</span> */}
-                            </div>
-                            <div className={`${s.content} ${s.yellow}`}>
-                                <div className={s.info}>
-                                    <div className={s.className}>{classData.class.description}</div>
-                                    <div className={s.classDescription}>{classData.class.classname}</div>
 
-                                    <div className={s.classDetails}>
-                                        <span className={s.teacher}>{classData.class.owner.name}</span>
-                                        <span className={s.courseCode}> | Join Code: {classData.cid.substring(0,6)}</span>
+                    {classes.length > 0 ? (
+                        // If classes are available, render the classes
+                        <div className={s.classes}>
+                            {classes.map((classData, index) => (
+                                <div className={s.class} key={index}>
+                                    <div className={`${s.trap} ${s.yellow}`}>
+                                        {/* <span>{classData.cid.substring(0,6)}</span> */}
+                                    </div>
+                                    <div className={`${s.content} ${s.yellow}`}>
+                                        <div className={s.info}>
+                                            <div className={s.className}>{classData.class.description}</div>
+                                            <div className={s.classDescription}>{classData.class.classname}</div>
+        
+                                            <div className={s.classDetails}>
+                                                <span className={s.teacher}>{classData.class.owner.name}</span>
+                                                <span className={s.courseCode}> | Join Code: {classData.cid.substring(0,6)}</span>
+                                            </div>
+                                        </div>
+                                        <div className={s.actions}>
+                                            <Link
+                                                href={{
+                                                    pathname: '/dashboard/' + classData.cid,
+                                                }}
+                                                className={s.link}
+                                            >
+                                                <div className={s.join}>Enter</div>
+                                            </Link>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className={s.actions}>
-                                    <Link
-                                        href={{
-                                            pathname: '/dashboard/' + classData.cid,
-                                        }}
-                                        className={s.link}
-                                    >
-                                        <div className={s.join}>Enter</div>
-                                    </Link>
-                                </div>
-                            </div>
+                            ))}
                         </div>
-                    ))}
+                    ) : (
+                        <div>
+                            <Image
+                                src="/PeersArtwork.png"
+                                alt="Open Poll Logo"
+                                width={500}
+                                height={500}
+                                className={s.peersArtwork}
+                            />
+                        </div>
+                    )}
                 </div>
 
                 <div className={s.seperator}></div>
 
-                <div className={s.classes}>
+                <div className={s.myClasses}>
                     <div className={s.details}>
                         <h2>Classes Enrolled</h2>
                         {
@@ -223,36 +240,48 @@ export default function Home() {
                                 </div>
                         }
                     </div>
-                    {
-                        enrolled.map((classData, index) => (
-                            <div className={s.class} key={index}>
-                                <div className={`${s.trap} ${s.yellow}`}>
-                                    <span>{classData.cid.substring(0,6)}</span>
-                                </div>
-                                <div className={`${s.content} ${s.yellow}`}>
-                                    <div className={s.info}>
-                                        <div className={s.className}>{classData.class.description}</div>
-                                        <div className={s.classDescription}>{classData.class.classname}</div>
+                    {enrolled.length > 0 ? (
+                        <div className={s.classes}>
+                            {enrolled.map((classData, index) => (
+                                    <div className={s.class} key={index}>
+                                        <div className={`${s.trap} ${s.yellow}`}>
+                                            {/* <span>{classData.cid.substring(0,6)}</span> */}
+                                        </div>
+                                        <div className={`${s.content} ${s.yellow}`}>
+                                            <div className={s.info}>
+                                                <div className={s.className}>{classData.class.description}</div>
+                                                <div className={s.classDescription}>{classData.class.classname}</div>
 
-                                        <div className={s.classDetails}>
-                                            <span className={s.teacher}>{classData.class.owner.name}</span>
-                                            <span className={s.courseCode}> | Join Code: {classData.cid.substring(0,6)}</span>
+                                                <div className={s.classDetails}>
+                                                    <span className={s.teacher}>{classData.class.owner.name}</span>
+                                                    <span className={s.courseCode}> | Join Code: {classData.cid.substring(0,6)}</span>
+                                                </div>
+                                            </div>
+                                            <div className={s.actions}>
+                                                <Link
+                                                    href={{
+                                                        pathname: '/class/' + classData.cid,
+                                                    }}
+                                                    className={s.link}
+                                                >
+                                                    <div className={s.join}>Enter</div>
+                                                </Link>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className={s.actions}>
-                                        <Link
-                                            href={{
-                                                pathname: '/class/' + classData.cid,
-                                            }}
-                                            className={s.link}
-                                        >
-                                            <div className={s.join}>Enter</div>
-                                        </Link>
-                                    </div>
-                                </div>
-                            </div>
-                        ))
-                    }
+                                ))}
+                        </div>
+                    ) : (
+                        <div>
+                            <Image
+                                src="/PeersArtwork.png"
+                                alt="Open Poll Logo"
+                                width={500}
+                                height={500}
+                                className={s.peersArtwork}
+                            />
+                        </div>
+                    )}
                 </div>
             </main>
         </div>
