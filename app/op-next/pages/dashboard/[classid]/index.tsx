@@ -125,7 +125,7 @@ export default function Dashboard() {
                                                 <PiChatsFill />
                                                 {poll.poll.question}
                                             </div>
-                                            <div className={s.created}>created: {new Date(poll.poll.created.seconds).toLocaleDateString()}</div>
+                                            <div className={s.created}>created: {new Date(poll.poll.created.seconds * 1000).toLocaleDateString()}</div>
                                             <div className={s.polltype}>
                                                 {convertPollTypeToText(poll.poll.type)}
                                             </div>
