@@ -72,6 +72,33 @@ export default function gradebook() {
         }
     };
 
+
+    //function to convert to csv format
+    function convertToCSV(data: { [x: string]: any; }) {
+        const csvRows = [];
+        // Headers
+        csvRows.push('Name,Email,Grade');
+        // Data
+        Object.keys(data).forEach((key) => {
+            const student = data[key];
+            csvRows.push(`${student.name},${student.email},${student.grade}`);
+        });
+        return csvRows.join('\n');
+    }
+
+    //function to download the csv file
+    function downloadCSV() {
+        const csvData = convertToCSV(students);
+        const blob = new Blob([csvData], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `gradebook-${classid}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
     const [totalCorrectAnswers, setTotalCorrectAnswers] = useState(0);
     async function grade() {
         let tempStudents: StudentsData = { ...students };
@@ -123,27 +150,28 @@ export default function gradebook() {
 
     return (
         <div className={s.gradebook}>
-            <div>
-                <h1>Gradebook for Class: {classid}</h1>
-                <table className={s.gradebookTable}>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Grade</th>
+        <div>
+            <h1>Gradebook for Class: {classid}</h1>
+            <button onClick={downloadCSV} className={s.downloadButton}>Download CSV</button>
+            <table className={s.gradebookTable}>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Grade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {Object.keys(students).map((studentId) => (
+                        <tr key={studentId}>
+                            <td>{students[studentId].name}</td>
+                            <td>{students[studentId].email}</td>
+                            <td>{students[studentId].grade} / {totalCorrectAnswers}</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {Object.keys(students).map((studentId) => (
-                            <tr key={studentId}>
-                                <td>{students[studentId].name}</td>
-                                <td>{students[studentId].email}</td>
-                                <td>{students[studentId].grade} / {totalCorrectAnswers}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                    ))}
+                </tbody>
+            </table>
         </div>
+    </div>
     );
 }

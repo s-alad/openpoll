@@ -9,7 +9,7 @@
 
         width: 100%;
 
-        .classes {
+        .myClasses {
             width: 70%;
             display: flex;
             flex-direction: column;
@@ -76,7 +76,7 @@
                 }
             }
 
-            .class {
+            .classes {
                 display: flex;
                 flex-direction: column;
                 width: 100%;
@@ -116,46 +116,69 @@
                             font-weight: 400;
                             padding-bottom: 1%;
                         }
-
-                        .classDescription {
-                            font-size: 30px;
-                            font-weight: 600;
-                            padding-bottom: 1%;
+                    }
+    
+                    .content {
+                        width: 100%;
+                        height: 130px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        padding: 0 20px;
+                        border-radius: 5px;
+    
+                        .info {
+                            .className {
+                                font-size: 15px;
+                                font-weight: 400;
+                                padding-bottom: 1%;
+                            }
+    
+                            .classDescription {
+                                font-size: 30px;
+                                font-weight: 600;
+                                padding-bottom: 1%;
+                            }
+    
+                            .classDetail {
+                                font-size: 15px;
+                            }
                         }
-
-                        .classDetail {
-                            font-size: 15px;
+    
+                        .actions {
+                            .join {
+                                width: 180px;
+                                height: 50px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                background-color: #4036ee;
+                                color: white;
+                                border-radius: 32px;
+                                font-size: 18px;
+                                font-weight: 600;
+                                cursor: pointer;
+                                &:hover {
+                                    transition: all 0.3s;
+                                    background-color: #9596FF;
+                                    color: #000000;
+                                }   
+                            }
                         }
                     }
-
+    
                     .actions {
-                        .join {
-                            width: 180px;
-                            height: 50px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            background-color: #4036ee;
-                            color: white;
-                            border-radius: 32px;
-                            font-size: 18px;
-                            font-weight: 600;
-                            cursor: pointer;
-                        }
+                        display: flex;
+    
                     }
-                }
-
-                .actions {
-                    display: flex;
-
-                }
-
-                .yellow {
-                    background-color: #FBB91B;
-                }
-
-                .pink {
-                    background-color: #ffc9c9;
+    
+                    .yellow {
+                        background-color: #FBB91B;
+                    }
+    
+                    .pink {
+                        background-color: #ffc9c9;
+                    }
                 }
             }
         }

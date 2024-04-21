@@ -6,6 +6,7 @@ import Poll from "@/models/poll";
 import RenderBarChart from '@/components/barchart/barchart';
 import { useAuth } from '@/context/authcontext';
 import { onAuthStateChanged } from 'firebase/auth';
+import s from './analytics.module.scss'
 
 export default function analytics() {
     const router = useRouter();
@@ -51,13 +52,18 @@ export default function analytics() {
     }, [classid]);
 
     return (
-        <div>
+        <div className={s.class}>
             {loading ? (
                 <div>Loading...</div>
             ) : (
                 <div>
                     {openpolls.map((data, index) => (
-                        <RenderBarChart poll={data} key={index}/>
+                        <div className={s.pollContainer}>
+                            <div className={s.pollQuestion}>{index + 1}. {data.question}</div>
+                            <div>Correct Answers: {data.answers}</div>
+
+                            <RenderBarChart poll={data} key={index}/>
+                        </div>
                     ))}
                 </div>
             )}

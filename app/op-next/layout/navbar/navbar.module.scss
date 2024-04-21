@@ -5,13 +5,16 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 40px;
-    padding-top: 30px;
-    padding-bottom: 5px;
     background-color: #c5cfe5;
 
-    .path {
-        font-size: 22px;
-        font-weight: 600;
+    .navbarLeftItems {
+        display: flex;
+        align-items: center;
+        
+        .path {
+            font-size: 22px;
+            font-weight: 600;
+            margin-left: 20px;
 
         .back {
             margin-right: 12px;
@@ -19,14 +22,34 @@
             width: 30px;
         }
     }
+    }
     
-    .person {
-        width: 40px;
-        height: 40px;
+    .navbarRightItems {
         display: flex;
         align-items: center;
-        justify-content: center;
-        border: 3px solid black;
-        border-radius: 50%;
+        text-align: center;
+        border-radius: 5px;
+        padding: 5px;
+        cursor: pointer;
+
+        .person {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .personName {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 5px;
+            align-items: center;
+        }
+    }
+
+    .navbarRightItems:hover {
+        background-color: #9596FF;
     }
 }
