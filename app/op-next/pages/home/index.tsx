@@ -6,17 +6,12 @@ import { useRouter } from "next/router";
 import { db, auth } from "../../firebase/firebaseconfig";
 import { collection, getDocs, where, query, addDoc, setDoc, doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
-import Classroom from "@/models/class";
+import Classroom, { Class } from "@/models/class";
 import Loader from "@/components/loader/loader";
 import { useAuth } from "@/context/authcontext";
 import Unauthorized from "@/components/unauthorized/unauthorized";
 import { useGlobal } from "@/context/globalcontext";
 import Link from "next/link";
-
-interface Class {
-    cid: string;
-    class: Classroom;
-}
 
 export default function Home() {
     const router = useRouter();

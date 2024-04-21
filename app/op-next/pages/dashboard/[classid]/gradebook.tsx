@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import Classroom from '@/models/class';
 import Poll from '@/models/poll';
 import { doc, collection, getDocs, getDoc } from 'firebase/firestore';
 import { db, auth } from '@/firebase/firebaseconfig';
