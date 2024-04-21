@@ -131,7 +131,13 @@ export default function Dashboard() {
                                             </div>
                                         </div>
                                         <div className={s.actions}>
-                                            <button className={s.configure}>edit</button>
+                                            <Link
+                                                href={{
+                                                    pathname: `/edit/${classid}/poll/${poll.id}`, 
+                                                }}
+                                            >
+                                                <button className={s.configure}>edit</button>
+                                            </Link>
                                             <Link
                                                 href={{
                                                     pathname: `/live/${classid}/${poll.id}`,
