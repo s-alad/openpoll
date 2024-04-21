@@ -21,6 +21,21 @@ export default function EditPoll() {
     });
     const [loading, setLoading] = useState(true);
 
+    function ensureArray(input: any) {
+        // Check if input is already an array
+        if (Array.isArray(input)) {
+            return input;
+        }
+        // Check if the input is a string
+        else if (typeof input === 'string') {
+            return [input];  // Return an array containing the string
+        }
+        // Optional: Handle cases where input is neither a string nor an array
+        else {
+            return [];  // Return an empty array or throw an error as per your needs
+        }
+    }
+
     useEffect(() => {
         async function fetchPollData() {
             if (classid && pollid) {
@@ -33,7 +48,7 @@ export default function EditPoll() {
                         pollid: pollid as string,
                         type: data.type,
                         question: data.question,
-                        answers: data.answers,
+                        answers: ensureArray(data.answers),
                         options: data.options
                     });
                     setLoading(false);
@@ -61,6 +76,9 @@ export default function EditPoll() {
             <div className={s.edit}>
                 {
 					pollData.type === "mc" && <CreateMultipleChoicePoll pollData={pollData}/>
+				}
+                {
+					pollData.type === "short" && <CreateShortAnswerPoll pollData={pollData}/>
 				}
             </div>
         </main>
