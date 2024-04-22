@@ -78,7 +78,7 @@ export default function Home() {
             const uid = user!.uid;
             const email = user!.email!;
 
-            const ownerQuery = query(collection(db, "classes"), where("owner", "==", uid));
+            const ownerQuery = query(collection(db, "classes"), where("owner.uid", "==", uid));
             const adminQuery = query(collection(db, "classes"), where("admin", "array-contains", email));
 
             const [ownerSnapshot, adminSnapshot] = await Promise.all([
@@ -95,6 +95,8 @@ export default function Home() {
                 cid: doc.id,
                 class: doc.data() as Classroom             
             }));
+
+            console.log(ownerClasses, adminClasses);
 
             const combinedClasses = [...ownerClasses, ...adminClasses]; 
             const uniqueClasses = combinedClasses.filter((cls, index, self) =>
