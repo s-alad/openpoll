@@ -11,28 +11,31 @@ import { ref, set } from "firebase/database";
 import { useRouter } from "next/router";
 import Spacer from "@/components/spacer/spacer";
 import { createAttendanceSchema } from "@/validation/schema";
+import AttendancePoll from "@/models/poll/attendance";
 
 export default function CreateAttendancePoll() {
 
-    const router = useRouter();
-    const classid = router.query.classid as string;
+	const router = useRouter();
+	const classid = router.query.classid as string;
 
-    async function createAttendance(data: CreateAttendancePollFormData) {
+	// attendance ============================================
+
+	async function onSubmit(data: CreateAttendancePollFormData) {
 		console.log('form data submitted:', data);
 
 		const user = auth.currentUser;
 		const uid = user!.uid;
 
-		const polldata = {
+		const polldata: AttendancePoll = {
 			type: "attendance",
 			classid: classid,
 			date: data.date,
 			question: "Attendance for " + data.date.toLocaleDateString(),
-			attended: data.attended,
-			created: new Date(),
+			createdat: new Date(),
 			creator: uid,
 			active: false,
-			done: false
+			done: false,
+			responses: {}
 		}
 		console.log(polldata);
 
@@ -52,27 +55,26 @@ export default function CreateAttendancePoll() {
 
 	}
 
-    const { register: registerattendance, handleSubmit: handleSubmitattendance, control: control3, formState: { errors: errors3 } } =
-        useForm<CreateAttendancePollFormData>({
-            resolver: zodResolver(createAttendanceSchema),
-            defaultValues: {
-                date: new Date(),
-                attended: []
-            }
-        });
+	const { register, handleSubmit, control: control3, formState: { errors: errors3 } } =
+		useForm<CreateAttendancePollFormData>({
+			resolver: zodResolver(createAttendanceSchema),
+			defaultValues: {
+				date: new Date(),
+				question: "Attendance for " + new Date().toLocaleDateString(),
+			}
+		});
 
-    return (
-        <form className={s.form} /* onSubmit={handleSubmit(onSubmit)} */>
+	return (
+		<form className={s.form} onSubmit={handleSubmit(onSubmit)}>
 
-            <div className={`${s.create} ${s.attendance}`}>
-                <h2>Create Attendance Poll for Today</h2>
-                <button onClick={() => createAttendance({ date: new Date(), attended: [] })} className={s.submitButton}>
-								Create Attendance Poll
-							</button>
-            </div>
-            <Spacer />
-            {/* <Button type="submit" text="Submit" /> */}
 
-        </form>
-    )
+			<div className={s.createattend}>Create Attendance Poll for Today</div>
+			<div className={s.date}>{new Date().toLocaleDateString()}</div>
+			<Spacer />
+			<Button type="submit" text="Create Attendance Poll"
+				onClick={
+					() => console.log("Create Attendance Poll")
+				} />
+		</form>
+	)
 }

@@ -2,6 +2,31 @@
     width: 100%;
     text-align: center;
 
+    .downloadButton {
+        padding: 10px 20px;
+        background-color: #4c4eaf; // Green background
+        color: white; // White text
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-bottom: 15px;
+        transition: background-color 0.3s, transform 0.3s;
+    
+        &:hover {
+            background-color: #4036ee; // Darker green on hover
+            transform: translateY(-2px); // Slight lift effect
+        }
+    
+        &:active {
+            transform: translateY(1px); // Slight press down effect
+        }
+    
+        &:focus {
+            outline: none; // Removes the default focus outline
+        }
+    }
+
     .gradebookTable {
         margin:auto;
         width: 75%;

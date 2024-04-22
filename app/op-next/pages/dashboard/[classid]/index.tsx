@@ -6,16 +6,13 @@ import s from './dashboard.module.scss';
 import Link from 'next/link';
 import { collection, doc, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase/firebaseconfig';
-import Poll, { convertPollTypeToText } from '@/models/poll';
+import Poll, { PollAndId, TLPoll, TPoll, convertPollTypeToText, getCorrectPollType } from '@/models/poll';
 import Loader from '@/components/loader/loader';
 import Image from 'next/image';
 import { PiChatsDuotone, PiChatsFill } from "react-icons/pi";
 import { getClassnameFromId } from '@/models/class';
+import MCPoll from '@/models/poll/mc';
 
-interface PollAndId {
-    poll: Poll;
-    id: string;
-}
 
 export default function Dashboard() {
 
@@ -27,14 +24,7 @@ export default function Dashboard() {
     const [classname, setClassname] = useState<string>("");
 
     const [openpolls, setOpenpolls] = useState<PollAndId[]>([]);
-    type PollTypes = "mc" | "short" | "order" | "attendance";
-    let polllookup: { [key: string]: string } = {
-        "mc": "Multiple Choice",
-        "short": "Short Answer",
-        "order": "Ordering",
-        "attendance": "Attendance"
-    }
-    const [selectedType, setSelectedType] = useState<PollTypes>("mc");
+    const [selectedType, setSelectedType] = useState<TPoll>("mc");
 
     async function getpolls() {
         setLoading(true);
@@ -48,10 +38,14 @@ export default function Dashboard() {
             let openpolls: PollAndId[] = [];
             snapshot.forEach((doc) => {
                 const pid = doc.id;
-                const data = doc.data() as Poll;
+                const data = doc.data();
+                let poll = getCorrectPollType(data);
+
+                if (!poll) return;
                 if (!data.classid) return;
                 console.log(pid, data);
-                openpolls.push({ poll: data, id: pid })
+
+                openpolls.push({ poll: poll, id: pid } as PollAndId)
             });
             setOpenpolls(openpolls);
         } catch (e) {
@@ -102,14 +96,14 @@ export default function Dashboard() {
 
                         <div className={s.selector}>
                             {
-                                Object.keys(polllookup).map((type, index) => {
+                                TLPoll.map((type, index) => {
                                     return (
                                         <div
                                             key={index}
                                             className={`${s.selectee} ${selectedType === type ? s.selected : ""}`}
-                                            onClick={() => setSelectedType(type as PollTypes)}
+                                            onClick={() => setSelectedType(type as TPoll)}
                                         >
-                                            {polllookup[type] as string}
+                                            {convertPollTypeToText(type as TPoll)}
                                         </div>
                                     )
                                 })
@@ -125,19 +119,31 @@ export default function Dashboard() {
                                                 <PiChatsFill />
                                                 {poll.poll.question}
                                             </div>
-                                            <div className={s.created}>created: {new Date(poll.poll.created.seconds).toLocaleDateString()}</div>
+                                            <div className={s.created}>created: {new Date(poll.poll.createdat.seconds).toLocaleDateString()}</div>
                                             <div className={s.polltype}>
-                                                {convertPollTypeToText(poll.poll.type)}
+                                                {convertPollTypeToText(poll.poll.type as TPoll)}
                                             </div>
                                         </div>
-                                        <div className={s.actions}>
-                                            <button className={s.configure}>edit</button>
+                                        {
+                                            poll.poll.done ? 
+                                            <div>
+                                                completed
+                                            </div> :
+                                            <div className={s.actions}>
+                                            <Link
+                                                href={{
+                                                    pathname: `/edit/${classid}/poll/${poll.id}`, 
+                                                }}
+                                            >
+                                                <button className={s.configure}>edit</button>
+                                            </Link>
                                             <Link
                                                 href={{
                                                     pathname: `/live/${classid}/${poll.id}`,
                                                 }}
                                             ><button className={s.live}>go live</button></Link>
                                         </div>
+                                        }
                                     </div>
                                 )
                             })
