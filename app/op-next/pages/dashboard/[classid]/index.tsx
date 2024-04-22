@@ -6,18 +6,13 @@ import s from './dashboard.module.scss';
 import Link from 'next/link';
 import { arrayUnion, collection, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
 import { auth, db } from '@/firebase/firebaseconfig';
-import Poll, { convertPollTypeToText } from '@/models/poll';
+import Poll, { PollAndId, TLPoll, TPoll, convertPollTypeToText, getCorrectPollType } from '@/models/poll';
 import Loader from '@/components/loader/loader';
 import Image from 'next/image';
 import { PiChatsDuotone, PiChatsFill } from "react-icons/pi";
 import { getClassnameFromId } from '@/models/class';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useAuth } from '@/context/authcontext';
-
-interface PollAndId {
-    poll: Poll;
-    id: string;
-}
 
 export default function Dashboard() {
     const [loading, setLoading] = useState(false);
@@ -221,12 +216,17 @@ export default function Dashboard() {
                                                 <PiChatsFill />
                                                 {poll.poll.question}
                                             </div>
-                                            <div className={s.created}>created: {new Date(poll.poll.created.seconds).toLocaleDateString()}</div>
+                                            <div className={s.created}>created: {new Date(poll.poll.createdat.seconds).toLocaleDateString()}</div>
                                             <div className={s.polltype}>
-                                                {convertPollTypeToText(poll.poll.type)}
+                                                {convertPollTypeToText(poll.poll.type as TPoll)}
                                             </div>
                                         </div>
-                                        <div className={s.actions}>
+                                        {
+                                            poll.poll.done ? 
+                                            <div>
+                                                completed
+                                            </div> :
+                                            <div className={s.actions}>
                                             <Link
                                                 href={{
                                                     pathname: `/edit/${classid}/poll/${poll.id}`, 
@@ -240,11 +240,11 @@ export default function Dashboard() {
                                                 }}
                                             ><button className={s.live}>go live</button></Link>
                                         </div>
+                                        }
                                     </div>
                                 )
                             })
                         }
-
                         {
                             openpolls.filter(poll => poll.poll.type === selectedType).length < 1 ?
                                 <Image

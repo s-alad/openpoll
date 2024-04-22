@@ -71,7 +71,7 @@ export default function Home() {
         getclass();
     }
 
-    async function getclass() {
+     async function getclass() {
         setLoading(true);
         try {
             const user = auth.currentUser;
@@ -94,7 +94,6 @@ export default function Home() {
         }
         setLoading(false);
     }
-
     async function getenrolled() {
         console.log("getting enrolled classes");
         setLoading(true);
