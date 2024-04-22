@@ -96,10 +96,10 @@ export default function Live() {
             await set(pollsref, true);
             setPollFinalStatus(true);
             setpollstatus(false);
-            let fxname = "transferPollResults"
+            let fxname = "transferAndCalculatePollResults"
             setEndedStatus(true);
 
-            const transferPollResultsFx = httpsCallable(fxns, "transferPollResults");
+            const transferPollResultsFx = httpsCallable(fxns, fxname);
             const result = await transferPollResultsFx({ pollId: pollId, classId: classId });
             console.log(result.data, 'result');
 

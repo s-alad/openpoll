@@ -173,11 +173,15 @@ export default function ClassGrades() {
 					},
 				);
 
+					console.log(userResponseEntry, "user response entry")
+
+				// If the user has responded to the poll
+				// Check if the user's response is correct
+				// Increment the correct count if the user's response is correct
 				if (userResponseEntry) {
-					const [responseOption] = userResponseEntry;
-					userResponseInfo.responses = [responseOption]; // The option the user chose
-					userResponseInfo.isCorrect = correctAnswersSet.has(responseOption);
+					userResponseInfo.responses = userResponseEntry[1].response;
 					userResponseInfo.answered = true;
+					userResponseInfo.isCorrect = userResponseEntry[1].correct;
 					if (userResponseInfo.isCorrect) {
 						correctCount++; // Increment local correct count
 					}
