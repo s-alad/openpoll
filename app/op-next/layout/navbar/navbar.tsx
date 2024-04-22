@@ -89,7 +89,7 @@ export default function Navbar() {
             </div>
             <div className={s.person}
                 onClick={() => {
-                    logout();
+                    router.push("/profile");
                 }}
             >
                 <FontAwesomeIcon icon={faUser} />
