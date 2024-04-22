@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faArrowLeftLong, faPlus } from '@fortawesome/free-solid-svg-icons';
 import s from './dashboard.module.scss';
 import Link from 'next/link';
-import { collection, doc, getDocs } from 'firebase/firestore';
+import { arrayUnion, collection, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
 import { db } from '@/firebase/firebaseconfig';
 import Poll, { convertPollTypeToText } from '@/models/poll';
 import Loader from '@/components/loader/loader';
@@ -18,13 +18,13 @@ interface PollAndId {
 }
 
 export default function Dashboard() {
-
     const [loading, setLoading] = useState(false);
 
     // get the class id from the url
     const router = useRouter();
     const classid = router.query.classid;
     const [classname, setClassname] = useState<string>("");
+    const [taId, settaId] = useState<string>("");
 
     const [openpolls, setOpenpolls] = useState<PollAndId[]>([]);
     type PollTypes = "mc" | "short" | "order" | "attendance";
@@ -59,6 +59,44 @@ export default function Dashboard() {
         }
 
         setLoading(false);
+    }
+
+    async function handleSubmit(event: any) {
+        event.preventDefault();
+
+        try {
+            addTA(taId);
+            settaId("");
+        } catch (e) {
+            console.error("Error adding TA: ", e);
+        }
+
+
+    }
+
+    async function addTA(userEmail: string) {
+        const classRef = doc(db, "classes", classid as string);
+        const userRef = doc(db, "users", userEmail);
+
+
+        try {
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+                console.log("Document data:", userSnap.data()); // Handle the data as needed
+                const userData = userSnap.data();
+                console.log(userData);  
+                const userId = userSnap.id;
+
+                await updateDoc(classRef, {
+                    tas: arrayUnion(userId) // add the user email to the tas array
+                });      
+            } else {
+                console.log("No such document!");            
+            }
+
+        } catch (e) {
+            console.error("Error adding TA: ", e);
+        }
     }
 
     //wait for router to load
@@ -98,6 +136,17 @@ export default function Dashboard() {
                                     <FontAwesomeIcon icon={faPlus} />
                                 </div>
                             </Link>
+                            <form onSubmit={handleSubmit}>
+                                <input
+                                    type="text"
+                                    value={taId}
+                                    onChange={(e) => settaId(e.target.value)}
+                                    placeholder="Enter TA User ID"
+                                    required
+                                />
+                                <button type="submit">Add TA</button>
+                            </form>
+                             
                         </div>
 
                         <div className={s.selector}>
