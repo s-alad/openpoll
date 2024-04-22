@@ -1,9 +1,11 @@
 import { BarChart } from '@mui/x-charts';
 import { useEffect, useState } from 'react';
 import Poll from '@/models/poll';
+import MCPoll, { MCResponses } from '@/models/poll/mc';
+import ShortPoll from '@/models/poll/short';
 
 interface PollChartProps {
-    poll?: Poll;
+    poll?: MCPoll;
 }
 
 export default function RenderBarChart({ poll }: PollChartProps) {
@@ -16,7 +18,7 @@ export default function RenderBarChart({ poll }: PollChartProps) {
             if (!poll) return; // Exit early if poll is not available
             console.log(poll);
             const options = poll.options;
-            const responses = poll.responses;
+            const responses: MCResponses = poll.responses;
 
             if (!responses || !options) {
                 setLoading(false); 
@@ -26,15 +28,9 @@ export default function RenderBarChart({ poll }: PollChartProps) {
                
             console.log(options, responses);
             const currentPollData = options.map((currentOption) => {
-                let current_value = 0; // Default value if no one chose the option
-                if (responses[currentOption.option]) {
-                    current_value = Object.keys(responses[currentOption.option]).length;
-                }
-
-                return { 
-                    label: currentOption.option, 
-                    value: current_value 
-                };
+                const optionLabel = currentOption.letter;
+                const optionValue = Object.values(responses).filter((response) => response.response.includes(optionLabel)).length;
+                return { label: optionLabel, value: optionValue };
             });
             setShowChart(true);
             setPollData(currentPollData);

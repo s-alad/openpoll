@@ -6,17 +6,13 @@ import { useRouter } from "next/router";
 import { db, auth } from "../../firebase/firebaseconfig";
 import { collection, getDocs, where, query, addDoc, setDoc, doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
-import Classroom from "@/models/class";
+import Classroom, { Class } from "@/models/class";
 import Loader from "@/components/loader/loader";
 import { useAuth } from "@/context/authcontext";
 import Unauthorized from "@/components/unauthorized/unauthorized";
 import { useGlobal } from "@/context/globalcontext";
 import Link from "next/link";
-
-interface Class {
-    cid: string;
-    class: Classroom;
-}
+import Image from "next/image";
 
 export default function Home() {
     const router = useRouter();
@@ -87,9 +83,11 @@ export default function Home() {
                 (doc) => {
                     const data = doc.data();
                     const cid = doc.id;
-                    return { cid, class: data as Classroom };
+
+                    return { cid, class: data as Classroom } as Class;
                 }
             );
+            console.log(newClasses);
             setClasses(newClasses);
         } catch (e) {
             console.error("Error getting documents: ", e);
@@ -123,7 +121,7 @@ export default function Home() {
                         const data = doc.data();
                         console.log(data);
                         const cid = doc.id;
-                        return { cid, class: data as Classroom };
+                        return { cid, class: data as Classroom } as Class;
                     }
                 );
                 setEnrolled(newClasses);
@@ -170,7 +168,7 @@ export default function Home() {
                     {classes.map((classData, index) => (
                         <div className={s.class} key={index}>
                             <div className={`${s.trap} ${s.yellow}`}>
-                                {/* <span>{classData.cid.substring(0,6)}</span> */}
+                                {classData.class.classidentifier}
                             </div>
                             <div className={`${s.content} ${s.yellow}`}>
                                 <div className={s.info}>
@@ -208,16 +206,12 @@ export default function Home() {
                                     <input type="text" placeholder="class code"
                                         onChange={(e) => { setClassCode(e.target.value) }}
                                     />
-                                    <button
-                                        onClick={joinclass}
-                                    >
+                                    <button onClick={joinclass}>
                                         <FontAwesomeIcon icon={faRightToBracket} />
                                     </button>
                                 </div>
                                 :
-                                <div className={s.join}
-                                    onClick={() => { setJoinClass(true) }}
-                                >
+                                <div className={s.join} onClick={() => { setJoinClass(true) }}>
                                     <FontAwesomeIcon icon={faRightToBracket} />
                                     Join
                                 </div>
@@ -227,7 +221,7 @@ export default function Home() {
                         enrolled.map((classData, index) => (
                             <div className={s.class} key={index}>
                                 <div className={`${s.trap} ${s.yellow}`}>
-                                    <span>{classData.cid.substring(0,6)}</span>
+                                    {classData.class.classidentifier}
                                 </div>
                                 <div className={`${s.content} ${s.yellow}`}>
                                     <div className={s.info}>
@@ -252,6 +246,16 @@ export default function Home() {
                                 </div>
                             </div>
                         ))
+                    }
+                    {
+                        enrolled.length === 0 &&
+                            <Image
+                                src="/PeersArtwork.png"
+                                alt="Open Poll Logo"
+                                width={500}
+                                height={500}
+                                className={s.peersArtwork}
+                            />
                     }
                 </div>
             </main>

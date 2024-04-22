@@ -10,21 +10,27 @@ import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Button from "@/ui/button/button";
 import { Box, Chip, FormControl, MenuItem, OutlinedInput, Select } from "@mui/material";
 import { useAuth } from "@/context/authcontext";
-import { addDoc, collection, doc } from "firebase/firestore";
-import { ref, set } from "firebase/database";
+import { deleteDoc, addDoc, collection, doc } from "firebase/firestore";
+import { remove, ref, set } from "firebase/database";
 import { db, rdb } from "@/firebase/firebaseconfig";
 import { useRouter } from "next/router";
 import Spacer from "@/components/spacer/spacer";
+import MCPoll, { MCAnswerKey, MCOptions } from "@/models/poll/mc";
 
 
-export default function CreateMultipleChoicePoll() {
+type CreateMultipleChoicePollProps = {
+    pollData?: MCPoll
+    pollid?: string
+}
+
+export default function CreateMultipleChoicePoll({ pollData, pollid }: CreateMultipleChoicePollProps) {
 
     const { user } = useAuth();
     const router = useRouter();
     const classid = router.query.classid as string;
 
     const colorselection: { [key: string]: string } = { "A": s.a, "B": s.b, "C": s.c, "D": s.d }
-    const initalpolls = [{ letter: "A", option: "A" }, { letter: "B", option: "B" }];
+    const initalpolls: MCOptions = [{ letter: "A", option: "" }, { letter: "B", option: "" }];
 
     const {
         register,
@@ -36,8 +42,9 @@ export default function CreateMultipleChoicePoll() {
         {
             resolver: zodResolver(createMultipleChoicePollData),
             defaultValues: {
-                options: initalpolls,
-                answers: ["A"]
+                question: pollData?.question ?? "",
+                options: pollData?.options ?? initalpolls,
+                answerkey: pollData?.answerkey ?? ["A"]
             }
         }
     );
@@ -48,20 +55,25 @@ export default function CreateMultipleChoicePoll() {
     });
 
     const onSubmit = async (data: CreateMultipleChoicePollFormData) => {
+
+        if (pollid) {
+            await deleteOldPoll(pollid, classid);
+        }    
+
         console.log("SUCCESS", data);
         console.log('form data submitted:', data);
 
 		const uid = user!.uid;
 
-		const polldata = {
+		const polldata: MCPoll = {
 			type: "mc",
 			classid: classid,
 			question: data.question,
 			options: data.options,
-			answers: data.answers,
-			created: new Date(),
+			answerkey: data.answerkey,
+			createdat: new Date(),
 			creator: uid,
-			responses: [],
+			responses: {},
 			active: false,
 			done: false
 		}
@@ -81,6 +93,21 @@ export default function CreateMultipleChoicePoll() {
 			console.error("Error adding document: ", e);
 		}
     }
+
+    const deleteOldPoll = async (pollId: string, classId: string) => {
+        // Reference to the Firestore document
+        const pollRef = doc(db, `classes/${classId}/polls`, pollId);
+        // Reference to the Realtime Database path    
+        try {
+            // Delete from Firestore
+            await deleteDoc(pollRef);
+            console.log("Poll deleted from Firestore successfully");
+    
+        } catch (error) {
+            console.error("Error deleting poll:", error);
+        }
+    };
+    
 
     return (
         <form className={s.form} onSubmit={handleSubmit(onSubmit)}>
@@ -126,7 +153,7 @@ export default function CreateMultipleChoicePoll() {
             </div>
 
             <Controller
-                name='answers'
+                name='answerkey'
                 control={control}
                 render={({ field }) => (
                     <FormControl className={s.multiselect}>

@@ -7,13 +7,36 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createMultipleChoicePollData, createShortAnswerPollSchema } from "@/validation/schema";
 import Button from "@/ui/button/button";
 import { useAuth } from "@/context/authcontext";
-import { addDoc, collection, doc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc } from "firebase/firestore";
 import { ref, set } from "firebase/database";
 import { db, rdb } from "@/firebase/firebaseconfig";
 import { useRouter } from "next/router";
 import Spacer from "@/components/spacer/spacer";
+import ShortPoll from "@/models/poll/short";
 
-export default function CreateShortAnswerPoll() {
+
+type CreateShortPollProps = {
+    pollData?: ShortPoll
+    pollid?: string
+}
+
+export default function CreateShortAnswerPoll({ pollData, pollid }: CreateShortPollProps) {
+
+
+    function returnString(input: any) {
+        // Check if input is an array and if the first element is a string
+        if (Array.isArray(input) && typeof input[0] === 'string') {
+            return input[0]; // Return the first string of the array
+        } 
+        // Check if the input is a string
+        else if (typeof input === 'string') {
+            return input; // Return the input string
+        }
+        // Handle cases where input is neither a string array nor a string
+        else {
+            return ""; // Return null or throw an error as per your needs
+        }
+    }
     
     const { user } = useAuth();
     const router = useRouter();
@@ -28,25 +51,35 @@ export default function CreateShortAnswerPoll() {
     } = useForm<CreateShortAnswerPollFormData>(
         {
             resolver: zodResolver(createShortAnswerPollSchema),
+            defaultValues: {
+                question: pollData?.question ?? "",  // Ensures the question is pre-filled if pollData exists
+                answerkey: returnString(pollData?.answerkey)
+            }
+
         }
     );
 
     const onSubmit = async (data: CreateShortAnswerPollFormData) => {
+        if (pollid) {
+            await deleteOldPoll(pollid, classid);
+        }
+
         console.log("SUCCESS", data);
 
         console.log('form data submitted:', data);
 
 		const uid = user!.uid;
 
-		const polldata = {
+		const polldata: ShortPoll = {
 			type: "short",
 			classid: classid,
 			question: data.question,
-			answers: data.answer,
-			created: new Date(),
+			answerkey: data.answerkey,
+			createdat: new Date(),
 			creator: uid,
 			active: false,
-			done: false
+			done: false,
+            responses: {}
 		}
 		console.log(polldata);
 
@@ -65,6 +98,20 @@ export default function CreateShortAnswerPoll() {
 		}
     }
 
+    const deleteOldPoll = async (pollId: string, classId: string) => {
+        // Reference to the Firestore document
+        const pollRef = doc(db, `classes/${classId}/polls`, pollId);
+        // Reference to the Realtime Database path    
+        try {
+            // Delete from Firestore
+            await deleteDoc(pollRef);
+            console.log("Poll deleted from Firestore successfully");
+    
+        } catch (error) {
+            console.error("Error deleting poll:", error);
+        }
+    };
+
     return (
         <form className={s.form} onSubmit={handleSubmit(onSubmit)}>
             
@@ -80,10 +127,10 @@ export default function CreateShortAnswerPoll() {
             <Input<CreateShortAnswerPollFormData>
                 type="text"
                 label="Answer"
-                name="answer"
+                name="answerkey"
                 placeholder="Your Answer"
                 register={register}
-                error={errors.answer as any}
+                error={errors.answerkey as any}
             />
             <Spacer />
             <Button type="submit" text="Submit" />
