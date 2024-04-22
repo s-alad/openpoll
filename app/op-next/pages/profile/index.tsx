@@ -14,7 +14,7 @@ interface Class {
 }
 
 export default function Profile() {
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const [loading, setLoading] = useState(false);
     const [enrolled, setEnrolled] = useState<Class[]>([]);
 
@@ -79,6 +79,9 @@ export default function Profile() {
     return (
         <div className={s.profile}>
             <h1>Account</h1>
+            <button
+                onClick={logout}
+            >Logout</button>
             <h3>
                 Name: {user?.displayName}
                 Email: {user?.email}
