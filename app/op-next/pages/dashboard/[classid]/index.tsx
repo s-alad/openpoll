@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faArrowLeftLong, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faArrowLeftLong, faPlus, faRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import s from './dashboard.module.scss';
 import Link from 'next/link';
 import { arrayUnion, collection, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
@@ -29,6 +29,7 @@ export default function Dashboard() {
     const [classname, setClassname] = useState<string>("");
     const [adminId, setadminId] = useState<string>("");
     const [isOwner, setIsOwner] = useState<boolean>(false);
+    const [isaddAdmin, setisaddAdmin] = useState<boolean>(false);
 
     const [openpolls, setOpenpolls] = useState<PollAndId[]>([]);
     type PollTypes = "mc" | "short" | "order" | "attendance";
@@ -155,9 +156,32 @@ export default function Dashboard() {
                                 <div className={s.classname}>
                                     {classname}
                                 </div>
-                                <div className={s.date}>
+                                <div className={s.classdate}>
                                     {new Date().toLocaleDateString()}
                                 </div>
+                                {isOwner && (
+                                    isaddAdmin ? (
+                                        <div className={s.addAdmin}>
+                                            <form onSubmit={handleSubmit}>
+                                                <input 
+                                                    type="text" 
+                                                    value={adminId}
+                                                    onChange={(e) => setadminId(e.target.value)}
+                                                    placeholder="Enter Admin Email"
+                                                    required
+                                                    />
+                                                    <button type="submit">
+                                                        <FontAwesomeIcon icon={faRightToBracket} /> Add Admin
+                                                    </button>
+                                            </form>
+                                        </div>
+                                    ) : (
+                                        <div className={s.addAdmin} onClick={() => setisaddAdmin(true)}>
+                                            Add Admin
+                                        </div>
+                                    )                          
+                                )}
+
                             </div>
 
                             <Link
@@ -169,19 +193,7 @@ export default function Dashboard() {
                                     <FontAwesomeIcon icon={faPlus} />
                                 </div>
                             </Link>
-                            { isOwner && (
-                                <form onSubmit={handleSubmit}>
-                                    <input
-                                        type="text"
-                                        value={adminId}
-                                        onChange={(e) => setadminId(e.target.value)}
-                                        placeholder="Enter TA User ID"
-                                        required
-                                    />
-                                    <button type="submit">Add TA</button>
-                                </form>
-                            )}
-                             
+                                                         
                         </div>
 
                         <div className={s.selector}>
