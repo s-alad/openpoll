@@ -27,3 +27,5 @@ export default class AttendancePoll extends Poll {
         this.responses = responses;
     }
 }
+
+export type { AttendanceResponses }

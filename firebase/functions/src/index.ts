@@ -41,6 +41,41 @@ export const onClassCreated = functions.firestore.document("classes/{classId}").
     }
 });
 
+export const transferAndCalculatePollResults = functions.https.onCall(async (data, context) => {
+
+    const pollId = data.pollId;
+    const classId = data.classId;
+
+    if (!pollId) {
+        throw new functions.https.HttpsError('invalid-argument', 'The function must be called with one argument "pollId".');
+    }
+
+    try {
+        const firestore = admin.firestore();
+        const realtimeDatabase = admin.database();
+
+        // Read the poll responses from the Realtime Database
+        const pollResponsesSnapshot = await realtimeDatabase.ref("/classes/"+classId+"/polls/"+pollId+"/responses").once('value');
+        const pollResponses = pollResponsesSnapshot.val();
+
+        console.log(pollResponses);
+
+        // Transfer to Firestore
+        if (pollResponses) {
+            await firestore.collection('classes').doc(classId).collection("polls").doc(pollId).update({
+                responses: pollResponses,
+                endedat: admin.firestore.FieldValue.serverTimestamp(),
+            });
+            console.log(`Poll results for ${pollId} transferred to Firestore.`);
+            return { result: `Poll results for ${pollId} transferred to Firestore.` };
+        } else {
+            return { result: 'No responses to transfer.' };
+        }
+    } catch (error) {
+        console.error("Error transferring poll results: ", error);
+        throw new functions.https.HttpsError('unknown', `Failed to transfer poll results: `);
+    }
+});
 
 export const transferPollResults = functions.https.onCall(async (data, context) => {
 

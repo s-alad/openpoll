@@ -27,3 +27,5 @@ export default class ShortPoll extends Poll {
         this.responses = responses;
     }
 }
+
+export type { ShortResponses }

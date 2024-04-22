@@ -99,6 +99,7 @@ export default function Navbar() {
             </div>
 
             <div className={s.right} onClick={() => {
+                logout();
                 router.push("/profile");
             }}>
                 <div className={s.person}>

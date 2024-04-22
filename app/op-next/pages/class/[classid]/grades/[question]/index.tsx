@@ -39,21 +39,23 @@ export default function index() {
             const docSnap = await getDoc(pollRef);
             const pollData = docSnap.data();
 
+            console.log(pollData);
+
             if (pollData) {
                 // Initialize default user response info
                 let userResponseInfo: Question = {
                     question: pollData.question,
                     responses: [],
-                    answer: pollData.answers[0],
+                    answer: pollData.answerkey,
                     isCorrect: false,
                     options: pollData.options,
                 };
 
                 // Find the user's response among the poll responses
-                Object.entries(pollData.responses || {}).forEach(([option, userResponses]) => {
-                    const responses = userResponses as { [uid: string]: string };
-                    if (responses[uid]) {
-                        userResponseInfo.responses.push(option);
+                Object.entries(pollData.responses || {}).forEach(([option, userResponses]: any) => {
+                    console.log(option, userResponses);
+                    if (option === uid) {
+                        userResponseInfo.responses = userResponses.response
                     }
                 });
 

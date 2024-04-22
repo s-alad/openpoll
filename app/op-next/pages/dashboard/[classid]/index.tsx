@@ -124,7 +124,12 @@ export default function Dashboard() {
                                                 {convertPollTypeToText(poll.poll.type as TPoll)}
                                             </div>
                                         </div>
-                                        <div className={s.actions}>
+                                        {
+                                            poll.poll.done ? 
+                                            <div>
+                                                completed
+                                            </div> :
+                                            <div className={s.actions}>
                                             <Link
                                                 href={{
                                                     pathname: `/edit/${classid}/poll/${poll.id}`, 
@@ -138,6 +143,7 @@ export default function Dashboard() {
                                                 }}
                                             ><button className={s.live}>go live</button></Link>
                                         </div>
+                                        }
                                     </div>
                                 )
                             })

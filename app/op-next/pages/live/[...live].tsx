@@ -177,7 +177,7 @@ export default function Live() {
                     ""
             }
 
-            {/* {
+            {
                 livepoll && livepoll.type != "attendance" && 
                 <div className={s.answers}>
                 {
@@ -186,7 +186,7 @@ export default function Live() {
                     </button>
                 }
             </div>
-            } */}
+            }
 
             <div className={s.answerWrapper}>
                 {showAnswers && correctAnswers.length > 0 && !pollstatus && (
