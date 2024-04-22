@@ -1,30 +1,45 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faArrowLeftLong, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faArrowLeftLong, faPlus, faRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import s from './dashboard.module.scss';
 import Link from 'next/link';
-import { collection, doc, getDocs } from 'firebase/firestore';
-import { db } from '@/firebase/firebaseconfig';
-import Poll, { PollAndId, TLPoll, TPoll, convertPollTypeToText, getCorrectPollType } from '@/models/poll';
+import { arrayUnion, collection, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
+import { auth, db } from '@/firebase/firebaseconfig';
+import Poll, { convertPollTypeToText } from '@/models/poll';
 import Loader from '@/components/loader/loader';
 import Image from 'next/image';
 import { PiChatsDuotone, PiChatsFill } from "react-icons/pi";
 import { getClassnameFromId } from '@/models/class';
-import MCPoll from '@/models/poll/mc';
+import { onAuthStateChanged } from 'firebase/auth';
+import { useAuth } from '@/context/authcontext';
 
+interface PollAndId {
+    poll: Poll;
+    id: string;
+}
 
 export default function Dashboard() {
-
     const [loading, setLoading] = useState(false);
+    const { user } = useAuth();
 
     // get the class id from the url
     const router = useRouter();
     const classid = router.query.classid;
     const [classname, setClassname] = useState<string>("");
+    const [adminId, setadminId] = useState<string>("");
+    const [isOwner, setIsOwner] = useState<boolean>(false);
+    const [isaddAdmin, setisaddAdmin] = useState<boolean>(false);
 
     const [openpolls, setOpenpolls] = useState<PollAndId[]>([]);
-    const [selectedType, setSelectedType] = useState<TPoll>("mc");
+    type PollTypes = "mc" | "short" | "order" | "attendance";
+    let polllookup: { [key: string]: string } = {
+        "mc": "Multiple Choice",
+        "short": "Short Answer",
+        "order": "Ordering",
+        "attendance": "Attendance"
+    }
+    const [selectedType, setSelectedType] = useState<PollTypes>("mc");
 
     async function getpolls() {
         setLoading(true);
@@ -38,14 +53,10 @@ export default function Dashboard() {
             let openpolls: PollAndId[] = [];
             snapshot.forEach((doc) => {
                 const pid = doc.id;
-                const data = doc.data();
-                let poll = getCorrectPollType(data);
-
-                if (!poll) return;
+                const data = doc.data() as Poll;
                 if (!data.classid) return;
                 console.log(pid, data);
-
-                openpolls.push({ poll: poll, id: pid } as PollAndId)
+                openpolls.push({ poll: data, id: pid })
             });
             setOpenpolls(openpolls);
         } catch (e) {
@@ -55,14 +66,81 @@ export default function Dashboard() {
         setLoading(false);
     }
 
+    async function handleSubmit(event: any) {
+        event.preventDefault();
+
+        try {
+            addAdmin(adminId);
+            setadminId("");
+        } catch (e) {
+            console.error("Error adding Admin: ", e);
+        }
+
+
+    }
+
+    async function addAdmin(userEmail: string) {
+        setLoading(true);
+        const classRef = doc(db, "classes", classid as string);
+        const userRef = doc(db, "users", userEmail);
+
+        try {
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+                const userData = userSnap.data();
+                console.log(userData);  
+                const userId = userSnap.id;
+
+                await updateDoc(classRef, {
+                    admin: arrayUnion(userId) // add the user email to the admin array
+                });      
+            } else {
+                console.log("No such document!");            
+            }
+
+        } catch (e) {
+            console.error("Error adding TA: ", e);
+        }
+        setLoading(false);
+    }
+
+    async function checkOwner() {
+        setLoading(true);
+        const classRef = doc(db, "classes", classid as string);
+        const user = auth.currentUser;
+        if (!user) return;
+        const uid = user!.uid;
+        console.log(uid);
+
+        const classSnap = await getDoc(classRef);
+        if (classSnap.exists()) {
+            const classData = classSnap.data();
+            if (classData.owner.uid === uid) {
+                console.log("Owner");
+                setIsOwner(true);
+            } else {
+                console.log("Not Owner");
+                setIsOwner(false);
+            }
+        }
+        setLoading(false);
+    }
+
     //wait for router to load
     useEffect(() => {
-        if (classid) {
-            getpolls();
-            const classname = getClassnameFromId(classid as string);
-            classname.then((name) => {
-                setClassname(name);
-            });
+        const unsubscribe = onAuthStateChanged(auth, (user: any) => {
+            if (user && classid) {
+                getpolls();
+                checkOwner();
+                const classname = getClassnameFromId(classid as string);
+                classname.then((name) => {
+                    setClassname(name);
+                });
+            }
+        });
+
+        return () => {
+            unsubscribe();
         }
     }, [classid]);
 
@@ -78,9 +156,32 @@ export default function Dashboard() {
                                 <div className={s.classname}>
                                     {classname}
                                 </div>
-                                <div className={s.date}>
+                                <div className={s.classdate}>
                                     {new Date().toLocaleDateString()}
                                 </div>
+                                {isOwner && (
+                                    isaddAdmin ? (
+                                        <div className={s.addAdmin}>
+                                            <form onSubmit={handleSubmit}>
+                                                <input 
+                                                    type="text" 
+                                                    value={adminId}
+                                                    onChange={(e) => setadminId(e.target.value)}
+                                                    placeholder="Enter Admin Email"
+                                                    required
+                                                    />
+                                                    <button type="submit">
+                                                        <FontAwesomeIcon icon={faRightToBracket} /> Add Admin
+                                                    </button>
+                                            </form>
+                                        </div>
+                                    ) : (
+                                        <div className={s.addAdmin} onClick={() => setisaddAdmin(true)}>
+                                            Add Admin
+                                        </div>
+                                    )                          
+                                )}
+
                             </div>
 
                             <Link
@@ -92,18 +193,19 @@ export default function Dashboard() {
                                     <FontAwesomeIcon icon={faPlus} />
                                 </div>
                             </Link>
+                                                         
                         </div>
 
                         <div className={s.selector}>
                             {
-                                TLPoll.map((type, index) => {
+                                Object.keys(polllookup).map((type, index) => {
                                     return (
                                         <div
                                             key={index}
                                             className={`${s.selectee} ${selectedType === type ? s.selected : ""}`}
-                                            onClick={() => setSelectedType(type as TPoll)}
+                                            onClick={() => setSelectedType(type as PollTypes)}
                                         >
-                                            {convertPollTypeToText(type as TPoll)}
+                                            {polllookup[type] as string}
                                         </div>
                                     )
                                 })
@@ -119,17 +221,12 @@ export default function Dashboard() {
                                                 <PiChatsFill />
                                                 {poll.poll.question}
                                             </div>
-                                            <div className={s.created}>created: {new Date(poll.poll.createdat.seconds).toLocaleDateString()}</div>
+                                            <div className={s.created}>created: {new Date(poll.poll.created.seconds).toLocaleDateString()}</div>
                                             <div className={s.polltype}>
-                                                {convertPollTypeToText(poll.poll.type as TPoll)}
+                                                {convertPollTypeToText(poll.poll.type)}
                                             </div>
                                         </div>
-                                        {
-                                            poll.poll.done ? 
-                                            <div>
-                                                completed
-                                            </div> :
-                                            <div className={s.actions}>
+                                        <div className={s.actions}>
                                             <Link
                                                 href={{
                                                     pathname: `/edit/${classid}/poll/${poll.id}`, 
@@ -143,7 +240,6 @@ export default function Dashboard() {
                                                 }}
                                             ><button className={s.live}>go live</button></Link>
                                         </div>
-                                        }
                                     </div>
                                 )
                             })
