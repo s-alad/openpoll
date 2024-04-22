@@ -9,6 +9,10 @@ import s from './live.module.scss';
 import PollChart from "@/components/barchart/barchart";
 import { PiChatsFill } from "react-icons/pi";
 import Poll from "@/models/poll";
+import MCPoll from "@/models/poll/mc";
+import ShortPoll from "@/models/poll/short";
+import OrderPoll from "@/models/poll/ordering";
+import AttendancePoll from "@/models/poll/attendance";
 
 export default function Live() {
 
@@ -18,7 +22,7 @@ export default function Live() {
     const [pollId, setPollId] = useState<string>("");
     const [classId, setClassId] = useState<string>("");
 
-    const [livepoll, setLivepoll] = useState<Poll>();
+    const [livepoll, setLivepoll] = useState<MCPoll | ShortPoll | OrderPoll | AttendancePoll>();
 
     const [pollstatus, setPollstatus] = useState<boolean>(false);
     const [endedstatus, setEndedStatus] = useState<boolean>(false);
@@ -44,7 +48,7 @@ export default function Live() {
 
             if (docSnap.exists()) {
                 const pollData = docSnap.data();
-                const answers = pollData.answers;
+                const answers = pollData.answerkey;
                 console.log(answers, "answers");
                 setCorrectAnswers(answers);
             }
@@ -62,7 +66,7 @@ export default function Live() {
             const poll = snapshot.val();
             if (!poll) return;
 
-            const lp = poll[live![1]] as Poll;
+            const lp = poll[live![1]] as MCPoll | ShortPoll | OrderPoll | AttendancePoll;
             console.log(lp);
 
             if (lp.done) {
@@ -92,10 +96,10 @@ export default function Live() {
             await set(pollsref, true);
             setPollFinalStatus(true);
             setpollstatus(false);
-            let fxname = "transferPollResults"
+            let fxname = "transferAndCalculatePollResults"
             setEndedStatus(true);
 
-            const transferPollResultsFx = httpsCallable(fxns, "transferPollResults");
+            const transferPollResultsFx = httpsCallable(fxns, fxname);
             const result = await transferPollResultsFx({ pollId: pollId, classId: classId });
             console.log(result.data, 'result');
 
@@ -133,7 +137,7 @@ export default function Live() {
                             {
 
                                 livepoll.type === "mc" &&
-                                livepoll?.options.map((option, index) => {
+                                (livepoll as MCPoll)?.options.map((option, index) => {
                                     return (
                                         <div key={index} className={s.option}>
                                             <div className={s.letter}>{option.letter}</div>
@@ -193,7 +197,11 @@ export default function Live() {
                 )}
                 {showAnswers && correctAnswers.length > 0 && (
                     <div className={s.content}>
-                        <PollChart poll={livepoll} />
+                        {
+                            livepoll?.type === "mc" && (
+                                <PollChart poll={livepoll as MCPoll} />
+                            )
+                        }
                     </div>
                 )}
                 {

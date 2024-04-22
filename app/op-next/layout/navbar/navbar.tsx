@@ -55,6 +55,7 @@ export default function Navbar() {
             { pattern: /^\/dashboard\/([^/]+)\/analytics$/, displayFunc: (match) => `Dashboard / ${ss(match[1])} / Analytics` },
             { pattern: /^\/dashboard\/([^/]+)\/gradebook$/, displayFunc: (match) => `Dashboard / ${ss(match[1])} / Gradebook` },
             { pattern: /^\/live\/([^/]+)\/([^/]+)$/, displayFunc: (match) => `Dashboard / ${ss(match[1])} / Live / ${ss(match[2])}`},
+            { pattern: /^\/profile$/, display: "Profile /" },
         ];
     
         const pathname = router.asPath.split('?')[0]; // Removing query parameters for matching
@@ -78,7 +79,7 @@ export default function Navbar() {
 
     return (
         <nav className={s.navbar}>
-            <div className={s.navbarLeftItems}>
+            <div className={s.left}>
                 <Image
                     src="/OpenPollLogo1.png"
                     alt="Open Poll Logo"
@@ -97,12 +98,15 @@ export default function Navbar() {
                 </div>
             </div>
 
-            <div className={s.navbarRightItems} onClick={() => {logout();}}>
+            <div className={s.right} onClick={() => {
+                logout();
+                router.push("/profile");
+            }}>
                 <div className={s.person}>
                     <FontAwesomeIcon icon={faUserCircle} size='2x'/>
                 </div>
 
-                <div className={s.personName}>{user?.displayName}</div>
+                <div className={s.name}>{user?.displayName}</div>
             </div>
         </nav>
     )

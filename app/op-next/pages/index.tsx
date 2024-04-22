@@ -11,35 +11,35 @@ const openSansBold = Open_Sans({ weight: "700", style: 'normal', subsets: ['lati
 
 export default function Index() {
 
-  let router = useRouter()
-  const { user, googlesignin, logout } = useAuth();
+	let router = useRouter()
+	const { user, googlesignin, logout } = useAuth();
 
-  return (
-    <>
-      <Head>
-        <title>OpenPoll</title>
-        <meta name="description" content="Openpoll" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <div className={s.container}>
-        <Image
-          src="/OpenPollLogo1.png"
-          alt="Open Poll Logo"
-          width={300}
-          height={300}
-          className={s.logo}
-        />
-        <div className={s.text}>
-          <h1 className={openSansBold.className}>Log in to Open Poll</h1>
-          <p className={openSansNormal.className}>Welcome back! Please log in below</p>
-        </div>
-        <button className={s.loginButton}
-          onClick={ () => {googlesignin();} }
-        >
-          Continue with Google
-        </button>
-      </div>
-      </>
-  );
+	return (
+		<>
+			<Head>
+				<title>OpenPoll</title>
+				<meta name="description" content="Openpoll" />
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<link rel="icon" href="/favicon.ico" />
+			</Head>
+			<div className={s.container}>
+				<Image
+					src="/OpenPollLogo1.png"
+					alt="Open Poll Logo"
+					width={300}
+					height={300}
+					className={s.logo}
+				/>
+				<div className={s.text}>
+					<h1 className={openSansBold.className}>Log in to Open Poll</h1>
+					<p className={openSansNormal.className}>Welcome back! Please log in below</p>
+				</div>
+				<button className={s.loginButton}
+					onClick={() => { googlesignin(); }}
+				>
+					Continue with Google
+				</button>
+			</div>
+		</>
+	);
 }

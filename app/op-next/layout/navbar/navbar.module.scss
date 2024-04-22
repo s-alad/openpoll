@@ -2,14 +2,19 @@
 .navbar {
     width: 100%;
     display: flex;
-    align-items: center;
+    align-items: end;
     justify-content: space-between;
     padding: 0 40px;
     background-color: #c5cfe5;
 
-    .navbarLeftItems {
+    .left {
         display: flex;
-        align-items: center;
+        align-items: inherit;
+
+        .logo {
+            position: relative;
+            top: 18px;
+        }
         
         .path {
             font-size: 22px;
@@ -24,7 +29,7 @@
     }
     }
     
-    .navbarRightItems {
+    .right {
         display: flex;
         align-items: center;
         text-align: center;
@@ -40,7 +45,7 @@
             justify-content: center;
         }
 
-        .personName {
+        .name {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -49,7 +54,7 @@
         }
     }
 
-    .navbarRightItems:hover {
+    /* .navbarRightItems:hover {
         background-color: #9596FF;
-    }
+    } */
 }

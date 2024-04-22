@@ -92,7 +92,7 @@ export default function CreateOrderingPoll() {
             defaultValues: {
                 question: "",
                 options: [{ letter: "A", option: "A" }, { letter: "B", option: "B" }],
-                answer: {
+                answerkey: {
                     "0": { letter: "A", option: "A" },
                     "1": { letter: "B", option: "B" },
                 },
@@ -150,7 +150,7 @@ export default function CreateOrderingPoll() {
                             return acc;
                         }, {});
 
-                        setValue('answer', updatedAnswer);
+                        setValue('answerkey', updatedAnswer);
                     }
                 }}>
                     <SortableContext items={fields} strategy={verticalListSortingStrategy}>

@@ -14,6 +14,10 @@
         width: 100%;
         background-color: transparent;
         padding: 0 10px;
+
+        &::placeholder {
+            color: #6650a4a9;
+        }
     }
     span {
         margin-top: 2px;

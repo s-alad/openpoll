@@ -11,6 +11,9 @@ import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import s from './class.module.scss';
 import Button from '@/ui/button/button';
+import { MCResponses } from '@/models/poll/mc';
+import { ShortResponses } from '@/models/poll/short';
+import { AttendanceResponses } from '@/models/poll/attendance';
 
 interface LivePoll {
     id: string;
@@ -58,7 +61,7 @@ export default function Class() {
         return () => unsubscribe();
     }, [classid]);
 
-    async function submitPoll(data: any, pollId: string) {
+    async function submitMCPoll(data: any, pollId: string) {
         console.log(data);
 
         // get the data letter that is true
@@ -66,30 +69,37 @@ export default function Class() {
         const nonSelectedOptions = Object.keys(data).filter((key) => !data[key]);
         console.log(selectedOptions);
 
-        // add student to selected options
-        for (const letter of selectedOptions) {
-            const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses/${letter}`);
-            await update(answerRef, { [user!.uid]: user!.email });
+        let MCres = {
+            email: user!.email,
+            correct: false,
+            response: selectedOptions
         }
 
-        // remove student from non selected options
-        for (const letter of nonSelectedOptions) {
-            const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses/${letter}/${user!.uid}`);
-            await remove(answerRef);
-        }
+        const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses`);
+        await update(answerRef, { [user!.uid]: MCres } as MCResponses);
     }
 
     async function submitShortPoll(data: any, pollId: string) {
         console.log(data);
 
+        let Sres = {
+            email: user!.email,
+            response: data.answer
+        }
+
         const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses`);
-        await update(answerRef, { [user!.uid]: data.answer });
+        await update(answerRef, { [user!.uid]: Sres } as ShortResponses);
     }
 
     async function submitAttendancePoll(data: any, pollId: string) {
 
+        let Ares = {
+            email: user!.email,
+            attended: true
+        }
+
         const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses`);
-        await update(answerRef, { [user!.uid]: user!.email });
+        await update(answerRef, { [user!.uid]: Ares } as AttendanceResponses);
     }
 
     const { handleSubmit, control, register, formState: { errors } } = useForm({});
@@ -104,7 +114,7 @@ export default function Class() {
 
                                 if (poll.type === "mc") return (
                                     <form key={poll.id} className={s.poll} onSubmit={
-                                        handleSubmit((data) => submitPoll(data, poll.id))
+                                        handleSubmit((data) => submitMCPoll(data, poll.id))
                                     }>
 
                                         <h1>{poll.question}</h1>

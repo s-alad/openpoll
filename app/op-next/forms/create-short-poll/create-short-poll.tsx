@@ -12,21 +12,15 @@ import { ref, set } from "firebase/database";
 import { db, rdb } from "@/firebase/firebaseconfig";
 import { useRouter } from "next/router";
 import Spacer from "@/components/spacer/spacer";
+import ShortPoll from "@/models/poll/short";
 
 
-interface PollData {
-    pollid: string;
-    type: string;
-    question: string;
-    options: {}[];
-    answers: string[];
-  }
+type CreateShortPollProps = {
+    pollData?: ShortPoll
+    pollid?: string
+}
 
-  interface CreateShortAnswerPollProps {
-    pollData?: PollData; // Make pollData optional
-  }
-
-export default function CreateShortAnswerPoll({ pollData }: CreateShortAnswerPollProps) {
+export default function CreateShortAnswerPoll({ pollData, pollid }: CreateShortPollProps) {
 
 
     function returnString(input: any) {
@@ -59,15 +53,15 @@ export default function CreateShortAnswerPoll({ pollData }: CreateShortAnswerPol
             resolver: zodResolver(createShortAnswerPollSchema),
             defaultValues: {
                 question: pollData?.question ?? "",  // Ensures the question is pre-filled if pollData exists
-                answer: returnString(pollData?.answers)
+                answerkey: returnString(pollData?.answerkey)
             }
 
         }
     );
 
     const onSubmit = async (data: CreateShortAnswerPollFormData) => {
-        if (pollData?.pollid) {
-            await deleteOldPoll(pollData.pollid, classid);
+        if (pollid) {
+            await deleteOldPoll(pollid, classid);
         }
 
         console.log("SUCCESS", data);
@@ -76,15 +70,16 @@ export default function CreateShortAnswerPoll({ pollData }: CreateShortAnswerPol
 
 		const uid = user!.uid;
 
-		const polldata = {
+		const polldata: ShortPoll = {
 			type: "short",
 			classid: classid,
 			question: data.question,
-			answers: data.answer,
-			created: new Date(),
+			answerkey: data.answerkey,
+			createdat: new Date(),
 			creator: uid,
 			active: false,
-			done: false
+			done: false,
+            responses: {}
 		}
 		console.log(polldata);
 
@@ -132,10 +127,10 @@ export default function CreateShortAnswerPoll({ pollData }: CreateShortAnswerPol
             <Input<CreateShortAnswerPollFormData>
                 type="text"
                 label="Answer"
-                name="answer"
+                name="answerkey"
                 placeholder="Your Answer"
                 register={register}
-                error={errors.answer as any}
+                error={errors.answerkey as any}
             />
             <Spacer />
             <Button type="submit" text="Submit" />
