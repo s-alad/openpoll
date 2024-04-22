@@ -76,19 +76,34 @@ export default function Home() {
         try {
             const user = auth.currentUser;
             const uid = user!.uid;
+            const email = user!.email!;
 
-            const userClassesQuery = query(collection(db, "classes"), where("owner.uid", "==", uid));
-            const userClassesSnapshot = await getDocs(userClassesQuery);
-            const newClasses = userClassesSnapshot.docs.map(
-                (doc) => {
-                    const data = doc.data();
-                    const cid = doc.id;
+            const ownerQuery = query(collection(db, "classes"), where("owner", "==", uid));
+            const adminQuery = query(collection(db, "classes"), where("admin", "array-contains", email));
 
-                    return { cid, class: data as Classroom } as Class;
-                }
-            );
-            console.log(newClasses);
-            setClasses(newClasses);
+            const [ownerSnapshot, adminSnapshot] = await Promise.all([
+                getDocs(ownerQuery),
+                getDocs(adminQuery)
+            ]);
+
+            const ownerClasses = ownerSnapshot.docs.map(doc => ({
+                cid: doc.id,
+                class: doc.data() as Classroom
+            }));
+
+            const adminClasses = adminSnapshot.docs.map(doc => ({
+                cid: doc.id,
+                class: doc.data() as Classroom             
+            }));
+
+            const combinedClasses = [...ownerClasses, ...adminClasses]; 
+            const uniqueClasses = combinedClasses.filter((cls, index, self) =>
+                index === self.findIndex((t) => (
+                    t.cid === cls.cid
+                ))
+            ); // Remove duplicates
+
+            setClasses(uniqueClasses);
         } catch (e) {
             console.error("Error getting documents: ", e);
         }
