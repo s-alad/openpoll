@@ -4,7 +4,8 @@ import MCPoll from "./poll/mc";
 import OrderPoll from "./poll/ordering";
 import ShortPoll from "./poll/short";
 
-type TPoll = "mc" | "short" | "attendance" | "order" | "match"
+export type TPoll = "mc" | "short" | "attendance" | "order" | "match"
+export type xPoll = Poll | MCPoll | ShortPoll | AttendancePoll | OrderPoll | MatchPoll;
 export const TLPoll = ["mc", "short", "attendance", "order", "match"]
 
 export default abstract class Poll {
@@ -76,7 +77,5 @@ function getCorrectPollType(data: any) {
     return undefined
   }
 } 
-
-export type { TPoll }
 export { convertPollTypeToText, getCorrectPollType };
 

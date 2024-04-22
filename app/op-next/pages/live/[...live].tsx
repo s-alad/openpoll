@@ -197,7 +197,11 @@ export default function Live() {
                 )}
                 {showAnswers && correctAnswers.length > 0 && (
                     <div className={s.content}>
-                        <PollChart poll={livepoll} />
+                        {
+                            livepoll?.type === "mc" && (
+                                <PollChart poll={livepoll as MCPoll} />
+                            )
+                        }
                     </div>
                 )}
                 {
