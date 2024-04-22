@@ -1,4 +1,5 @@
-import { faArrowLeftLong, faHome, faUser } from "@fortawesome/free-solid-svg-icons";
+import Image from 'next/image'
+import { faArrowLeftLong, faHome, faUser, faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/router";
 import React from "react";
@@ -44,7 +45,7 @@ export default function Navbar() {
             display?: string,
             displayFunc?: (match: RegExpExecArray) => string
         }> = [
-            { pattern: /^\/home$/, display: "Courses /" },
+            { pattern: /^\/home$/, display: "Dashboard /" },
             { pattern: /^\/create\/poll\/([^/]+)$/, displayFunc: (match) => `Dashboard / ${ss(match[1])} / Create A Poll` },
             { pattern: /^\/create\/class$/, display: "Create a class /" },
             { pattern: /^\/class\/([^/]+)$/, displayFunc: (match) => `Class / ${ss(match[1])} / Polls` },
@@ -54,6 +55,7 @@ export default function Navbar() {
             { pattern: /^\/dashboard\/([^/]+)\/analytics$/, displayFunc: (match) => `Dashboard / ${ss(match[1])} / Analytics` },
             { pattern: /^\/dashboard\/([^/]+)\/gradebook$/, displayFunc: (match) => `Dashboard / ${ss(match[1])} / Gradebook` },
             { pattern: /^\/live\/([^/]+)\/([^/]+)$/, displayFunc: (match) => `Dashboard / ${ss(match[1])} / Live / ${ss(match[2])}`},
+            { pattern: /^\/profile$/, display: "Profile /" },
         ];
     
         const pathname = router.asPath.split('?')[0]; // Removing query parameters for matching
@@ -77,22 +79,34 @@ export default function Navbar() {
 
     return (
         <nav className={s.navbar}>
-            <div className={s.path}>
-
-                {
-                    router.pathname === "/home" ?
-                        <FontAwesomeIcon icon={faHome} className={s.back} />
-                        :
-                        <FontAwesomeIcon icon={faArrowLeftLong} onClick={goback} className={s.back} />
-                }
-                {matchRouterWithPath()}
+            <div className={s.left}>
+                <Image
+                    src="/OpenPollLogo1.png"
+                    alt="Open Poll Logo"
+                    width={75}
+                    height={75}
+                    className={s.logo}
+                />
+                <div className={s.path}>
+                    {
+                        router.pathname === "/home" ?
+                            <FontAwesomeIcon icon={faHome} className={s.back} />
+                            :
+                            <FontAwesomeIcon icon={faArrowLeftLong} onClick={goback} className={s.back} />
+                    }
+                    {matchRouterWithPath()}
+                </div>
             </div>
-            <div className={s.person}
-                onClick={() => {
-                    router.push("/profile");
-                }}
-            >
-                <FontAwesomeIcon icon={faUser} />
+
+            <div className={s.right} onClick={() => {
+                /* logout(); */
+                router.push("/profile");
+            }}>
+                <div className={s.person}>
+                    <FontAwesomeIcon icon={faUserCircle} size='2x'/>
+                </div>
+
+                <div className={s.name}>{user?.displayName}</div>
             </div>
         </nav>
     )
