@@ -83,9 +83,11 @@ export default function Home() {
                 (doc) => {
                     const data = doc.data();
                     const cid = doc.id;
-                    return { cid, class: data as Classroom };
+
+                    return { cid, class: data as Classroom } as Class;
                 }
             );
+            console.log(newClasses);
             setClasses(newClasses);
         } catch (e) {
             console.error("Error getting documents: ", e);
@@ -119,7 +121,7 @@ export default function Home() {
                         const data = doc.data();
                         console.log(data);
                         const cid = doc.id;
-                        return { cid, class: data as Classroom };
+                        return { cid, class: data as Classroom } as Class;
                     }
                 );
                 setEnrolled(newClasses);
@@ -166,7 +168,7 @@ export default function Home() {
                     {classes.map((classData, index) => (
                         <div className={s.class} key={index}>
                             <div className={`${s.trap} ${s.yellow}`}>
-                                {/* <span>{classData.cid.substring(0,6)}</span> */}
+                                {classData.class.classidentifier}
                             </div>
                             <div className={`${s.content} ${s.yellow}`}>
                                 <div className={s.info}>
@@ -219,7 +221,7 @@ export default function Home() {
                         enrolled.map((classData, index) => (
                             <div className={s.class} key={index}>
                                 <div className={`${s.trap} ${s.yellow}`}>
-                                    <span>{classData.cid.substring(0,6)}</span>
+                                    {classData.class.classidentifier}
                                 </div>
                                 <div className={`${s.content} ${s.yellow}`}>
                                     <div className={s.info}>

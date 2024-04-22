@@ -6,7 +6,7 @@ import CreateMultipleChoicePoll from '@/forms/create-mc-poll/create-mc-poll';
 import CreateShortAnswerPoll from '@/forms/create-short-poll/create-short-poll';
 import CreateOrderingPoll from '@/forms/create-ordering-poll/create-ordering-poll';
 import s from './edit.poll.module.scss';
-import Poll, { convertPollTypeToText } from '@/models/poll';
+import Poll, {  } from '@/models/poll';
 
 export default function EditPoll() {
     const router = useRouter();

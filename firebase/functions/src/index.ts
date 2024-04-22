@@ -39,37 +39,7 @@ export const onClassCreated = functions.firestore.document("classes/{classId}").
     } catch (error) {
         console.error("Error adding class to Firestore:", error);
     }
-})
-
-// function to generate a unique memorable 5 digit class id
-export const generateClassId = functions.https.onCall(async (data, context) => {
-    
-    const checkUniqueId = async (id: string) => {
-        // check the classes document, then check the fields for the id
-        const classes = admin.firestore().collection("classes");
-        const query = await classes.where("id", "==", id).get();
-        return query.docs.length > 0;
-    }
-
-    const generateId = () => {
-        // make a six digit alphanumeric id
-        let id = "";
-        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        for (let i = 0; i < 6; i++) {
-            id += characters.charAt(Math.floor(Math.random() * characters.length));
-        }
-        return id;
-    }
-
-    let id = generateId();
-    while (await checkUniqueId(id)) {
-        id = generateId();
-    }
-
-    return {
-        id
-    }
-})
+});
 
 
 export const transferPollResults = functions.https.onCall(async (data, context) => {

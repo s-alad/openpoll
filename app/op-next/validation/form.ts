@@ -1,3 +1,5 @@
+import { MCAnswerKey, MCOptions } from "@/models/poll/mc";
+import { OrderAnswerKey, OrderOptions } from "@/models/poll/ordering";
 import { FieldError, FieldValues, Path, UseFormRegister } from "react-hook-form";
 
 
@@ -18,11 +20,13 @@ export type DefaultFormField = {
 export type CreateClassFormData = {
     classname: string;
     description: string;
+    classidentifier?: string;
 };
 
 export type ValidCreateClassFieldNames =
     | "classname"
     | "description"
+    | "classidentifier";
 
 
 export interface CreateClassFormField extends DefaultFormField {
@@ -43,39 +47,28 @@ export interface GenericFormField<T extends FieldValues> extends DefaultFormFiel
 
 export type CreateMultipleChoicePollFormData = {
     question: string;
-    options: {
-        letter: string;
-        option: string;
-    }[]
-    answers: string[];
+    options: MCOptions;
+    answerkey: MCAnswerKey;
 };
 
 // create short answer poll form ----------------------------------------------
 
 export type CreateShortAnswerPollFormData = {
     question: string;
-    answer: string;
+    answerkey?: string;
 };
 
 // create ordering poll form
 
 export type CreateOrderingPollFormData = {
     question: string;
-    options: {
-        letter: string;
-        option: string;
-    }[];
-    answer: {
-        [key: string]: {
-            letter: string;
-            option: string;
-        };
-    }
+    options: OrderOptions;
+    answerkey: OrderAnswerKey;
 };
 
 // create attendance poll form
 
 export type CreateAttendancePollFormData = {
+    question: string;
     date: Date;
-    attended: string[];
 };

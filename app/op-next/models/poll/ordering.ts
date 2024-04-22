@@ -1,0 +1,44 @@
+import Poll from "../poll";
+
+type OrderAnswerKey = {
+    [index: number]: string // index: letter
+}
+type OrderOptions = {
+    [letter: string]: string; // letter: option
+}
+type OrderResponses = {
+    [userid: string]: {
+        correct: boolean;
+        email: string;
+        response: {
+            [index: number]: string; // index: letter
+        }
+    }
+}
+
+export default class OrderPoll extends Poll {
+    answerkey: OrderAnswerKey
+    options: OrderOptions
+    responses: OrderResponses
+    
+
+    constructor(
+        active: boolean,
+        classid: string,
+        createdat: any,
+        creator: string,
+        done: boolean,
+        question: string,
+        answerkey: OrderAnswerKey,
+        options: OrderOptions,
+        responses: OrderResponses,
+        endedat?: any,
+    ) {
+        super("order", active, classid, createdat, creator, done, question, endedat);
+        this.answerkey = answerkey;
+        this.options = options;
+        this.responses = responses;
+    }
+}
+
+export type { OrderOptions, OrderAnswerKey, OrderResponses}

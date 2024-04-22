@@ -14,6 +14,7 @@ import { createClassSchema } from "@/validation/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Loader from "@/components/loader/loader";
 import Input from "@/ui/input/input";
+import Classroom, { Class } from "@/models/class";
 
 
 export default function CreateClass() {
@@ -28,15 +29,19 @@ export default function CreateClass() {
         const user = auth.currentUser;
         const uid = user!.uid;
 
-        const classdata = {
+        const classdata: Classroom = {
+            admin: [],
+            classid: "",
             classname: data.classname,
+            classidentifier: data.classidentifier,
             description: data.description,
             owner: {
                 uid: uid,
-                email: user!.email,
-                name: user!.displayName
+                email: user!.email!,
+                name: user!.displayName!
             },
-            admin: [],
+            students: {},
+            polls: {}
         }
 
         try {
@@ -73,16 +78,27 @@ export default function CreateClass() {
                                     type="text"
                                     name="classname"
                                     register={register}
+                                    placeholder="Spark! Innovation Lab"
                                     error={errors.classname}
                                 />
-
+                                <Input<CreateClassFormData>
+                                    label="Class Identifier"
+                                    type="text"
+                                    name="classidentifier"
+                                    register={register}
+                                    placeholder="XC475"
+                                    error={errors.classidentifier}
+                                />
                                 <Input<CreateClassFormData>
                                     label="Description"
                                     type="textarea"
                                     name="description"
                                     register={register}
+                                    placeholder="This class is all about innovation and creativity. We will be working on a variety of projects that will challenge your creativity and problem-solving skills."
                                     error={errors.description}
                                 />
+
+                                
                                 <button type="submit">Create Class</button>
                             </form>
                         </div>

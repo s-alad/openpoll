@@ -15,19 +15,12 @@ import { remove, ref, set } from "firebase/database";
 import { db, rdb } from "@/firebase/firebaseconfig";
 import { useRouter } from "next/router";
 import Spacer from "@/components/spacer/spacer";
+import MCPoll, { MCAnswerKey, MCOptions } from "@/models/poll/mc";
 
 
-interface PollData {
-    pollid: string;
-    type: string;
-    question: string;
-    options: {}[];
-    answers: string[];
-  }
-
-  interface CreateMultipleChoicePollProps {
-    pollData?: PollData; // Make pollData optional
-  }
+type CreateMultipleChoicePollProps = {
+    pollData?: MCPoll
+}
 
 export default function CreateMultipleChoicePoll({ pollData }: CreateMultipleChoicePollProps) {
 
@@ -36,7 +29,7 @@ export default function CreateMultipleChoicePoll({ pollData }: CreateMultipleCho
     const classid = router.query.classid as string;
 
     const colorselection: { [key: string]: string } = { "A": s.a, "B": s.b, "C": s.c, "D": s.d }
-    const initalpolls = [{ letter: "A", option: "A" }, { letter: "B", option: "B" }];
+    const initalpolls: MCOptions = [{ letter: "A", option: "" }, { letter: "B", option: "" }];
 
     const {
         register,
@@ -48,9 +41,9 @@ export default function CreateMultipleChoicePoll({ pollData }: CreateMultipleCho
         {
             resolver: zodResolver(createMultipleChoicePollData),
             defaultValues: {
-                question: pollData?.question ?? "",  // Ensures the question is pre-filled if pollData exists
+                question: pollData?.question ?? "",
                 options: pollData?.options ?? initalpolls,
-                answers: pollData?.answers ?? ["A"]
+                answerkey: pollData?.answerkey ?? ["A"]
             }
         }
     );
@@ -62,24 +55,24 @@ export default function CreateMultipleChoicePoll({ pollData }: CreateMultipleCho
 
     const onSubmit = async (data: CreateMultipleChoicePollFormData) => {
 
-        if (pollData?.pollid) {
+        /* if (pollData?.pollid) {
             await deleteOldPoll(pollData.pollid, classid);
-        }    
+        }     */
 
         console.log("SUCCESS", data);
         console.log('form data submitted:', data);
 
 		const uid = user!.uid;
 
-		const polldata = {
+		const polldata: MCPoll = {
 			type: "mc",
 			classid: classid,
 			question: data.question,
 			options: data.options,
-			answers: data.answers,
-			created: new Date(),
+			answerkey: data.answerkey,
+			createdat: new Date(),
 			creator: uid,
-			responses: [],
+			responses: {},
 			active: false,
 			done: false
 		}
@@ -159,7 +152,7 @@ export default function CreateMultipleChoicePoll({ pollData }: CreateMultipleCho
             </div>
 
             <Controller
-                name='answers'
+                name='answerkey'
                 control={control}
                 render={({ field }) => (
                     <FormControl className={s.multiselect}>
