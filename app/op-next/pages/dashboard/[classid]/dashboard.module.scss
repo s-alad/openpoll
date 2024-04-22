@@ -31,41 +31,10 @@
                 }
     
                 .classdate {
-                    font-size: 18px;
+                    font-size: 24px;
                     font-weight: 500;
-                    margin-bottom: 10px;
+                    color: #9596FF;
                 }
-
-                .addAdmin {
-                    color: black;
-                    font-size: 20px;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 5px;
-                    gap: 10px;
-                    background-color:  #FBB91B;
-                    border-radius: 5px;
-
-                    input, button {
-                        height: 30px; 
-                        width: 120px;
-                        border: none;
-                        
-                    }
-
-                    button {
-                        background-color: white;
-                        border: none;
-                        cursor: pointer;
-                        &:hover {
-                            background-color: #fbb91b;
-                            color: white;
-                        }
-                    }
-                }
-
             }    
 
             .add {
