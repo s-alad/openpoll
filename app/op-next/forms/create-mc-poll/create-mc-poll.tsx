@@ -20,9 +20,10 @@ import MCPoll, { MCAnswerKey, MCOptions } from "@/models/poll/mc";
 
 type CreateMultipleChoicePollProps = {
     pollData?: MCPoll
+    pollid?: string
 }
 
-export default function CreateMultipleChoicePoll({ pollData }: CreateMultipleChoicePollProps) {
+export default function CreateMultipleChoicePoll({ pollData, pollid }: CreateMultipleChoicePollProps) {
 
     const { user } = useAuth();
     const router = useRouter();
@@ -55,9 +56,9 @@ export default function CreateMultipleChoicePoll({ pollData }: CreateMultipleCho
 
     const onSubmit = async (data: CreateMultipleChoicePollFormData) => {
 
-        /* if (pollData?.pollid) {
-            await deleteOldPoll(pollData.pollid, classid);
-        }     */
+        if (pollid) {
+            await deleteOldPoll(pollid, classid);
+        }    
 
         console.log("SUCCESS", data);
         console.log('form data submitted:', data);

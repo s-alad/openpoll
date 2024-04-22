@@ -7,18 +7,13 @@ import CreateShortAnswerPoll from '@/forms/create-short-poll/create-short-poll';
 import CreateOrderingPoll from '@/forms/create-ordering-poll/create-ordering-poll';
 import s from './edit.poll.module.scss';
 import Poll, {  } from '@/models/poll';
+import MCPoll from "@/models/poll/mc";
+import ShortPoll from "@/models/poll/short";
 
 export default function EditPoll() {
     const router = useRouter();
     const { pollid, classid } = router.query;
-    const [pollData, setPollData] = useState({
-        pollid: "",
-        type: "",
-        question: "",
-        answers: [""],
-        options: [{}]
-
-    });
+    const [pollData, setPollData] = useState<MCPoll | ShortPoll | null>(null);
     const [loading, setLoading] = useState(true);
 
     function ensureArray(input: any) {
@@ -41,16 +36,11 @@ export default function EditPoll() {
             if (classid && pollid) {
                 const pollRef = doc(db, `classes/${classid}/polls/${pollid}`);
                 const docSnap = await getDoc(pollRef);
-                const data = docSnap.data() as Poll
+                const data = docSnap.data() as (MCPoll | ShortPoll);
+                const pid = docSnap.id;
 
                 if (docSnap.exists()) {
-                    setPollData({
-                        pollid: pollid as string,
-                        type: data.type,
-                        question: data.question,
-                        answers: ensureArray(data.answers),
-                        options: data.options
-                    });
+                    setPollData(data);
                     setLoading(false);
                 } else {
                     console.log("No such poll!");
@@ -75,10 +65,10 @@ export default function EditPoll() {
         <main className={s.editpoll}>
             <div className={s.edit}>
                 {
-					pollData.type === "mc" && <CreateMultipleChoicePoll pollData={pollData}/>
+					pollData.type === "mc" && <CreateMultipleChoicePoll pollData={pollData as MCPoll} pollid={pollid as string}/>
 				}
                 {
-					pollData.type === "short" && <CreateShortAnswerPoll pollData={pollData}/>
+					pollData.type === "short" && <CreateShortAnswerPoll pollData={pollData as ShortPoll} pollid={pollid as string}/>
 				}
             </div>
         </main>

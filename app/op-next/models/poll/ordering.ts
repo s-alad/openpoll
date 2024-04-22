@@ -1,11 +1,15 @@
 import Poll from "../poll";
 
 type OrderAnswerKey = {
-    [index: number]: string // index: letter
+    [index: number]: {
+        letter: string;
+        option: string;
+    };
 }
 type OrderOptions = {
-    [letter: string]: string; // letter: option
-}
+    letter: string; 
+    option: string;
+}[];
 type OrderResponses = {
     [userid: string]: {
         correct: boolean;

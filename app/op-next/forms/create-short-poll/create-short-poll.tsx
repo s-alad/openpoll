@@ -15,19 +15,12 @@ import Spacer from "@/components/spacer/spacer";
 import ShortPoll from "@/models/poll/short";
 
 
-interface PollData {
-    pollid: string;
-    type: string;
-    question: string;
-    options: {}[];
-    answers: string[];
-  }
+type CreateShortPollProps = {
+    pollData?: ShortPoll
+    pollid?: string
+}
 
-  interface CreateShortAnswerPollProps {
-    pollData?: PollData; // Make pollData optional
-  }
-
-export default function CreateShortAnswerPoll({ pollData }: CreateShortAnswerPollProps) {
+export default function CreateShortAnswerPoll({ pollData, pollid }: CreateShortPollProps) {
 
 
     function returnString(input: any) {
@@ -60,15 +53,15 @@ export default function CreateShortAnswerPoll({ pollData }: CreateShortAnswerPol
             resolver: zodResolver(createShortAnswerPollSchema),
             defaultValues: {
                 question: pollData?.question ?? "",  // Ensures the question is pre-filled if pollData exists
-                answerkey: returnString(pollData?.answers)
+                answerkey: returnString(pollData?.answerkey)
             }
 
         }
     );
 
     const onSubmit = async (data: CreateShortAnswerPollFormData) => {
-        if (pollData?.pollid) {
-            await deleteOldPoll(pollData.pollid, classid);
+        if (pollid) {
+            await deleteOldPoll(pollid, classid);
         }
 
         console.log("SUCCESS", data);

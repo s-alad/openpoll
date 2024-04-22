@@ -35,6 +35,14 @@ export const createAttendanceSchema: ZodType<CreateAttendancePollFormData> = z
 export const createOrderingPollSchema: ZodType<CreateOrderingPollFormData> = z
     .object({
         question: z.string().min(1, "Question must be at least 2 characters").max(200, "Question must be between 1 and 200 characters"),
-        options: z.record(z.string()).refine((data) => Object.keys(data).length > 0, {message: "At least one option is required",}),
-        answerkey: z.record(z.string())
+        options: z.array(
+            z.object({
+                letter: z.string(),
+                option: z.string().min(1, "Option must be at least 2 characters").max(200, "Option must be between 1 and 200 characters")
+            })
+        ).min(2, "Poll must have at least 2 options").max(10, "Poll must have at most 10 options"),
+        answerkey: z.record(z.object({
+            letter: z.string(),
+            option: z.string(),
+        }))
     })
