@@ -1,7 +1,7 @@
 import { useAuth } from "@/context/authcontext";
 import Poll, { PollAndId, getCorrectPollType } from "@/models/poll";
 import { onAuthStateChanged } from "firebase/auth";
-import { Timestamp, collection, doc, getDocs } from "firebase/firestore";
+import { Timestamp, collection, doc, getDocs, query, where } from "firebase/firestore";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { auth, db } from "../../../../firebase/firebaseconfig";
@@ -12,9 +12,10 @@ import { AppBar, Tabs, Tab, Box, Typography } from "@mui/material";
 import TopSection from "@/components/grades/topSection/topSection";
 import StudentStats from "@/components/grades/studentStats/studentStats";
 import MCPoll, { MCResponses } from "@/models/poll/mc";
-import ShortPoll from "@/models/poll/short";
+import ShortPoll, { ShortResponses } from "@/models/poll/short";
 import OrderPoll from "@/models/poll/ordering";
 import AttendancePoll from "@/models/poll/attendance";
+import MatchPoll from "@/models/poll/matching";
 
 interface PollAndAnswer {
 	pollId: string;
@@ -27,12 +28,6 @@ interface PollAndAnswer {
 	answers: string[];
 	isCorrect: boolean;
 	answered?: boolean;
-  }
-
-interface PollAttendance {
-	pollId: string;
-	date: Timestamp;
-	attended: boolean;
 }
 
 export default function ClassGrades() {
@@ -43,13 +38,12 @@ export default function ClassGrades() {
 	const classid = router.query.classid;
 	const { user } = useAuth();
 
-	const [openpolls, setOpenpolls] = useState<PollAndId[]>([]);
-	const [studentAnswers, setStudentAnswers] = useState<PollAndAnswer[]>([]);
+	const [openPolls, setOpenPolls] = useState<(MCPoll | ShortPoll | AttendancePoll | OrderPoll | MatchPoll)[]>([]);
 	const [numCorrect, setNumCorrect] = useState(0); // Number of correct answers used as an integer to display how many questions the student got correct
 	const [totalQuestions, setTotalQuestions] = useState(0); // Total number of questions in the poll
 	const [totalGrade, setTotalGrade] = useState(0); // Total grade of the student
-	const [studentAttendance, setStudentAttendance] = useState<PollAttendance[]>([]);
 	const [attendedCount, setAttendedCount] = useState(0);
+	const [attendancePolls, setAttendancePolls] = useState<AttendancePoll[]>([]);
 
 
 
@@ -83,125 +77,107 @@ export default function ClassGrades() {
 	async function getPolls() {
 		setLoading(true);
 		const classRef = doc(db, "classes", classid as string);
-		const pollsRef = collection(classRef, "polls");
-		try {
-			const snapshot = await getDocs(pollsRef);
-			let completedPolls: PollAndId[] = [];
-			snapshot.forEach((doc) => {
-				const pid = doc.id;
-				const data = doc.data();
-				let poll = getCorrectPollType(data);
+		
+		const allPolls = query(collection(classRef, "polls"), where("done", "==", true));
+		const allPollsSnapshot = await getDocs(allPolls);
 
-				if (!poll) return;
-				if (!data.classid) return;
-				if (!data.done) return;
-				console.log(pid, data);
+		const openPollsData: (MCPoll | ShortPoll | OrderPoll | MatchPoll)[] = [];
+		const attendancePollsData: AttendancePoll[] = [];
+        
+		allPollsSnapshot.forEach((doc) => {
+			const pid = doc.id;
+			const data = doc.data();
+			const poll = getCorrectPollType(data);
+			if (!poll) return;
+			
+			if (poll instanceof AttendancePoll) {
+				attendancePollsData.push(poll);
+			} else {
+				openPollsData.push(poll);
+			}
+		});
 
-				completedPolls.push({ poll: poll, id: pid } as PollAndId)
-			});
-			setOpenpolls(completedPolls);
-		} catch (e) {
-			console.error("Error getting documents: ", e);
-		}
-
+		console.log("Open polls", openPollsData);
+		setOpenPolls(openPollsData);
+        setTotalQuestions(openPollsData.length);
+		setAttendancePolls(attendancePollsData);
 		setLoading(false);
 	}
 
 	async function extractPolls() {
-		try {
-			const currentUser = auth.currentUser;
-			if (!currentUser) {
-				console.error("No current user found");
-				return;
-			}
-			const uid = currentUser.uid;
+		const currentUser = auth.currentUser;
+		if (!currentUser) {
+			console.error("No current user found");
+			return;
+		}
+		const uid = currentUser.uid;
 
-			let correctCount = 0;
-			let attendanceCount = 0;
+		let correctCount = 0;
+		let attendanceCount = 0;
 
-			const attendancePolls = openpolls.filter(poll => poll.poll.type === "attendance");
-			const questionPolls = openpolls.filter(poll => poll.poll.type === "mc");
-
-			console.log(attendancePolls, "attendance polls")
-			console.log(questionPolls, "question polls")
-
-			const attendanceResults: PollAttendance[] = attendancePolls.map((pollAndId) => {
-				const poll: AttendancePoll = pollAndId.poll as AttendancePoll;
-				const pollId = pollAndId.id;
-
-				let userAttendanceInfo: PollAttendance = {
-					pollId,
-					date: poll.date,
-					attended: false,
-				};
-
-				const userAttendanceEntry = Object.entries(poll.responses || {}).find(
-					([uid, attended]) => {
-						return uid === currentUser.uid;
-					},
-				);
-
-				if (userAttendanceEntry) {
-					userAttendanceInfo.attended = true;
+		openPolls.forEach((poll) => {
+			if (poll.type == "mc") {
+				const mcPoll = poll as MCPoll;
+				const userResponse = mcPoll.responses[uid];
+				if (userResponse) {
+					if (userResponse.correct) {
+						correctCount++;
+					}
+				} else {
+					console.log("No response found");
+					return;
+				} 
+			} else if (poll.type == "short") {
+				const shortPoll = poll as ShortPoll;
+				const userResponse = shortPoll.responses[uid];
+				console.log("user response", userResponse);
+				if (userResponse) {
+					if (userResponse.response.toLowerCase() === shortPoll.answerkey?.toLowerCase()) {
+						correctCount++;
+					}
+				} else {
+					console.log("No response found");
+					return;
+				}
+			} else if (poll.type == "order") {
+				const orderPoll = poll as OrderPoll;
+				const userResponse = orderPoll.responses[uid];
+				if (userResponse) {
+					if (userResponse.correct) {
+						correctCount++;
+					}
+				} else {
+					console.log("No response found");
+					return;
+				}
+			} 
+			// Do match poll when there is a correct
+			// else if (poll.type == "match") {
+			// 	const matchPoll = poll as MatchPoll;
+			// 	const userResponse = matchPoll.responses[uid];
+			// 	if (userResponse) {
+			// 		if (userResponse.correct) {
+			// 			correctCount++;
+			// 		}
+			// 	} else {
+			// 		console.log("No response found");
+			// 		return;
+			// 	}
+			// }
+		});
+		
+		attendancePolls.forEach((poll) => {
+			const attendancePoll = poll as AttendancePoll;
+			const userResponse = attendancePoll.responses[uid];
+			if (userResponse) {
+				if (userResponse.attended) {
 					attendanceCount++;
 				}
-
-				return userAttendanceInfo;
-			});
-
-			const MCresults: PollAndAnswer[] = questionPolls.map((pollAndId) => {
-				const poll: MCPoll = pollAndId.poll as MCPoll;
-				const pollId = pollAndId.id;
-				const correctAnswersSet = new Set(poll.answerkey);
-
-				// Initialize default user response info
-				let userResponseInfo: PollAndAnswer = {
-					question: poll.question,
-					pollId,
-					responses: [],
-					answers: poll.answerkey,
-					isCorrect: false,
-					options: poll.options,
-					answered: false,
-				};
-
-				// Find the user's response among the poll responses
-				console.log(poll.responses, "poll responses")
-				const userResponseEntry = Object.entries(poll.responses || {}).find(
-					([option, userResponses]) => {
-						return option === currentUser.uid;
-					},
-				);
-
-					console.log(userResponseEntry, "user response entry")
-
-				// If the user has responded to the poll
-				// Check if the user's response is correct
-				// Increment the correct count if the user's response is correct
-				if (userResponseEntry) {
-					userResponseInfo.responses = userResponseEntry[1].response;
-					userResponseInfo.answered = true;
-					userResponseInfo.isCorrect = userResponseEntry[1].correct;
-					if (userResponseInfo.isCorrect) {
-						correctCount++; // Increment local correct count
-					}
-				}
-
-
-				return userResponseInfo;
-			});
-
-			setAttendedCount(attendanceCount);
-			setStudentAttendance(attendanceResults);
-			setStudentAnswers(MCresults); // Save the results to the state
-			setNumCorrect(correctCount);
-			setTotalQuestions(questionPolls.length);
-			setTotalGrade(
-				Math.round((correctCount / openpolls.length) * 100 * 10) / 10,
-			);
-		} catch (e) {
-			console.error("Error while checking answers: ", e);
-		}
+			} else {
+				console.log("No response found");
+				return;
+			}
+		});
 	}
 
 	useEffect(() => {
@@ -215,8 +191,8 @@ export default function ClassGrades() {
 	}, [classid]);
 
 	useEffect(() => {
-		console.log("Open polls changed");
-		console.log(openpolls);
+		// console.log("Open polls changed");
+		// console.log(openpolls);
 		if (openpolls.length > 0) {
 			console.log("Extracted polls");
 			extractPolls();
@@ -238,21 +214,20 @@ export default function ClassGrades() {
 						>
 							Gradebook
 						</h1>
-						<TopSection
+						{/* <TopSection
 							totalGrade={totalGrade}
 							attendedCount={attendedCount}
 							studentAttendanceLength={studentAttendance.length}
 							numCorrect={numCorrect}
 							totalQuestions={totalQuestions}
 						/>
-						{/* Section for stats and images */}
 						<StudentStats
 							studentAttendance={studentAttendance.filter(attend => attend.attended).length}
 							studentAttendanceLength={studentAttendance.length}
 							questionsAnswered={studentAnswers.filter(answer => answer.answered).length}
 							totalQuestions={totalQuestions}
 							numCorrect={numCorrect}
-						/>
+						/> */}
 						{/* Question Section */}
 						<Box sx={{ width: "100%" }}>
 							<AppBar
@@ -289,7 +264,7 @@ export default function ClassGrades() {
 										<h2>Total</h2>
 									</div>
 									<div className={s.questionsList}>
-										{studentAnswers.map((answer, index) => (
+										{/* {studentAnswers.map((answer, index) => (
 											<div key={index} className={s.question}>
 												<div className={s.responseColumn}>
 													<Image
@@ -333,7 +308,7 @@ export default function ClassGrades() {
 												</div>
 												<div className={s.stat}>1/1</div>
 											</div>
-										))}
+										))} */}
 									</div>
 								</div>
 							</TabPanel>
@@ -344,7 +319,7 @@ export default function ClassGrades() {
 										<h2>Attended</h2>
 									</div>
 									<div>
-										{studentAttendance.map((attendance, index) => (
+										{/* {studentAttendance.map((attendance, index) => (
 											<div key={index} className={s.question}>
 												<div className={s.responseColumn}>
 
@@ -373,7 +348,7 @@ export default function ClassGrades() {
 													}
 												</div>
 											</div>
-										))}
+										))} */}
 									</div>
 								</div>
 							</TabPanel>

@@ -14,7 +14,7 @@ interface Question {
         letter: string;
     }[];
     responses: string[];
-    answer: string;
+    answers: string[];
     isCorrect: boolean;
 }
 
@@ -46,24 +46,28 @@ export default function index() {
                 let userResponseInfo: Question = {
                     question: pollData.question,
                     responses: [],
-                    answer: pollData.answerkey,
+                    answers: pollData.answerkey,
                     isCorrect: false,
                     options: pollData.options,
                 };
 
-                // Find the user's response among the poll responses
-                Object.entries(pollData.responses || {}).forEach(([option, userResponses]: any) => {
-                    console.log(option, userResponses);
-                    if (option === uid) {
-                        userResponseInfo.responses = userResponses.response
-                    }
-                });
+                const userResponseEntry = Object.entries(pollData.responses || {}).find(
+					([option, userResponses]) => {
+						return option === currentUser.uid;
+					},
+				);
+
+                console.log(userResponseEntry, "userResponseEntry");
+                if (userResponseEntry) {
+					userResponseInfo.responses = userResponseEntry[1].response;
+					userResponseInfo.isCorrect = userResponseEntry[1].correct;
+				}
 
                 userResponseInfo.isCorrect = userResponseInfo.responses.includes(userResponseInfo.answer);
 
                 setQuestion(userResponseInfo);
             }
-            
+             
         } catch (e) {
             console.log(e);
         }
