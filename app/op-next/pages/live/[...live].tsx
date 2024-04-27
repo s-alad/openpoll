@@ -12,6 +12,7 @@ import MCPoll from "@/models/poll/mc";
 import ShortPoll from "@/models/poll/short";
 import OrderPoll from "@/models/poll/ordering";
 import AttendancePoll from "@/models/poll/attendance";
+import { getPollTypeFromId } from "@/context/utils";
 
 export default function Live() {
 
@@ -31,21 +32,21 @@ export default function Live() {
     const [responsecount, setResponseCount] = useState<number>(0);
 
 
-    // gets the poll from the database on page load
+    // gets the poll from the realtime database on page load
     async function getpoll() {
-        const pollsref = ref(rdb, `classes/${live![0]}/polls`);
+        if (!classId || !pollId) return;
 
+        const pollref = ref(rdb, `classes/${classId}/polls/${pollId}`);
         try {
-            const snapshot = await get(pollsref);
-            const poll = snapshot.val();
-            if (!poll) return;
+            const snapshot = await get(pollref);
+            const lp = snapshot.val();
+            if (!lp) return;
 
-            const lp = poll[live![1]] as MCPoll | ShortPoll | OrderPoll | AttendancePoll;
-            console.log(lp);
+            if (lp.done) { setEndedStatus(true); }
+            else { setEndedStatus(false); }
 
-            if (lp.done) {
-                setEndedStatus(true);
-            } else { setEndedStatus(false); }
+            if (lp.active) { setLocalPollStatus(true); }
+            else { setLocalPollStatus(false); }
 
             setLivepoll(lp);
 
@@ -54,11 +55,25 @@ export default function Live() {
 
     // get the current live responses
     async function getlivereponses() {
+        if (!classId || !pollId) return;
+
+        const responsesref = ref(rdb, `classes/${classId}/polls/${pollId}/responses`);
+        try {
+            const snapshot = await get(responsesref);
+            const responses = snapshot.val();
+            if (!responses) return;
+
+            setResponseCount(Object.keys(responses).length);
+
+        } catch (e) { console.error("Error getting documents: ", e); }
+
     }
 
     // sets the poll status to either active or inactive
     async function setremotepollstatus(status: boolean) {
-        const pollsref = ref(rdb, `classes/${live![0]}/polls/${live![1]}/active`);
+        if (!classId || !pollId) return;
+        
+        const pollsref = ref(rdb, `classes/${classId}/polls/${pollId}/active`);
         try { 
             await set(pollsref, status);
             setLocalPollStatus(status);
@@ -68,9 +83,9 @@ export default function Live() {
 
     // completely ends the poll
     async function endpoll() {
-        const pollsref = ref(rdb, `classes/${live![0]}/polls/${live![1]}/done`);
-        console.log(pollsref);
+        if (!classId || !pollId) return;
 
+        const pollsref = ref(rdb, `classes/${classId}/polls/${pollId}/done`);
         try {
             await set(pollsref, true);
             setremotepollstatus(false);
