@@ -6,7 +6,6 @@ import { auth, db, fxns } from "../../firebase/firebaseconfig";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import s from './live.module.scss';
-import PollChart from "@/components/barchart/barchart";
 import { PiChatsFill } from "react-icons/pi";
 import Poll from "@/models/poll";
 import MCPoll from "@/models/poll/mc";
@@ -19,43 +18,18 @@ export default function Live() {
     // url query
     const router = useRouter();
     const { live } = router.query;
-    const [pollId, setPollId] = useState<string>("");
-    const [classId, setClassId] = useState<string>("");
+    const classId = live ? live[0] : "";
+    const pollId = live ? live[1] : "";
 
     const [livepoll, setLivepoll] = useState<MCPoll | ShortPoll | OrderPoll | AttendancePoll>();
 
-    const [pollstatus, setPollstatus] = useState<boolean>(false);
+    const [localpollstatus, setLocalPollStatus] = useState<boolean>(false);
     const [endedstatus, setEndedStatus] = useState<boolean>(false);
+    const [showlivereponses, setShowLiveResponses] = useState<boolean>(false);
+    const [showcorrectanswers, setShowCorrectAnswers] = useState<boolean>(false);
 
-    const [pollFinalStatus, setPollFinalStatus] = useState<boolean>(false);
-    const [showAnswers, setShowAnswers] = useState<boolean>(false);
-    const [correctAnswers, setCorrectAnswers] = useState<string[]>([]);
+    const [responsecount, setResponseCount] = useState<number>(0);
 
-
-    // Uses pollId and classId to get the correct answers from the database
-    async function getCorrectAnswers(classId: string, pollId: string) {
-        if (!pollId) {
-            console.log('Poll ID is undefined or empty.');
-            return;
-        }
-
-        // Reference to the poll document in the 'polls' collection
-        const pollDocRef = doc(db, "classes", classId, "polls", pollId);
-        console.log(pollDocRef, "pollDocRef")
-        // Get the document from the database
-        try {
-            const docSnap = await getDoc(pollDocRef);
-
-            if (docSnap.exists()) {
-                const pollData = docSnap.data();
-                const answers = pollData.answerkey;
-                console.log(answers, "answers");
-                setCorrectAnswers(answers);
-            }
-        } catch (error) {
-            console.error("Error fetching document:", error);
-        }
-    }
 
     // gets the poll from the database on page load
     async function getpoll() {
@@ -78,12 +52,17 @@ export default function Live() {
         } catch (e) { console.error("Error getting documents: ", e); }
     }
 
-    // sets the poll status to either active or inactive
-    async function setpollstatus(status: boolean) {
-        const pollsref = ref(rdb, `classes/${live![0]}/polls/${live![1]}/active`);
-        console.log(pollsref);
+    // get the current live responses
+    async function getlivereponses() {
+    }
 
-        try { await set(pollsref, status); setPollstatus(status); }
+    // sets the poll status to either active or inactive
+    async function setremotepollstatus(status: boolean) {
+        const pollsref = ref(rdb, `classes/${live![0]}/polls/${live![1]}/active`);
+        try { 
+            await set(pollsref, status);
+            setLocalPollStatus(status);
+        }
         catch (e) { console.error("Error getting documents: ", e); }
     }
 
@@ -94,18 +73,12 @@ export default function Live() {
 
         try {
             await set(pollsref, true);
-            setPollFinalStatus(true);
-            setpollstatus(false);
-            let fxname = "transferAndCalculatePollResults"
+            setremotepollstatus(false);
             setEndedStatus(true);
 
-            const transferPollResultsFx = httpsCallable(fxns, fxname);
+            const transferPollResultsFx = httpsCallable(fxns, "transferAndCalculatePollResults");
             const result = await transferPollResultsFx({ pollId: pollId, classId: classId });
             console.log(result.data, 'result');
-
-            const firestorePollRef = doc(db, "classes", classId, "polls", pollId);
-            await updateDoc(firestorePollRef, { done: true }); // Assuming 'done' is the field you want to update
-
         }
         catch (e) { console.error("Error getting documents: ", e); }
     }
@@ -113,13 +86,7 @@ export default function Live() {
     // gets the poll from the database on page load
     useEffect(() => {
         if (live) {
-            console.log(live);
-            setPollId(live[1] as string);
-            setClassId(live[0] as string);
             getpoll();
-            if (correctAnswers && correctAnswers.length === 0) {
-                getCorrectAnswers(live[0] as string, live[1] as string);
-            }
         }
 
     }, [live]);
@@ -129,96 +96,73 @@ export default function Live() {
             {
                 live && livepoll ?
                     <div className={s.poll}>
-                        <div className={s.question}>
-                            <PiChatsFill />
-                            {livepoll?.question}
+                        <div className={s.info}>
+                            <span className={s.question}><PiChatsFill /> {livepoll?.question}</span>
+                            <span className={s.count}>
+                                {`${responsecount} responses`}
+                            </span>
                         </div>
-                        <div className={s.options}>
+                        <div className={s.polltypes}>
                             {
-
                                 livepoll.type === "mc" &&
-                                (livepoll as MCPoll)?.options.map((option, index) => {
-                                    return (
-                                        <div key={index} className={s.option}>
-                                            <div className={s.letter}>{option.letter}</div>
-                                            <div className={s.content}>{option.option}</div>
-                                        </div>
-                                    )
-                                })
+                                <div className={s.mc}>
+                                    {
+                                        (livepoll as MCPoll)?.options.map((option, index) => {
+                                            return (
+                                                <div key={index} className={s.option}>
+                                                    <div className={s.letter}>{option.letter}</div>
+                                                    <div className={s.content}>{option.option}</div>
+                                                </div>
+                                            )
+                                        })
+                                    }
+                                </div>
                             }
                             {
                                 livepoll.type === "short" && <></>
                             }
                             {
                                 livepoll.type === "attendance" && (
-                                    <div className={s.codeDisplay}>Code: {pollId.substring(pollId.length - 4)}</div>
+                                    <div className={s.attendancecode}>Code: {pollId.substring(pollId.length - 4)}</div>
                                 )
                             }
                         </div>
 
-                        <div className={s.actions}>
-                            {
-                                endedstatus ? null : (
-                                    pollstatus ?
-                                        <button onClick={() => setpollstatus(false)} className={s.stop}>Stop</button>
-                                        :
-                                        <button onClick={() => setpollstatus(true)} className={s.start}>Start Poll</button>)
-                            }
+                        <div className={s.seperator}></div>
 
-                            {
-                                endedstatus ?
-                                    <div className={s.completed}>poll completed</div>
-                                    :
-                                    <button onClick={() => endpoll()} className={s.stop}>Complete Poll</button>
-                            }
+                        <div className={s.actions}>
+                            <div className={s.left}>
+                                {
+                                    !endedstatus && (localpollstatus ?
+                                        <button onClick={() => setremotepollstatus(false)} className={s.stop}>Stop</button>
+                                        :
+                                        <button onClick={() => setremotepollstatus(true)} className={s.start}>Start Poll</button>)
+                                }
+                                {
+                                    endedstatus ?
+                                        <div className={s.completed}>poll completed</div>
+                                        :
+                                        <button onClick={() => endpoll()} className={s.destructive}>Complete Poll</button>
+                                }
+                            </div>
+                            <div className={s.right}>
+                                <button onClick={() => setShowLiveResponses(!showlivereponses)} 
+                                    className={`${!localpollstatus ? s.disabled : ''} ${showlivereponses ? s.off : s.on}`}
+                                    disabled={!localpollstatus}
+                                >
+                                    {showlivereponses ? "Hide Live Responses" : "Show Live Responses"}
+                                </button>
+                                <button onClick={() => setShowCorrectAnswers(!showcorrectanswers)} 
+                                    className={`${showcorrectanswers ? s.off : s.on}`}
+                                >
+                                    {showcorrectanswers ? "Hide Correct Answer" : "Show Correct Answer"}
+                                </button>
+                            </div>
                         </div>
                     </div>
                     :
                     ""
             }
-
-            {
-                livepoll && livepoll.type != "attendance" && 
-                <div className={s.answers}>
-                {
-                    <button onClick={() => setShowAnswers(!showAnswers)} className={s.answer}>
-                        {showAnswers ? "Hide Answers" : "Show Answers"}
-                    </button>
-                }
-            </div>
-            }
-
-            <div className={s.answerWrapper}>
-                {showAnswers && correctAnswers.length > 0 && !pollstatus && (
-                    <div className={s.answers}>
-                        <h2>Correct Answer</h2>
-                        <p>{correctAnswers}</p>
-                    </div>
-                )}
-                {showAnswers && correctAnswers.length > 0 && (
-                    <div className={s.content}>
-                        {
-                            livepoll?.type === "mc" && (
-                                <PollChart poll={livepoll as MCPoll} />
-                            )
-                        }
-                    </div>
-                )}
-                {
-                    showAnswers && livepoll?.type === "short" && (
-                        <div className={s.answers}>
-                            <h2>Answers</h2>
-                            {
-                                livepoll?.responses && Object.entries(livepoll.responses).map(([studentid, answer], index) => {
-                                    return (
-                                        <p key={index}>{answer.toString()}</p>
-                                    )
-                                })
-                            }
-                        </div>
-                    )
-                }
-            </div>
         </div>
     )
 }

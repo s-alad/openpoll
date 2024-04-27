@@ -1,4 +1,4 @@
-import Poll from "../poll";
+import Poll, { TPoll } from "../poll";
 
 type OrderAnswerKey = {
     [index: number]: {
