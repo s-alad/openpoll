@@ -208,14 +208,18 @@ export default function Live() {
                         {
                             livepoll.type !== "attendance" && (
                                 <div className={s.right}>
-                                    <button onClick={() => setShowLiveResponses(!showlivereponses)}
-                                        className={`${!localpollstatus ? s.disabled : ''} ${showlivereponses ? s.off : s.on}`}
-                                        disabled={!localpollstatus}
+                                    <button onClick={() => {
+                                        if (!showlivereponses) {setShowLiveResponses(true)}
+                                        else {setShowLiveResponses(false); setShowCorrectAnswers(false)}
+                                    }}
+                                        /* className={`${!localpollstatus ? s.disabled : ''} ${showlivereponses ? s.off : s.on}`} */
+                                        /* disabled={!localpollstatus} */
+                                        className={`${showlivereponses ? s.off : s.on}`}
                                     >
                                         {showlivereponses ? "Hide Live Responses" : "Show Live Responses"}
                                     </button>
                                     <button onClick={() => setShowCorrectAnswers(!showcorrectanswers)}
-                                        className={`${showcorrectanswers ? s.off : s.on}`}
+                                        className={`${!showlivereponses ? s.disabled : ''} ${showcorrectanswers ? s.off : s.on}`}
                                     >
                                         {showcorrectanswers ? "Hide Correct Answer" : "Show Correct Answer"}
                                     </button>
