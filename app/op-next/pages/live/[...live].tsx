@@ -249,7 +249,7 @@ export default function Live() {
                                                     width: `${
                                                         (
                                                             Object.values(responses as MCResponses).filter((response) => 
-                                                            response.response.includes(option.letter)).length / 
+                                                            response.response?.includes(option.letter)).length / 
                                                             Object.values(responses as MCResponses).length
                                                         ) * 100
                                                     }%`
