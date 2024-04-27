@@ -74,7 +74,7 @@ export default function Live() {
         console.log("getting live responses");
         if (!classId || !pollId) return;
 
-        const polltype = livepoll?.type;
+        const polltype = await getPollTypeFromId(classId, pollId);
 
         const responsesref = ref(rdb, `classes/${classId}/polls/${pollId}/responses`);
         try {
@@ -228,7 +228,39 @@ export default function Live() {
             <div className={s.liveresponses}>
                 {
                     livepoll && livepoll.type === "mc" && showlivereponses && responses && (
-                        <div>live</div>
+                        <div className={s.mcresponses}>
+                            {
+                                (livepoll as MCPoll)?.options.map((option, index) => {
+                                    return (
+                                        <div key={index} className={s.option}>
+                                            <div className={s.letter}
+                                                style={
+                                                    showcorrectanswers ?
+                                                    {
+                                                        backgroundColor: `${
+                                                            (livepoll as MCPoll).answerkey.includes(option.letter) ?
+                                                                "#00FF00" : "#fff"
+                                                        }`
+                                                    } : {}
+                                                }
+                                            >{option.letter}</div>
+                                            <div className={s.content}
+                                                style={{
+                                                    width: `${
+                                                        (
+                                                            Object.values(responses as MCResponses).filter((response) => 
+                                                            response.response.includes(option.letter)).length / 
+                                                            Object.values(responses as MCResponses).length
+                                                        ) * 100
+                                                    }%`
+                                                }}
+                                            >
+                                            </div>
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
                     )
                 }
             </div>
