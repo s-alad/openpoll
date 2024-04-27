@@ -7,11 +7,11 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import s from './live.module.scss';
 import { PiChatsFill } from "react-icons/pi";
-import Poll from "@/models/poll";
-import MCPoll from "@/models/poll/mc";
-import ShortPoll from "@/models/poll/short";
-import OrderPoll from "@/models/poll/ordering";
-import AttendancePoll from "@/models/poll/attendance";
+import Poll, { getCorrectPollType } from "@/models/poll";
+import MCPoll, { MCResponses } from "@/models/poll/mc";
+import ShortPoll, { ShortResponses } from "@/models/poll/short";
+import OrderPoll, { OrderResponses } from "@/models/poll/ordering";
+import AttendancePoll, { AttendanceResponses } from "@/models/poll/attendance";
 import { getPollTypeFromId } from "@/context/utils";
 
 export default function Live() {
@@ -29,7 +29,7 @@ export default function Live() {
     const [showlivereponses, setShowLiveResponses] = useState<boolean>(false);
     const [showcorrectanswers, setShowCorrectAnswers] = useState<boolean>(false);
 
-    const [responsecount, setResponseCount] = useState<number>(0);
+    const [responses, setResponses] = useState<(MCResponses | ShortResponses | OrderResponses | AttendanceResponses | null)>();
 
 
     // gets the poll from the realtime database on page load
@@ -48,33 +48,77 @@ export default function Live() {
             if (lp.active) { setLocalPollStatus(true); }
             else { setLocalPollStatus(false); }
 
-            setLivepoll(lp);
+            const polltype = lp.type;
 
+            switch (polltype) {
+                case "mc":
+                    setLivepoll(getCorrectPollType(lp) as MCPoll);
+                    break;
+                case "short":
+                    setLivepoll(getCorrectPollType(lp) as ShortPoll);
+                    break;
+                case "order":
+                    setLivepoll(getCorrectPollType(lp) as OrderPoll);
+                    break;
+                case "attendance":
+                    setLivepoll(getCorrectPollType(lp) as AttendancePoll);
+                    break;
+                default:
+                    break;
+            }
         } catch (e) { console.error("Error getting documents: ", e); }
     }
 
     // get the current live responses
     async function getlivereponses() {
+        console.log("getting live responses");
         if (!classId || !pollId) return;
+
+        const polltype = livepoll?.type;
 
         const responsesref = ref(rdb, `classes/${classId}/polls/${pollId}/responses`);
         try {
-            const snapshot = await get(responsesref);
-            const responses = snapshot.val();
-            if (!responses) return;
+            onValue(responsesref, (snapshot) => {
+                const responses = snapshot.val();
+                console.log("responses: ", responses);
+                if (responses) {
+                    console.log("responses: ", responses);
 
-            setResponseCount(Object.keys(responses).length);
+                    switch (polltype) {
+                        case "mc":
+                            console.log("mc");
+                            console.log(responses);
+                            setResponses(responses as MCResponses);
+                            break;
+                        case "short":
+                            setResponses(responses as ShortResponses);
+                            break;
+                        case "order":
+                            setResponses(responses as OrderResponses);
+                            break;
+                        case "attendance":
+                            setResponses(responses as AttendanceResponses);
+                            break;
+                        default:
+                            break;
+                    }
+
+                } else {
+                    setResponses(null);
+                }
+            }, (error) => {
+                console.error("Error listening to live responses: ", error);
+            });
 
         } catch (e) { console.error("Error getting documents: ", e); }
-
     }
 
     // sets the poll status to either active or inactive
     async function setremotepollstatus(status: boolean) {
         if (!classId || !pollId) return;
-        
+
         const pollsref = ref(rdb, `classes/${classId}/polls/${pollId}/active`);
-        try { 
+        try {
             await set(pollsref, status);
             setLocalPollStatus(status);
         }
@@ -102,6 +146,7 @@ export default function Live() {
     useEffect(() => {
         if (live) {
             getpoll();
+            getlivereponses();
         }
 
     }, [live]);
@@ -109,75 +154,84 @@ export default function Live() {
     return (
         <div className={s.livepoll}>
             {
-                live && livepoll ?
-                    <div className={s.poll}>
-                        <div className={s.info}>
-                            <span className={s.question}><PiChatsFill /> {livepoll?.question}</span>
-                            <span className={s.count}>
-                                {`${responsecount} responses`}
-                            </span>
-                        </div>
-                        <div className={s.polltypes}>
-                            {
-                                livepoll.type === "mc" &&
-                                <div className={s.mc}>
-                                    {
-                                        (livepoll as MCPoll)?.options.map((option, index) => {
-                                            return (
-                                                <div key={index} className={s.option}>
-                                                    <div className={s.letter}>{option.letter}</div>
-                                                    <div className={s.content}>{option.option}</div>
-                                                </div>
-                                            )
-                                        })
-                                    }
-                                </div>
-                            }
-                            {
-                                livepoll.type === "short" && <></>
-                            }
-                            {
-                                livepoll.type === "attendance" && (
-                                    <div className={s.attendancecode}>Code: {pollId.substring(pollId.length - 4)}</div>
-                                )
-                            }
-                        </div>
-
-                        <div className={s.seperator}></div>
-
-                        <div className={s.actions}>
-                            <div className={s.left}>
-                                {
-                                    !endedstatus && (localpollstatus ?
-                                        <button onClick={() => setremotepollstatus(false)} className={s.stop}>Stop</button>
-                                        :
-                                        <button onClick={() => setremotepollstatus(true)} className={s.start}>Start Poll</button>)
-                                }
-                                {
-                                    endedstatus ?
-                                        <div className={s.completed}>poll completed</div>
-                                        :
-                                        <button onClick={() => endpoll()} className={s.destructive}>Complete Poll</button>
-                                }
-                            </div>
-                            <div className={s.right}>
-                                <button onClick={() => setShowLiveResponses(!showlivereponses)} 
-                                    className={`${!localpollstatus ? s.disabled : ''} ${showlivereponses ? s.off : s.on}`}
-                                    disabled={!localpollstatus}
-                                >
-                                    {showlivereponses ? "Hide Live Responses" : "Show Live Responses"}
-                                </button>
-                                <button onClick={() => setShowCorrectAnswers(!showcorrectanswers)} 
-                                    className={`${showcorrectanswers ? s.off : s.on}`}
-                                >
-                                    {showcorrectanswers ? "Hide Correct Answer" : "Show Correct Answer"}
-                                </button>
-                            </div>
-                        </div>
+                live && livepoll &&
+                <div className={s.poll}>
+                    <div className={s.info}>
+                        <span className={s.question}><PiChatsFill /> {livepoll?.question}</span>
+                        <span className={s.count}>
+                            {`${responses ? Object.keys(responses).length : 0} responses`}
+                        </span>
                     </div>
-                    :
-                    ""
+                    <div className={s.polltypes}>
+                        {
+                            livepoll.type === "mc" &&
+                            <div className={s.mc}>
+                                {
+                                    (livepoll as MCPoll)?.options.map((option, index) => {
+                                        return (
+                                            <div key={index} className={s.option}>
+                                                <div className={s.letter}>{option.letter}</div>
+                                                <div className={s.content}>{option.option}</div>
+                                            </div>
+                                        )
+                                    })
+                                }
+                            </div>
+                        }
+                        {
+                            livepoll.type === "short" && <></>
+                        }
+                        {
+                            livepoll.type === "attendance" && (
+                                <div className={s.attendancecode}>Code: {pollId.substring(pollId.length - 4)}</div>
+                            )
+                        }
+                    </div>
+
+                    <div className={s.seperator}></div>
+
+                    <div className={s.actions}>
+                        <div className={s.left}>
+                            {
+                                !endedstatus && (localpollstatus ?
+                                    <button onClick={() => setremotepollstatus(false)} className={s.stop}>Stop</button>
+                                    :
+                                    <button onClick={() => setremotepollstatus(true)} className={s.start}>Start Poll</button>)
+                            }
+                            {
+                                endedstatus ?
+                                    <div className={s.completed}>poll completed</div>
+                                    :
+                                    <button onClick={() => endpoll()} className={s.destructive}>Complete Poll</button>
+                            }
+                        </div>
+                        {
+                            livepoll.type !== "attendance" && (
+                                <div className={s.right}>
+                                    <button onClick={() => setShowLiveResponses(!showlivereponses)}
+                                        className={`${!localpollstatus ? s.disabled : ''} ${showlivereponses ? s.off : s.on}`}
+                                        disabled={!localpollstatus}
+                                    >
+                                        {showlivereponses ? "Hide Live Responses" : "Show Live Responses"}
+                                    </button>
+                                    <button onClick={() => setShowCorrectAnswers(!showcorrectanswers)}
+                                        className={`${showcorrectanswers ? s.off : s.on}`}
+                                    >
+                                        {showcorrectanswers ? "Hide Correct Answer" : "Show Correct Answer"}
+                                    </button>
+                                </div>
+                            )
+                        }
+                    </div>
+                </div>
             }
+            <div className={s.liveresponses}>
+                {
+                    livepoll && livepoll.type === "mc" && showlivereponses && responses && (
+                        <div>live</div>
+                    )
+                }
+            </div>
         </div>
     )
 }
