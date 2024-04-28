@@ -46,10 +46,14 @@ export default function analytics() {
         }
     }
 
-    function filterpolls(polls: (MCPoll | ShortPoll | AttendancePoll | OrderPoll | MatchPoll)[]): (MCPoll)[] {
+    function filterMCPolls(polls: (MCPoll | ShortPoll | AttendancePoll | OrderPoll | MatchPoll)[]): (MCPoll)[] {
         return polls.filter((poll) => poll.type === "mc") as (MCPoll)[];
     }
 
+    function filterShortPolls(polls: (MCPoll | ShortPoll | AttendancePoll | OrderPoll | MatchPoll)[]): (ShortPoll)[] {
+        return polls.filter((poll) => poll.type === "short") as (ShortPoll)[];
+    }
+    
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user && classid) {
@@ -66,23 +70,42 @@ export default function analytics() {
                 <div>Loading...</div>
             ) : (
                 <div>
-                    {/* {
-
-                        openpolls.map((data, index) => (
-                            <div className={s.pollContainer}>
-                                <div className={s.pollQuestion}>{index + 1}. {data.question}</div>
-                                <div>Correct Answers: {data.answerkey}</div>
-
-                                <RenderBarChart poll={data} key={index} />
-                            </div>
-                        ))} */}
                         {
-                            filterpolls(openpolls).map((data, index) => (
+                            // display done MC polls
+                            filterMCPolls(openpolls).map((data, index) => (
                                 <div className={s.pollContainer}>
                                     <div className={s.pollQuestion}>{index + 1}. {data.question}</div>
                                     <div>Correct Answers: {data.answerkey}</div>
                                     <RenderBarChart poll={data} key={index} />
                                 </div>
+                            ))
+                        }
+
+                        {
+                            // Display done Short Answer Polls
+                            filterShortPolls(openpolls).map((data, index) => (
+                                <div className={s.pollContainer} key={index}>
+                                <div className={s.pollQuestion}>{index + 1}. {data.question}</div>
+                                <div>Correct Answers: {data.answerkey}</div>
+
+                                <table className={s.shortAnswerTable}>
+                                    <tr className={s.tableHeader}>
+                                        <th>Email</th>
+                                        <th>Response</th>
+                                    </tr>
+
+                                    {/* Map out the responses */}
+                                    {
+                                        Object.values(data.responses).map((response, index) => (
+                                            <tr className={response.correct ? s.correctRow : s.incorrectRow} key={index}>
+                                                <th>{response.email}</th>
+                                                <th>{response.response}</th>
+                                            </tr>
+                                        ))
+                                    }
+
+                                </table>
+                            </div>
                             ))
                         }
                 </div>

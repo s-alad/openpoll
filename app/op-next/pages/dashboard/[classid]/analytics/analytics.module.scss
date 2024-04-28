@@ -11,5 +11,26 @@
         .pollQuestion {
             font-size: 20px;
         }
+
+        .shortAnswerTable {
+            border-collapse: collapse;
+            width: 50%;
+            text-align: left;
+            border: 1px solid black;
+            padding: 8px;
+            
+            .tableHeader{
+                background-color: #4036EE;
+                color: white;
+            }
+
+            .correctRow {
+                background-color: #FBB91B;
+            }
+
+            .incorrectRow {
+                background-color: #FE6768;
+            }
+        }
     }
 }
