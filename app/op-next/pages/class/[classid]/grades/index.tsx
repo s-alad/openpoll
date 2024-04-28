@@ -16,6 +16,7 @@ import ShortPoll, { ShortResponses } from "@/models/poll/short";
 import OrderPoll from "@/models/poll/ordering";
 import AttendancePoll from "@/models/poll/attendance";
 import MatchPoll from "@/models/poll/matching";
+import { set } from "firebase/database";
 
 interface PollAndAnswer {
 	pollId: string;
@@ -38,12 +39,13 @@ export default function ClassGrades() {
 	const classid = router.query.classid;
 	const { user } = useAuth();
 
-	const [openPolls, setOpenPolls] = useState<(MCPoll | ShortPoll | AttendancePoll | OrderPoll | MatchPoll)[]>([]);
+	const [openPolls, setOpenPolls] = useState<PollAndId[]>([]);
+	const [attendancePolls, setAttendancePolls] = useState<PollAndId[]>([]);
 	const [numCorrect, setNumCorrect] = useState(0); // Number of correct answers used as an integer to display how many questions the student got correct
 	const [totalQuestions, setTotalQuestions] = useState(0); // Total number of questions in the poll
+	const [questionsAnswered, setQuestionsAnswered] = useState(0); // Number of questions the student answered
 	const [totalGrade, setTotalGrade] = useState(0); // Total grade of the student
 	const [attendedCount, setAttendedCount] = useState(0);
-	const [attendancePolls, setAttendancePolls] = useState<AttendancePoll[]>([]);
 
 
 
@@ -81,28 +83,29 @@ export default function ClassGrades() {
 		const allPolls = query(collection(classRef, "polls"), where("done", "==", true));
 		const allPollsSnapshot = await getDocs(allPolls);
 
-		const openPollsData: (MCPoll | ShortPoll | OrderPoll | MatchPoll)[] = [];
-		const attendancePollsData: AttendancePoll[] = [];
+		const openPollsData: PollAndId[] = [];
+		const attendancePollsData: PollAndId[] = [];
         
 		allPollsSnapshot.forEach((doc) => {
 			const pid = doc.id;
 			const data = doc.data();
 			const poll = getCorrectPollType(data);
+			// push pid to poll
 			if (!poll) return;
-			
-			if (poll instanceof AttendancePoll) {
-				attendancePollsData.push(poll);
-			} else {
-				openPollsData.push(poll);
+
+			if (poll.type === "attendance") {
+				attendancePollsData.push({id: pid, poll: poll as AttendancePoll});
+			} else if (poll.type === "mc" || poll.type === "short" || poll.type === "order" || poll.type === "match") {
+				openPollsData.push({id: pid, poll: poll as MCPoll | ShortPoll | OrderPoll | MatchPoll});
 			}
 		});
 
-		console.log("Open polls", openPollsData);
 		setOpenPolls(openPollsData);
         setTotalQuestions(openPollsData.length);
 		setAttendancePolls(attendancePollsData);
 		setLoading(false);
 	}
+
 
 	async function extractPolls() {
 		const currentUser = auth.currentUser;
@@ -113,12 +116,15 @@ export default function ClassGrades() {
 		const uid = currentUser.uid;
 
 		let correctCount = 0;
+		let questionsAnswered = 0;
 		let attendanceCount = 0;
+		let totalGrade = 0;
 
 		openPolls.forEach((poll) => {
-			if (poll.type == "mc") {
-				const mcPoll = poll as MCPoll;
+			if (poll.poll.type === "mc") {
+				const mcPoll = poll.poll as MCPoll;
 				const userResponse = mcPoll.responses[uid];
+				console.log(userResponse);
 				if (userResponse) {
 					if (userResponse.correct) {
 						correctCount++;
@@ -126,11 +132,10 @@ export default function ClassGrades() {
 				} else {
 					console.log("No response found");
 					return;
-				} 
-			} else if (poll.type == "short") {
-				const shortPoll = poll as ShortPoll;
+				}
+			} else if (poll.poll.type === "short") {
+				const shortPoll = poll.poll as ShortPoll;
 				const userResponse = shortPoll.responses[uid];
-				console.log("user response", userResponse);
 				if (userResponse) {
 					if (userResponse.response.toLowerCase() === shortPoll.answerkey?.toLowerCase()) {
 						correctCount++;
@@ -139,8 +144,8 @@ export default function ClassGrades() {
 					console.log("No response found");
 					return;
 				}
-			} else if (poll.type == "order") {
-				const orderPoll = poll as OrderPoll;
+			} else if (poll.poll.type === "order") {
+				const orderPoll = poll.poll as OrderPoll;
 				const userResponse = orderPoll.responses[uid];
 				if (userResponse) {
 					if (userResponse.correct) {
@@ -150,10 +155,11 @@ export default function ClassGrades() {
 					console.log("No response found");
 					return;
 				}
-			} 
+			}
+			questionsAnswered++;
 			// Do match poll when there is a correct
-			// else if (poll.type == "match") {
-			// 	const matchPoll = poll as MatchPoll;
+			// else if (poll.poll.type == "match") {
+			// 	const matchPoll = poll.poll as MatchPoll;
 			// 	const userResponse = matchPoll.responses[uid];
 			// 	if (userResponse) {
 			// 		if (userResponse.correct) {
@@ -164,10 +170,12 @@ export default function ClassGrades() {
 			// 		return;
 			// 	}
 			// }
+
+			
 		});
 		
 		attendancePolls.forEach((poll) => {
-			const attendancePoll = poll as AttendancePoll;
+			const attendancePoll = poll.poll as AttendancePoll;
 			const userResponse = attendancePoll.responses[uid];
 			if (userResponse) {
 				if (userResponse.attended) {
@@ -178,6 +186,14 @@ export default function ClassGrades() {
 				return;
 			}
 		});
+
+		totalGrade = (correctCount / totalQuestions) * 100;
+		setQuestionsAnswered(questionsAnswered);
+		console.log("Questions answered", questionsAnswered);
+		setNumCorrect(correctCount);
+		setTotalGrade(totalGrade);
+		setAttendedCount(attendanceCount);
+		console.log("Total grade", totalGrade);
 	}
 
 	useEffect(() => {
@@ -191,13 +207,11 @@ export default function ClassGrades() {
 	}, [classid]);
 
 	useEffect(() => {
-		// console.log("Open polls changed");
-		// console.log(openpolls);
-		if (openpolls.length > 0) {
+		if (openPolls.length > 0) {
 			console.log("Extracted polls");
 			extractPolls();
 		}
-	}, [openpolls]); // Only run the effect when openpolls changes
+	}, [openPolls]); // Only run the effect when openpolls changes
 
 
 	return (
@@ -214,20 +228,20 @@ export default function ClassGrades() {
 						>
 							Gradebook
 						</h1>
-						{/* <TopSection
+						<TopSection
 							totalGrade={totalGrade}
 							attendedCount={attendedCount}
-							studentAttendanceLength={studentAttendance.length}
+							studentAttendanceLength={attendancePolls.length}
 							numCorrect={numCorrect}
 							totalQuestions={totalQuestions}
 						/>
 						<StudentStats
-							studentAttendance={studentAttendance.filter(attend => attend.attended).length}
-							studentAttendanceLength={studentAttendance.length}
-							questionsAnswered={studentAnswers.filter(answer => answer.answered).length}
+							studentAttendance={attendedCount}
+							studentAttendanceLength={attendancePolls.length}
+							questionsAnswered={questionsAnswered}
 							totalQuestions={totalQuestions}
 							numCorrect={numCorrect}
-						/> */}
+						/>
 						{/* Question Section */}
 						<Box sx={{ width: "100%" }}>
 							<AppBar
@@ -259,56 +273,78 @@ export default function ClassGrades() {
 								<div className={s.boxContainer}>
 									<div className={s.boxOverhead}>
 										<h2>Responses</h2>
-										<h2>Weight</h2>
 										<h2>Correctness</h2>
 										<h2>Total</h2>
 									</div>
 									<div className={s.questionsList}>
-										{/* {studentAnswers.map((answer, index) => (
-											<div key={index} className={s.question}>
-												<div className={s.responseColumn}>
-													<Image
-														src="/chat_box.svg"
-														alt="chat box"
-														width={20}
-														height={20}
-													/>
-													<div className={s.textDetails}>
-														<Link
-															href={`/class/${classid}/grades/${answer.pollId}`}
-															passHref
-															className={s.questionLink}
-														>
-															<h2 className={s.questionText}>
-																{answer.question}
-															</h2>
-														</Link>
-														<Typography variant="body2" className={s.correctAnswer}>
-															Correct answer is {answer.answers[0]}
-														</Typography>
+										{openPolls.map((pollAndId, index) => {
+											const uid = auth.currentUser?.uid;
+											if (!uid) return;
+											let correct = false;
+											let answerkey = "";
+
+											if (pollAndId.poll.type === "mc") {
+												const mcPoll = pollAndId.poll as MCPoll;
+												correct = mcPoll.responses[uid].correct;
+												answerkey = mcPoll.answerkey.join(", ");
+											} else if (pollAndId.poll.type === "short") {
+												const shortPoll = pollAndId.poll as ShortPoll;
+												correct = shortPoll.responses[uid].response.toLowerCase() === shortPoll.answerkey?.toLowerCase();
+												answerkey = shortPoll.answerkey ?? '';
+											} else if (pollAndId.poll.type === "order") {
+												const orderPoll = pollAndId.poll as OrderPoll;
+												correct = orderPoll.responses[uid].correct;
+											}
+
+											return (
+												<div key={index} className={s.question}>
+													<div className={s.responseColumn}>
+														<Image
+															src="/chat_box.svg"
+															alt="chat box"
+															width={20}
+															height={20}
+														/>
+														<div className={s.textDetails}>
+															<Link
+																href={`/class/${classid}/grades/${pollAndId.id}`}
+																passHref
+																className={s.questionLink}
+															>
+																<h2 className={s.questionText}>
+																	{pollAndId.poll.question}
+																</h2>
+															</Link>
+															<Typography variant="body2" className={s.correctAnswer}>
+																Correct answer is {answerkey}
+															</Typography>
+														</div>
+													</div>
+													<div className={s.stat}>{correct ?
+														<Image
+															src="/checkmark.svg"
+															alt="check"
+															width={20}
+															height={20}
+															className={s.image}
+														/> :
+														<Image
+															src="/x-mark.svg"
+															alt="x"
+															width={250}
+															height={25}
+															className={s.image}
+														/>
+													}
+													</div>
+													<div className={s.stat}>{correct ? 
+														"1/1" :
+														"0/1"
+													}
 													</div>
 												</div>
-												<div className={s.stat}>1/1</div>
-												<div className={s.stat}>{studentAnswers[index].isCorrect ?
-													<Image
-														src="/checkmark.svg"
-														alt="check"
-														width={20}
-														height={20}
-														className={s.image}
-													/> :
-													<Image
-														src="/x-mark.svg"
-														alt="x"
-														width={250}
-														height={25}
-														className={s.image}
-													/>
-												}
-												</div>
-												<div className={s.stat}>1/1</div>
-											</div>
-										))} */}
+											)
+										})}
 									</div>
 								</div>
 							</TabPanel>
@@ -319,36 +355,44 @@ export default function ClassGrades() {
 										<h2>Attended</h2>
 									</div>
 									<div>
-										{/* {studentAttendance.map((attendance, index) => (
-											<div key={index} className={s.question}>
-												<div className={s.responseColumn}>
+										{attendancePolls.map((pollAndId, index) => {
+											const uid = auth.currentUser?.uid;
+											if (!uid) return;
+											let attended = false;
 
-													<div>
-														<h2>
-															{attendance.date.toDate().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
-														</h2>
+											const attendancePoll = pollAndId.poll as AttendancePoll;
+											attended = attendancePoll.responses[uid].attended;
+
+											return (
+												<div key={index} className={s.question}>
+													<div className={s.responseColumn}>
+														<div>
+															<h2>
+																{attendancePoll.date.toDate().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
+															</h2>
+														</div>
+													</div>
+													<div className={s.stat}>
+														{attended ?
+															<Image
+																src="/checkmark.svg"
+																alt="check"
+																width={20}
+																height={20}
+																className={s.image}
+															/> :
+															<Image
+																src="/x-mark.svg"
+																alt="check"
+																width={20}
+																height={20}
+																className={s.image}
+															/>
+														}
 													</div>
 												</div>
-												<div className={s.stat}>
-													{attendance.attended ?
-														<Image
-															src="/checkmark.svg"
-															alt="check"
-															width={20}
-															height={20}
-															className={s.image}
-														/> :
-														<Image
-															src="/x-mark.svg"
-															alt="check"
-															width={20}
-															height={20}
-															className={s.image}
-														/>
-													}
-												</div>
-											</div>
-										))} */}
+											)
+										})}
 									</div>
 								</div>
 							</TabPanel>
