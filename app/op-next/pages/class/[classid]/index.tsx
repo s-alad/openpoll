@@ -14,6 +14,7 @@ import Button from '@/ui/button/button';
 import { MCResponses } from '@/models/poll/mc';
 import { ShortResponses } from '@/models/poll/short';
 import { AttendanceResponses } from '@/models/poll/attendance';
+import { MCPoll } from '@/forms/answer-mc-poll/answer-mc-poll';
 
 interface LivePoll {
     id: string;
@@ -42,6 +43,7 @@ export default function Class() {
 
     const [activePolls, setActivePolls] = useState<LivePoll[]>([]);
     const [submitted, setSubmitted] = useState<boolean>(false);
+    const [showPoll, setShowPoll] = useState(true);
 
     useEffect(() => {
         const pollsRef = query(ref(rdb, `classes/${classid}/polls`), orderByChild('active'), equalTo(true));
@@ -69,6 +71,7 @@ export default function Class() {
         const nonSelectedOptions = Object.keys(data).filter((key) => !data[key]);
         console.log(selectedOptions);
 
+
         let MCres = {
             email: user!.email,
             correct: false,
@@ -77,6 +80,8 @@ export default function Class() {
 
         const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses`);
         await update(answerRef, { [user!.uid]: MCres } as MCResponses);
+        setSubmitted(true);
+        setShowPoll(false);
     }
 
     async function submitShortPoll(data: any, pollId: string) {
@@ -112,47 +117,7 @@ export default function Class() {
                         {
                             activePolls.map((poll) => {
 
-                                if (poll.type === "mc") return (
-                                    <form key={poll.id} className={s.poll} onSubmit={
-                                        handleSubmit((data) => submitMCPoll(data, poll.id))
-                                    }>
-
-                                        <h1>{poll.question}</h1>
-
-                                        <div className={s.options}>
-                                            {
-                                                poll.options.map((option: { option: string, letter: string }) => {
-                                                    return (
-                                                        <div key={option.letter} className={s.option}>
-                                                            <Controller
-                                                                control={control}
-                                                                name={option.letter}
-                                                                defaultValue={
-                                                                    poll.responses && poll.responses[option.letter] && user!.uid in poll.responses[option.letter]
-                                                                }
-                                                                render={({ field }) => (
-                                                                    <FormControlLabel
-                                                                        control={<Checkbox {...field}
-                                                                            defaultChecked={
-                                                                                poll.responses && poll.responses[option.letter] && user!.uid in poll.responses[option.letter]
-                                                                            }
-                                                                        />}
-                                                                        label={option.letter}
-                                                                    />
-                                                                )}
-                                                            />
-
-
-                                                            <div className={s.content}>{option.option}</div>
-                                                        </div>
-                                                    )
-                                                })
-                                            }
-                                        </div>
-
-                                        <Button type='submit' text='Submit' />
-                                    </form>
-                                )
+                                if (poll.type === "mc") return <MCPoll key={poll.id} poll={poll} handleSubmit={handleSubmit} submitMCPoll={submitMCPoll} control={control} user={user} />;
 
                                 if (poll.type === "short") return (
                                     <form key={poll.id} className={s.poll} onSubmit={

@@ -1,0 +1,81 @@
+.class {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+
+    .openpolls {
+        padding-top: 100px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .poll {
+            width: 70%;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            color: black;
+            border-radius: 12px;
+            padding: 20px 40px;
+            gap: 20px;
+            position: relative; // Ensure that the poll container can act as a reference for absolute positioned elements
+
+            h1 {
+                margin: 0;
+            }
+
+            .question {
+                font-size: 28px;
+                font-weight: 600;
+            }
+
+            .options {
+                .option {
+                    display: flex;
+                    align-items: center;
+                }
+            }
+
+            .attendanceinput, .shortinput {
+                input {
+                    width: 100%;
+                    border: 2px solid #4036ee;
+                    border-radius: 4px;
+                    padding: 10px;
+                }
+            }
+
+            .button {
+                min-width: 150px;
+                width: min-content;
+                white-space: nowrap;
+                padding: 0 20px;
+                height: 45px;
+                background-color: #4036EE;
+                border-radius: 80px;
+                border: none;
+                color: white;
+                cursor: pointer;
+                transition: background-color 0.2s; // Adjust transition for a better effect
+                position: absolute; // Position the button absolutely relative to its nearest positioned ancestor
+                bottom: 20px; // Position at the bottom of the poll container
+                right: 40px; // Align to the right
+
+                &:active {
+                    background-color: #1005a4; // Darker blue when the button is pressed
+                }
+            }
+
+            .submittedButton {
+                background-color: #4CAF50;
+                transition: background-color 0.2s;
+
+                &:active {
+                    background-color: #359a3f; // Slightly darker green when pressed
+                }
+            }
+        }
+    }
+}

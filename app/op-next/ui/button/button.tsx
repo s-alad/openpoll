@@ -5,11 +5,17 @@ interface ButtonProps {
     onClick?: () => void;
     text: string;
     type?: "submit" | "button";
+    className?: string;  // Add this line for optional custom class
+
 }
 
-export default function Button({ onClick, text, type }: ButtonProps) {
+export default function Button({ onClick, text, type, className }: ButtonProps) {
+
+    const buttonClass = `${s.button} ${className || ''}`;
+
+
     return (
-        <button className={s.button} onClick={onClick} type={type}>
+        <button className={buttonClass} onClick={onClick} type={type}>
             {text}
         </button>
     )
