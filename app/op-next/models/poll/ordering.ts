@@ -1,4 +1,4 @@
-import Poll from "../poll";
+import Poll, { TPoll } from "../poll";
 
 type OrderAnswerKey = {
     [index: number]: {
@@ -10,12 +10,18 @@ type OrderOptions = {
     letter: string; 
     option: string;
 }[];
+type OrderResponseStructure = {
+    [key: number]: { letter: string; option: string; };
+};
 type OrderResponses = {
     [userid: string]: {
         correct: boolean;
         email: string;
         response: {
-            [index: number]: string; // index: letter
+            [index: number]: {
+                letter: string;
+                option: string;
+            };
         }
     }
 }
@@ -45,4 +51,4 @@ export default class OrderPoll extends Poll {
     }
 }
 
-export type { OrderOptions, OrderAnswerKey, OrderResponses}
+export type { OrderOptions, OrderAnswerKey, OrderResponses, OrderResponseStructure}

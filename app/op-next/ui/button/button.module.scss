@@ -9,4 +9,13 @@
     border: none;
     color: white;
     cursor: pointer;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    img {
+        height: 40%;
+        width: 40%;
+    }
 }

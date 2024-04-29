@@ -77,5 +77,6 @@ function getCorrectPollType(data: any) {
     return undefined
   }
 } 
+
 export { convertPollTypeToText, getCorrectPollType };
 

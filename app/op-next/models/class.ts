@@ -16,8 +16,6 @@ class Classroom {
         email: string;
         name: string;
     }
-    students: Object
-    polls: Object
     classidentifier?: string;
 
     constructor(admin: string[], classid: string, classname: string, description: string, owner: {uid: string, email: string, name: string}, students: Object, polls: Object, classidentifier?: string) {
@@ -27,8 +25,6 @@ class Classroom {
         this.classidentifier = classidentifier;
         this.description = description;
         this.owner = owner;
-        this.students = students;
-        this.polls = polls;
     }
 }
 

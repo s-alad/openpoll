@@ -14,6 +14,7 @@ type MatchOptions = {
 type MatchResponses = {
     [userid: string]: {
         email: string;
+        correct: boolean;
         response: {
             [index: string]: string;
         }

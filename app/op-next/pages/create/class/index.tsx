@@ -40,8 +40,6 @@ export default function CreateClass() {
                 email: user!.email!,
                 name: user!.displayName!
             },
-            students: {},
-            polls: {}
         }
 
         try {
