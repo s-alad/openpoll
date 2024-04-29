@@ -30,6 +30,11 @@ export default function SubNavbar() {
             path: `/dashboard/${classid}/analytics`,
             name: "Analytics",
             activeby: ["/dashboard/[classid]/analytics"]
+        },
+        {
+            path: `/dashboard/${classid}/settings`,
+            name: "Settings",
+            activeby: ["/dashboard/[classid]/settings"]
         }
     ]
 
