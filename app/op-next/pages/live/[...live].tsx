@@ -13,6 +13,8 @@ import ShortPoll, { ShortResponses } from "@/models/poll/short";
 import OrderPoll, { OrderResponses } from "@/models/poll/ordering";
 import AttendancePoll, { AttendanceResponses } from "@/models/poll/attendance";
 import { getPollTypeFromId } from "@/context/utils";
+import LiveMcResponses from "@/components/live-responses/mc-responses";
+import { FaCheck } from "react-icons/fa";
 
 export default function Live() {
 
@@ -28,6 +30,8 @@ export default function Live() {
     const [endedstatus, setEndedStatus] = useState<boolean>(false);
     const [showlivereponses, setShowLiveResponses] = useState<boolean>(false);
     const [showcorrectanswers, setShowCorrectAnswers] = useState<boolean>(false);
+
+    const isshortwithnokey = livepoll?.type === "short" && !(livepoll as ShortPoll).answerkey;
 
     const [responses, setResponses] = useState<(MCResponses | ShortResponses | OrderResponses | AttendanceResponses | null)>();
 
@@ -219,7 +223,7 @@ export default function Live() {
                                         {showlivereponses ? "Hide Live Responses" : "Show Live Responses"}
                                     </button>
                                     <button onClick={() => setShowCorrectAnswers(!showcorrectanswers)}
-                                        className={`${!showlivereponses ? s.disabled : ''} ${showcorrectanswers ? s.off : s.on}`}
+                                        className={`${(!showlivereponses || isshortwithnokey) ? s.disabled : ''} ${showcorrectanswers ? s.off : s.on}`}
                                     >
                                         {showcorrectanswers ? "Hide Correct Answer" : "Show Correct Answer"}
                                     </button>
@@ -231,35 +235,36 @@ export default function Live() {
             }
             <div className={s.liveresponses}>
                 {
+                    showlivereponses && !responses && (
+                        <div className={s.none}>no live responses yet</div>
+                    )
+                }
+                {
                     livepoll && livepoll.type === "mc" && showlivereponses && responses && (
-                        <div className={s.mcresponses}>
+                        <LiveMcResponses 
+                            livepoll={livepoll as MCPoll} 
+                            responses={responses as MCResponses} 
+                            showcorrectanswers={showcorrectanswers} 
+                        />
+                    )
+                }
+                {
+                    livepoll && livepoll.type === "short" && showlivereponses && responses && (
+                        <div className={s.shortresponses}>
                             {
-                                (livepoll as MCPoll)?.options.map((option, index) => {
+                                showcorrectanswers && (livepoll as ShortPoll).answerkey && (
+                                    <div className={s.correct}>
+                                        <div className={s.letter}><FaCheck/></div>
+                                        <div className={s.content}>{(livepoll as ShortPoll).answerkey}</div>
+                                    </div>
+                                )
+                            }
+                            {
+                                Object.values(responses as ShortResponses).reverse().map((response, index) => {
                                     return (
-                                        <div key={index} className={s.option}>
-                                            <div className={s.letter}
-                                                style={
-                                                    showcorrectanswers ?
-                                                    {
-                                                        backgroundColor: `${
-                                                            (livepoll as MCPoll).answerkey.includes(option.letter) ?
-                                                                "#00FF00" : "#fff"
-                                                        }`
-                                                    } : {}
-                                                }
-                                            >{option.letter}</div>
-                                            <div className={s.content}
-                                                style={{
-                                                    width: `${
-                                                        (
-                                                            Object.values(responses as MCResponses).filter((response) => 
-                                                            response.response?.includes(option.letter)).length / 
-                                                            Object.values(responses as MCResponses).length
-                                                        ) * 100
-                                                    }%`
-                                                }}
-                                            >
-                                            </div>
+                                        <div key={index} className={s.response}>
+                                            <div className={s.letter}>{index}</div>
+                                            <div className={s.content}>{response.response}</div>
                                         </div>
                                     )
                                 })

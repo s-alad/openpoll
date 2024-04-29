@@ -4,7 +4,7 @@ type ShortResponses = {
     [userid: string]: {
         email: string;
         response: string;
-        correct: string;
+        correct: boolean;
     }
 }
 

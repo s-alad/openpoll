@@ -20,7 +20,7 @@ export default function Dashboard() {
 
     const [isaddAdmin, setisaddAdmin] = useState<boolean>(false);
     const [loading, setLoading] = useState(false);
-    const { user } = useAuth();
+    const { user, loading: authloading } = useAuth();
     // get the class id from the url
     const router = useRouter();
     const classid = router.query.classid;
@@ -49,8 +49,7 @@ export default function Dashboard() {
         setLoading(true);
         const classRef = doc(db, "classes", classid as string);
         const userRef = doc(db, "users", userEmail);
-
-
+        
         try {
             const userSnap = await getDoc(userRef);
             if (userSnap.exists()) {
@@ -74,7 +73,6 @@ export default function Dashboard() {
     }   
 
     async function checkOwner() {
-        setLoading(true);
         const classRef = doc(db, "classes", classid as string);
         const user = auth.currentUser;
         if (!user) return;
@@ -92,11 +90,9 @@ export default function Dashboard() {
                 setIsOwner(false);
             }
         }
-        setLoading(false);
     }
 
     async function getpolls() {
-        setLoading(true);
         // collection classes - document class id - collection polls
         const classref = doc(db, "classes", classid as string);
         console.log(classref);
@@ -120,27 +116,25 @@ export default function Dashboard() {
         } catch (e) {
             console.error("Error getting documents: ", e);
         }
+    }
 
+    // execute necessary functions
+    async function main() {
+        setLoading(true);
+        await getpolls();
+        await checkOwner();
+        const classname = await getClassnameFromId(classid as string);
+        setClassname(classname);
         setLoading(false);
     }
 
     //wait for router to load
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user: any) => {
-            if (user && classid) {
-                getpolls();
-                checkOwner();
-                const classname = getClassnameFromId(classid as string);
-                classname.then((name) => {
-                    setClassname(name);
-                });
-            }
-        });
-
-        return () => {
-            unsubscribe();
+        if (user && classid) {
+            main();
         }
     }, [classid]);
+    if (!user || authloading || !classid) { return (<div></div>) }
 
     return (
         <div className={s.dashboard}>
@@ -148,7 +142,6 @@ export default function Dashboard() {
                 loading ? <Loader /> :
 
                     <div className={s.openpolls}>
-
                         <div className={s.info}>
                             <div className={s.classinfo}>
                                 <div className={s.classname}>
