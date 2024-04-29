@@ -96,6 +96,7 @@ async function calculatePollResults(pollid: string, classid: string) {
                 });
             }
         }
+    } else if (polltype === "order") {
     }
 }
 
@@ -129,6 +130,11 @@ export const transferAndCalculatePollResults = functions.https.onCall(async (dat
             await calculatePollResults(pollId, classId);
             return { result: `Poll results for ${pollId} transferred to Firestore.` };
         } else {
+            await firestore.collection('classes').doc(classId).collection("polls").doc(pollId).update({
+                responses: {},
+                endedat: admin.firestore.FieldValue.serverTimestamp(),
+                done: true
+            });
             return { result: 'No responses to transfer.' };
         }
     } catch (error) {

@@ -16,6 +16,7 @@ import { getPollTypeFromId } from "@/context/utils";
 import LiveMcResponses from "@/components/live-responses/mc-responses";
 import { FaCheck } from "react-icons/fa";
 import LiveShortResponses from "@/components/live-responses/short-responses";
+import Spinner from "@/components/spinner/spinner";
 
 export default function Live() {
 
@@ -29,6 +30,7 @@ export default function Live() {
 
     const [localpollstatus, setLocalPollStatus] = useState<boolean>(false);
     const [endedstatus, setEndedStatus] = useState<boolean>(false);
+    const [ending, setEnding] = useState<boolean>(false);
     const [showlivereponses, setShowLiveResponses] = useState<boolean>(false);
     const [showcorrectanswers, setShowCorrectAnswers] = useState<boolean>(false);
 
@@ -133,18 +135,20 @@ export default function Live() {
     // completely ends the poll
     async function endpoll() {
         if (!classId || !pollId) return;
-
-        const pollsref = ref(rdb, `classes/${classId}/polls/${pollId}/done`);
+        setEnding(true);
         try {
-            await set(pollsref, true);
-            setremotepollstatus(false);
-            setEndedStatus(true);
 
             const transferPollResultsFx = httpsCallable(fxns, "transferAndCalculatePollResults");
             const result = await transferPollResultsFx({ pollId: pollId, classId: classId });
+            const pollsref = ref(rdb, `classes/${classId}/polls/${pollId}/done`);
+            await set(pollsref, true);
+            setremotepollstatus(false);
+            setEnding(false);
+            setEndedStatus(true);
             console.log(result.data, 'result');
         }
         catch (e) { console.error("Error getting documents: ", e); }
+        setEnding(false);
     }
 
     function uniqueInnerResponsesOrderPoll(responses: OrderResponses) {
@@ -237,10 +241,13 @@ export default function Live() {
                     <div className={s.actions}>
                         <div className={s.left}>
                             {
-                                !endedstatus && (localpollstatus ?
+                                (!endedstatus && !ending) && (localpollstatus ?
                                     <button onClick={() => setremotepollstatus(false)} className={s.stop}>Stop</button>
                                     :
                                     <button onClick={() => setremotepollstatus(true)} className={s.start}>Start Poll</button>)
+                            }
+                            {
+                                ending && <div className={s.loading}><Spinner op={false}/></div>
                             }
                             {
                                 endedstatus ?

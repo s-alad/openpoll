@@ -135,6 +135,8 @@ export default function ClassGrades() {
 				}
 			} else if (poll.poll.type === "short") {
 				const shortPoll = poll.poll as ShortPoll;
+				if (!shortPoll.responses) return;
+				console.log(shortPoll.responses);
 				const userResponse = shortPoll.responses[uid];
 				if (userResponse) {
 					if (userResponse.response.toLowerCase() === shortPoll.answerkey?.toLowerCase()) {
@@ -289,7 +291,17 @@ export default function ClassGrades() {
 												answerkey = mcPoll.answerkey.join(", ");
 											} else if (pollAndId.poll.type === "short") {
 												const shortPoll = pollAndId.poll as ShortPoll;
-												correct = shortPoll.responses[uid].response.toLowerCase() === shortPoll.answerkey?.toLowerCase();
+												if (!shortPoll.responses) {
+													correct = true;
+												} else {
+													console.log(shortPoll.responses);
+													console.log(uid)
+													if (!shortPoll.responses[uid]) {
+														correct = false;
+													} else {
+														correct = shortPoll.responses[uid].response.toLowerCase() === shortPoll.answerkey?.toLowerCase();
+													}
+												}
 												answerkey = shortPoll.answerkey ?? '';
 											} else if (pollAndId.poll.type === "order") {
 												const orderPoll = pollAndId.poll as OrderPoll;

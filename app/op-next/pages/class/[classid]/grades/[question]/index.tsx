@@ -51,6 +51,10 @@ export default function Question() {
             setUserResponse(userResponse.response);
         } else if (poll.type === "short") {
             const shortPoll = poll as ShortPoll;
+            console.log(shortPoll)
+            if (!shortPoll.responses) return;
+            if (!shortPoll.responses[uid]) return;
+
             const correct = shortPoll.responses[uid].response.toLowerCase() === shortPoll.answerkey?.toLowerCase();
             setCorrectAnswer(correct);
             setUserResponse([shortPoll.responses[uid].response]);
