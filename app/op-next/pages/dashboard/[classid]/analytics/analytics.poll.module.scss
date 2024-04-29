@@ -1,0 +1,41 @@
+.AdvancedAnalytics{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+
+    .PollContainer {
+        margin-top: 1vh;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 2vh;
+
+        .pollQuestion {
+            font-size: x-large;
+            font-weight: bold;
+        }
+
+        .pollTable {
+            border-collapse: collapse;
+            width: 50%;
+            text-align: left;
+            border: 1px solid black;
+            padding: 8px;
+
+            .pollTableHeader{
+                background-color: #4036EE;
+                color: white;
+            }
+
+            .correctRow:hover {
+                background-color: #FBB91B;
+            }
+
+            .incorrectRow:hover {
+                background-color: #FE6768;
+            }
+        }
+    }
+}

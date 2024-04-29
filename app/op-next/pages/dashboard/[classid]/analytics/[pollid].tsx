@@ -5,26 +5,27 @@ import { db } from "../../../../firebase/firebaseconfig";
 import MCPoll from "@/models/poll/mc";
 import ShortPoll from "@/models/poll/short";
 import RenderBarChart from "@/components/barchart/barchart";
+import s from "./analytics.poll.module.scss"
 
 function RenderMCAnalytics({ poll }: { poll: MCPoll }) {
     return (
-        <div>
-            <div>{poll.question}</div>
-            <div>Answer: {poll.answerkey}</div>
+        <div className={s.PollContainer}>
+            <div className={s.pollQuestion}>{poll.question}</div>
+            <div className={s.pollAnswer}>Answer: {poll.answerkey}</div>
 
             {/* Bar Chart */}
             <RenderBarChart poll={poll}/>
             
             {/* Student Stats */}
-            <table>
-                <tr>
+            <table className={s.pollTable}>
+                <tr className={s.pollTableHeader}>
                     <th>Email</th>
                     <th>Response</th>
                 </tr>
 
                 {
                     Object.values(poll.responses).map((data, index) => (
-                        <tr key={index}>
+                        <tr className={data.correct ? s.correctRow : s.incorrectRow} key={index}>
                             <th>{data.email}</th>
                             <th>{data.response}</th>
                         </tr>
@@ -38,20 +39,20 @@ function RenderMCAnalytics({ poll }: { poll: MCPoll }) {
 
 function RenderShortAnalytics({ poll }: { poll: ShortPoll }) {
     return (
-        <div>
-            <div>{poll.question}</div>
-            <div>Answer: {poll.answerkey}</div>
+        <div className={s.PollContainer}>
+            <div className={s.pollQuestion}>{poll.question}</div>
+            <div className={s.pollAnswer}>Answer: {poll.answerkey}</div>
             
             {/* Student Stats */}
-            <table>
-                <tr>
+            <table className={s.pollTable}>
+                <tr className={s.pollTableHeader}>
                     <th>Email</th>
                     <th>Response</th>
                 </tr>
 
                 {
                     Object.values(poll.responses).map((data, index) => (
-                        <tr key={index}>
+                        <tr className={data.correct ? s.correctRow : s.incorrectRow} key={index}>
                             <th>{data.email}</th>
                             <th>{data.response}</th>
                         </tr>
@@ -91,7 +92,7 @@ export default function AdvancedAnalytics() {
 
     return (
         <main>
-            <div>
+            <div className={s.AdvancedAnalytics}>
                 {
                     pollData.type === "mc" && <RenderMCAnalytics poll={pollData as MCPoll} />
                 }
