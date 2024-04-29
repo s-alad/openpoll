@@ -102,9 +102,8 @@ export default function analytics() {
                         Object.entries(filterMCPolls(openpolls)).map(([key, data], index) => (
                             <div className={s.pollContainer}>
                                 <div className={s.pollQuestion}>
-                                    {index + 1}. {data.question}
                                     <Link href={{pathname: `/dashboard/${classid}/analytics/${key}`}}>
-                                        Link to advanced analytics
+                                        {index + 1}. {data.question}
                                     </Link>
                                 </div>
                                 <div>Correct Answers: {data.answerkey}</div>
@@ -116,7 +115,11 @@ export default function analytics() {
                     {
                         Object.entries(filterShortPolls(openpolls)).map(([key, data], index) => (
                             <div className={s.pollContainer} key={index}>
-                                <div className={s.pollQuestion}>{index + 1}. {data.question}</div>
+                                <div className={s.pollQuestion}>
+                                    <Link href={{pathname: `/dashboard/${classid}/analytics/${key}`}}>
+                                        {index + 1}. {data.question}
+                                    </Link>
+                                </div>
                                 <div>Correct Answers: {data.answerkey}</div>
 
                                 <table className={s.shortAnswerTable}>
