@@ -5,12 +5,13 @@ interface ButtonProps {
     onClick?: () => void;
     text: string;
     type?: "submit" | "button";
+    loading?: boolean;
 }
 
-export default function Button({ onClick, text, type }: ButtonProps) {
+export default function Button({ onClick, text, type, loading }: ButtonProps) {
     return (
         <button className={s.button} onClick={onClick} type={type}>
-            {text}
+            {loading ? <img src="/openpolltransparent.gif" /> : text}
         </button>
     )
 }

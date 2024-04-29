@@ -10,6 +10,7 @@ import Button from '@/ui/button/button';
 import s from '../respond-poll.module.scss';
 import MCPoll, { MCResponses } from '@/models/poll/mc';
 import { ref, update } from 'firebase/database';
+import { useState } from 'react';
 
 interface RespondMcPollProps {
     classid: string;
@@ -18,10 +19,16 @@ interface RespondMcPollProps {
 
 export default function RespondMcPoll({ classid, poll }: RespondMcPollProps) {
 
+    const [loading, setLoading] = useState(false);
+    const [lastsubmitted, setLastSubmitted] = useState<{
+        [key: string]: boolean;
+    }>({}); // for checking if the user has already submitted the same response
+
     const { user } = useAuth();
     const mcpoll = poll.poll as MCPoll;
 
     async function submitMCPoll(data: { [key: string]: boolean }, pollid: string) {
+        setLoading(true);
         const selectedOptions = Object.keys(data).filter((key) => data[key]);
         console.log(selectedOptions);
         console.log(data);
@@ -36,6 +43,7 @@ export default function RespondMcPoll({ classid, poll }: RespondMcPollProps) {
 
         const responseref = ref(rdb, `classes/${classid}/polls/${pollid}/responses`);
         await update(responseref, MCresponse);
+        setLoading(false);
     }
 
     const { handleSubmit, control, register, formState: { errors } } = useForm({});
@@ -73,8 +81,10 @@ export default function RespondMcPoll({ classid, poll }: RespondMcPollProps) {
                     })
                 }
             </div>
-
-            <Button type='submit' text='Submit' />
+            {
+                
+            }
+            <Button type='submit' text='Submit' loading={loading} />
         </form>
     )
 }
