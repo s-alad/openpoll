@@ -1,6 +1,6 @@
 import React from "react";
 
-import s from "./live-responses.module.scss";
+import s from "./mc-responses.module.scss";
 import MCPoll, { MCResponses } from "@/models/poll/mc";
 
 interface LiveMcResponsesProps {

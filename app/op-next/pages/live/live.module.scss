@@ -30,9 +30,7 @@
                 color: #6750A4;
             }
 
-            .count {
-
-            }
+            .count {}
 
             svg {
                 font-size: 42px;
@@ -40,14 +38,15 @@
         }
 
         .polltypes {
-            .mc {
+            .mc, .order {
                 display: flex;
                 flex-direction: column;
                 gap: 20px;
+
                 .option {
                     display: flex;
                     gap: 20px;
-    
+
                     .letter {
                         padding: 15px;
                         width: 60px;
@@ -57,13 +56,32 @@
                         border-radius: 4px;
                         background-color: orange;
                     }
-    
+
                     // use n-th child to apply different colors to different options, make it cycle through colors so like modulos
-                    &:nth-child(4n+1) { .letter {background-color: #fe6768;} }
-                    &:nth-child(4n+2) { .letter {background-color: #ffc9c9;} }
-                    &:nth-child(4n+3) { .letter {background-color: #fbb91b;} }
-                    &:nth-child(4n+4) { .letter {background-color: #F2E9E4;} }
-    
+                    &:nth-child(4n+1) {
+                        .letter {
+                            background-color: #fe6768;
+                        }
+                    }
+
+                    &:nth-child(4n+2) {
+                        .letter {
+                            background-color: #ffc9c9;
+                        }
+                    }
+
+                    &:nth-child(4n+3) {
+                        .letter {
+                            background-color: #fbb91b;
+                        }
+                    }
+
+                    &:nth-child(4n+4) {
+                        .letter {
+                            background-color: #F2E9E4;
+                        }
+                    }
+
                     .content {
                         flex: 1;
                         padding: 15px;
@@ -85,7 +103,8 @@
             flex-direction: row;
             justify-content: space-between;
 
-            .left, .right {
+            .left,
+            .right {
                 display: flex;
                 flex-direction: column;
                 gap: 20px;
@@ -102,11 +121,26 @@
                 color: #fff;
             }
 
-            .destructive { background-color: #fe6768; color: #fff;}
-            .start { background-color: #46b42a; }
-            .stop { background-color: #fe6768; }
-            .on { background-color: #6750A4;}
-            .off { background-color: #9a9afd;}
+            .destructive {
+                background-color: #fe6768;
+                color: #fff;
+            }
+
+            .start {
+                background-color: #46b42a;
+            }
+
+            .stop {
+                background-color: #fe6768;
+            }
+
+            .on {
+                background-color: #6750A4;
+            }
+
+            .off {
+                background-color: #9a9afd;
+            }
 
             .disabled {
                 background-color: #ccc;
@@ -127,11 +161,11 @@
         .attendancecode {
             font-size: 20px;
             font-weight: bold;
-            color: #F2E9E4; 
+            color: #F2E9E4;
             background-color: #4036ee;
             padding: 10px 20px;
             border-radius: 8px;
-            margin-top: 20px; 
+            margin-top: 20px;
             width: min-content;
             white-space: nowrap;
         }
@@ -151,16 +185,18 @@
             color: #6750A4;
         }
 
-        .shortresponses {
+        .orderresponses {
             width: 50%;
             display: flex;
             flex-direction: column;
             gap: 20px;
-            .response, .correct {
+
+            .response,
+            .correct {
                 display: flex;
                 align-items: center;
                 gap: 20px;
-        
+
                 .letter {
                     padding: 15px;
                     width: 60px;
@@ -171,6 +207,7 @@
                     background-color: #6750A4;
                     color: white;
                 }
+
                 .content {
                     font-weight: bold;
                     padding: 15px;
@@ -182,7 +219,14 @@
                     min-width: 200px;
                 }
             }
-            .correct {.letter {background-color: #46b42a;}}
+
+            .correct {
+                flex-direction: column;
+                align-items: start;
+                .letter {
+                    background-color: #46b42a;
+                }
+            }
         }
     }
 }

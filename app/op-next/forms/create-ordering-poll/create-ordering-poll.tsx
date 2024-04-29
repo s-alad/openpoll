@@ -84,9 +84,11 @@ export default function CreateOrderingPoll() {
         register,
         handleSubmit,
         setValue,
+        getValues,
         control,
         formState: { errors },
         setError,
+        watch
     } = useForm<CreateOrderingPollFormData>(
         {
             resolver: zodResolver(createOrderingPollSchema),
@@ -97,6 +99,8 @@ export default function CreateOrderingPoll() {
             },
         }
     );
+
+    const watchedOptions = watch("options");
 
     const { fields, append, remove, move } = useFieldArray({
         control,
@@ -110,8 +114,24 @@ export default function CreateOrderingPoll() {
         })
     );
 
+    type AnswerType = {
+        [key: string]: {
+            letter: string;
+            option: string;
+        };
+    };
+
     const onSubmit = async (data: CreateOrderingPollFormData) => {
         console.log("SUCCESS", data);
+
+
+        const updatedAnswer: AnswerType = fields.reduce((acc: AnswerType, field, index) => {
+            const currentOptionValue = getValues(`options.${index}.option`);
+            acc[index] = { letter: field.letter, option: currentOptionValue };
+            return acc;
+        }, {});
+
+        console.log(updatedAnswer);
 
         const uid = user!.uid;
 
@@ -120,7 +140,7 @@ export default function CreateOrderingPoll() {
 			classid: classid,
 			question: data.question,
 			options: data.options,
-			answerkey: data.answerkey,
+			answerkey: updatedAnswer,
 			createdat: new Date(),
 			creator: uid,
 			responses: {},
@@ -145,20 +165,17 @@ export default function CreateOrderingPoll() {
     }
 
     useEffect(() => {
-        type AnswerType = {
-            [key: string]: {
-                letter: string;
-                option: string;
-            };
-        }
-
+    
         const updatedAnswer: AnswerType = fields.reduce((acc: AnswerType, field, index) => {
-            acc[index.toString()] = { letter: field.letter, option: field.option };
+            const currentOptionValue = getValues(`options.${index}.option`);
+            acc[index] = { letter: field.letter, option: currentOptionValue };
             return acc;
         }, {});
 
-        setValue('answerkey', updatedAnswer);
-    }, [fields])
+        console.log(updatedAnswer);
+    
+        setValue('answerkey', updatedAnswer, { shouldValidate: true });
+    }, [fields, getValues, setValue]);
 
     return (
         <form className={s.form} onSubmit={handleSubmit(onSubmit)}>

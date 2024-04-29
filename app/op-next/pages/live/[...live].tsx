@@ -15,6 +15,7 @@ import AttendancePoll, { AttendanceResponses } from "@/models/poll/attendance";
 import { getPollTypeFromId } from "@/context/utils";
 import LiveMcResponses from "@/components/live-responses/mc-responses";
 import { FaCheck } from "react-icons/fa";
+import LiveShortResponses from "@/components/live-responses/short-responses";
 
 export default function Live() {
 
@@ -146,6 +147,30 @@ export default function Live() {
         catch (e) { console.error("Error getting documents: ", e); }
     }
 
+    function uniqueInnerResponsesOrderPoll(responses: OrderResponses) {
+        let uniqueset = new Set();
+        let unique: {
+            letter: string;
+            option: string;
+        }[][] = [];
+        let count: { [key: string]: number } = {};
+
+        Object.values(responses).forEach(response => {
+            let insideresponse = Object.values(response.response);
+            let stringresponse = JSON.stringify(insideresponse);
+            if (!uniqueset.has(stringresponse)) {
+                uniqueset.add(stringresponse);
+                unique.push(insideresponse);
+                count[stringresponse] = 1;
+            }
+            else {
+                count[stringresponse] += 1;
+            }
+        });
+
+        return {unique, count}
+    }
+
     // gets the poll from the database on page load
     useEffect(() => {
         if (live) {
@@ -190,6 +215,21 @@ export default function Live() {
                                 <div className={s.attendancecode}>Code: {pollId.substring(pollId.length - 4)}</div>
                             )
                         }
+                        {
+                            livepoll.type === "order" &&
+                            <div className={s.order}>
+                                {
+                                    (livepoll as OrderPoll)?.options.map((option, index) => {
+                                        return (
+                                            <div key={index} className={s.option}>
+                                                <div className={s.letter}>{option.letter}</div>
+                                                <div className={s.content}>{option.option}</div>
+                                            </div>
+                                        )
+                                    })
+                                }
+                            </div>
+                        }
                     </div>
 
                     <div className={s.seperator}></div>
@@ -215,6 +255,11 @@ export default function Live() {
                                     <button onClick={() => {
                                         if (!showlivereponses) {setShowLiveResponses(true)}
                                         else {setShowLiveResponses(false); setShowCorrectAnswers(false)}
+
+                                        console.log("showlivereponses: ", showlivereponses);
+                                        console.log("showcorrectanswers: ", showcorrectanswers);
+                                        console.log("livepoll: ", livepoll);
+                                        console.log("ak: ", (livepoll as OrderPoll).answerkey);
                                     }}
                                         /* className={`${!localpollstatus ? s.disabled : ''} ${showlivereponses ? s.off : s.on}`} */
                                         /* disabled={!localpollstatus} */
@@ -250,21 +295,48 @@ export default function Live() {
                 }
                 {
                     livepoll && livepoll.type === "short" && showlivereponses && responses && (
-                        <div className={s.shortresponses}>
+                        <LiveShortResponses 
+                            livepoll={livepoll as ShortPoll} 
+                            responses={responses as ShortResponses} 
+                            showcorrectanswers={showcorrectanswers}
+                        />
+                    )
+                }
+                {
+                    livepoll && livepoll.type === "order" && showlivereponses && responses && (
+                        <div className={s.orderresponses}>
                             {
-                                showcorrectanswers && (livepoll as ShortPoll).answerkey && (
+                                showcorrectanswers && (livepoll as OrderPoll).answerkey && (
                                     <div className={s.correct}>
-                                        <div className={s.letter}><FaCheck/></div>
-                                        <div className={s.content}>{(livepoll as ShortPoll).answerkey}</div>
+                                        {
+                                            Object.values((livepoll as OrderPoll).answerkey).map((answer, index) => {
+                                                return (
+                                                    <div key={index} className={s.response}>
+                                                        <div className={s.letter}>{answer.letter}</div>
+                                                        <div className={s.content}>{answer.option}</div>
+                                                    </div>
+                                                )
+                                            })
+                                        }
                                     </div>
                                 )
                             }
                             {
-                                Object.values(responses as ShortResponses).reverse().map((response, index) => {
+                                uniqueInnerResponsesOrderPoll(responses as OrderResponses).unique.map((response, index) => {
                                     return (
                                         <div key={index} className={s.response}>
-                                            <div className={s.letter}>{index}</div>
-                                            <div className={s.content}>{response.response}</div>
+                                            <div className={s.count}>
+                                                {uniqueInnerResponsesOrderPoll(responses as OrderResponses).count[JSON.stringify(response)]}
+                                            </div>
+                                            {
+                                                response.map((option, index) => {
+                                                    return (
+                                                        <div key={index} className={s.option}>
+                                                            <div className={s.letter}>{option.letter}</div>
+                                                        </div>
+                                                    )
+                                                })
+                                            }
                                         </div>
                                     )
                                 })
