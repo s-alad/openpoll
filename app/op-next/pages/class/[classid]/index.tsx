@@ -20,6 +20,7 @@ import MatchPoll from '@/models/poll/matching';
 import RespondMcPoll from '@/forms/respond-mc-poll/respond-mc-poll';
 import RespondAttendancePoll from '@/forms/respond-attendance-poll/respond-attendance-poll';
 import RespondShortPoll from '@/forms/respond-short-poll/respond-short-poll';
+import RespondOrderPoll from '@/forms/respond-ordering-poll/respond-ordering-poll';
 
 export default function Class() {
 
@@ -72,6 +73,14 @@ export default function Class() {
 
                             if (type === "attendance") return (
                                 <RespondAttendancePoll key={poll.id} classid={classid as string} poll={poll} />
+                            );
+
+                            if (type === "order") return (
+                                <RespondOrderPoll  key={poll.id} classid={classid as string} poll={poll} />
+                            );
+
+                            if (type === "match") return (
+                                <div>Match Poll</div>
                             );
                         })
                     }
