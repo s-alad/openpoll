@@ -20,9 +20,7 @@ interface RespondMcPollProps {
 export default function RespondMcPoll({ classid, poll }: RespondMcPollProps) {
 
     const [loading, setLoading] = useState(false);
-    const [lastsubmitted, setLastSubmitted] = useState<{
-        [key: string]: boolean;
-    }>({}); // for checking if the user has already submitted the same response
+    const [sucess, setSuccess] = useState(false);
 
     const { user } = useAuth();
     const mcpoll = poll.poll as MCPoll;
@@ -44,6 +42,11 @@ export default function RespondMcPoll({ classid, poll }: RespondMcPollProps) {
         const responseref = ref(rdb, `classes/${classid}/polls/${pollid}/responses`);
         await update(responseref, MCresponse);
         setLoading(false);
+        // set success for 2 seconds
+        setSuccess(true);
+        setTimeout(() => {
+            setSuccess(false);
+        }, 1000);
     }
 
     const { handleSubmit, control, register, formState: { errors } } = useForm({});
@@ -82,9 +85,9 @@ export default function RespondMcPoll({ classid, poll }: RespondMcPollProps) {
                 }
             </div>
             {
-                
+
             }
-            <Button type='submit' text='Submit' loading={loading} />
+            <Button type='submit' text='Submit' loading={loading} success={sucess} />
         </form>
     )
 }

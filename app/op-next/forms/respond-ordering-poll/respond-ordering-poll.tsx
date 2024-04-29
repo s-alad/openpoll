@@ -25,9 +25,13 @@ export default function RespondOrderPoll({ classid, poll }: RespondOrderPollProp
 
     const [sortedOptions, setSortedOptions] = useState(orderpoll.options);
 
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
+
     async function submit(data: any, pollId: string) {
         console.log(data);
         console.log(sortedOptions);
+        setLoading(true);
 
         const responseStructure = sortedOptions.reduce<OrderResponseStructure>((acc, option, index) => {
             acc[index] = { letter: option.letter, option: option.option };
@@ -46,6 +50,12 @@ export default function RespondOrderPoll({ classid, poll }: RespondOrderPollProp
 
         const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses`);
         await update(answerRef, Sres);
+
+        setLoading(false);
+        setSuccess(true);
+        setTimeout(() => {
+            setSuccess(false);
+        }, 1000);
     }
 
     const { handleSubmit, control, setValue, register, formState: { errors } } = useForm({});

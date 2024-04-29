@@ -7,6 +7,7 @@ import s from '../respond-poll.module.scss';
 import { ref, update } from 'firebase/database';
 import AttendancePoll, { AttendanceResponses } from '@/models/poll/attendance';
 import ShortPoll, { ShortResponses } from '@/models/poll/short';
+import { useState } from 'react';
 
 interface RespondShortPollProps {
     classid: string;
@@ -18,7 +19,11 @@ export default function RespondShortPoll({ classid, poll }: RespondShortPollProp
     const { user } = useAuth();
     const shortpoll = poll.poll as ShortPoll;
 
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
+
     async function submitShortPoll(data: { [answer: string]: string }, pollId: string) {
+        setLoading(true);
         console.log(data);
 
         let Sres = { [user!.uid]: {
@@ -28,6 +33,12 @@ export default function RespondShortPoll({ classid, poll }: RespondShortPollProp
 
         const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses`);
         await update(answerRef, Sres);
+
+        setLoading(false);
+        setSuccess(true);
+        setTimeout(() => {
+            setSuccess(false);
+        }, 1000);
     }
 
     const { handleSubmit, control, register, formState: { errors } } = useForm({});
@@ -36,7 +47,7 @@ export default function RespondShortPoll({ classid, poll }: RespondShortPollProp
         <form key={poll.id} className={s.poll} onSubmit={handleSubmit((data) => submitShortPoll(data, poll.id))}>
             <h1>{shortpoll.question}</h1>
             <input type="text" {...control.register("answer")} className={s.shortinput} />
-            <Button type='submit' text='Submit' />
+            <Button type='submit' text='Submit' loading={loading} success={success} />
         </form>
     )
 }
