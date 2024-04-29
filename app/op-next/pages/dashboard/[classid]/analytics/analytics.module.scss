@@ -1,5 +1,15 @@
 .class {
     width: 100%;
+
+    .analyticsHeader {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+        font-size: 2vh;
+        margin-top: 1vh;
+        font-weight: 800;
+    }
     
     .pollContainer {
         display: flex;

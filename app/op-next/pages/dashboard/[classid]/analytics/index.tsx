@@ -6,6 +6,8 @@ import Poll, { getCorrectPollType, xPoll } from "@/models/poll";
 import RenderBarChart from '@/components/barchart/barchart';
 import { useAuth } from '@/context/authcontext';
 import { onAuthStateChanged } from 'firebase/auth';
+import { getClassnameFromId } from "@/models/class";
+import Link from "next/link";
 import s from './analytics.module.scss'
 import MCPoll from "@/models/poll/mc";
 import AttendancePoll from "@/models/poll/attendance";
@@ -13,13 +15,18 @@ import MatchPoll from "@/models/poll/matching";
 import OrderPoll from "@/models/poll/ordering";
 import ShortPoll from "@/models/poll/short";
 
+type PollType = MCPoll | ShortPoll | AttendancePoll | OrderPoll | MatchPoll
+
+type pollMap = Record<string, PollType>;
+
 export default function analytics() {
     const router = useRouter();
     const classid = router.query.classid;
     const { user } = useAuth();
 
-    const [openpolls, setOpenpolls] = useState<(MCPoll | ShortPoll | AttendancePoll | OrderPoll | MatchPoll)[]>([]);
+    const [openpolls, setOpenpolls] = useState<pollMap>({});
     const [loading, setLoading] = useState(true);
+    const [classname, setClassname] = useState<string>("");
 
     async function getpolls() {
 
@@ -29,14 +36,14 @@ export default function analytics() {
         try {
             const donePollsQuery = query(pollsref, where("done", "==", true));
             const snapshot = await getDocs(donePollsQuery);
-            let donePolls: (MCPoll | ShortPoll | AttendancePoll | OrderPoll | MatchPoll)[] = [];
+            let donePolls: pollMap = {};
 
             snapshot.forEach((doc) => {
                 const pid = doc.id;
                 const data = doc.data();
                 const poll = getCorrectPollType(data);
                 if (!poll) return;
-                donePolls.push(poll);
+                donePolls[pid] = poll;
             });
 
             setOpenpolls(donePolls);
@@ -46,18 +53,36 @@ export default function analytics() {
         }
     }
 
-    function filterMCPolls(polls: (MCPoll | ShortPoll | AttendancePoll | OrderPoll | MatchPoll)[]): (MCPoll)[] {
-        return polls.filter((poll) => poll.type === "mc") as (MCPoll)[];
+    function filterMCPolls(polls: pollMap): Record<string, MCPoll> {
+        const filteredPolls: Record<string, MCPoll> = {}
+
+        for (const key in polls) {
+            if (polls[key].type == "mc") {
+                filteredPolls[key] = polls[key] as MCPoll;
+            }
+        }
+
+        return filteredPolls;
     }
 
-    function filterShortPolls(polls: (MCPoll | ShortPoll | AttendancePoll | OrderPoll | MatchPoll)[]): (ShortPoll)[] {
-        return polls.filter((poll) => poll.type === "short") as (ShortPoll)[];
+    function filterShortPolls(polls: pollMap): Record<string, ShortPoll> {
+        const filteredPolls: Record<string, ShortPoll> = {}
+
+        for (const key in polls) {
+            if (polls[key].type == "short") {
+                filteredPolls[key] = polls[key] as ShortPoll;
+            }
+        }
+
+        return filteredPolls
     }
     
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user && classid) {
                 getpolls();
+                const className = getClassnameFromId(classid as string);
+                className.then((name) => setClassname(name))
             }
         });
 
@@ -70,21 +95,25 @@ export default function analytics() {
                 <div>Loading...</div>
             ) : (
                 <div>
-                        {
-                            // display done MC polls
-                            filterMCPolls(openpolls).map((data, index) => (
-                                <div className={s.pollContainer}>
-                                    <div className={s.pollQuestion}>{index + 1}. {data.question}</div>
-                                    <div>Correct Answers: {data.answerkey}</div>
-                                    <RenderBarChart poll={data} key={index} />
+                    <div className={s.analyticsHeader}>
+                        <div>Analytics for {classname}</div>
+                    </div>
+                    {
+                        Object.entries(filterMCPolls(openpolls)).map(([key, data], index) => (
+                            <div className={s.pollContainer}>
+                                <div className={s.pollQuestion}>
+                                    {index + 1}. {data.question}
+                                    {/* <Link href={{pathname: `/analytics/${classid}/${key}`}}></Link> */}
                                 </div>
-                            ))
-                        }
+                                <div>Correct Answers: {data.answerkey}</div>
+                                <RenderBarChart poll={data} key={index} />
+                            </div>
+                        ))
+                    }
 
-                        {
-                            // Display done Short Answer Polls
-                            filterShortPolls(openpolls).map((data, index) => (
-                                <div className={s.pollContainer} key={index}>
+                    {
+                        Object.entries(filterShortPolls(openpolls)).map(([key, data], index) => (
+                            <div className={s.pollContainer} key={index}>
                                 <div className={s.pollQuestion}>{index + 1}. {data.question}</div>
                                 <div>Correct Answers: {data.answerkey}</div>
 
@@ -94,7 +123,6 @@ export default function analytics() {
                                         <th>Response</th>
                                     </tr>
 
-                                    {/* Map out the responses */}
                                     {
                                         Object.values(data.responses).map((response, index) => (
                                             <tr className={response.correct ? s.correctRow : s.incorrectRow} key={index}>
@@ -106,8 +134,8 @@ export default function analytics() {
 
                                 </table>
                             </div>
-                            ))
-                        }
+                        ))
+                    }
                 </div>
             )}
         </div>
