@@ -8,7 +8,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import s from './classGrades.module.scss';
+import s from "./question.module.scss";
 import { set } from "firebase/database";
 
 export default function Question() {
@@ -21,6 +21,7 @@ export default function Question() {
     const [openpoll, setOpenPoll] = useState<(MCPoll | ShortPoll | OrderPoll) | null>(null);
     const [correctAnswer, setCorrectAnswer] = useState<boolean>(false);
     const [options, setOptions] = useState<MCOptions>([]);
+    const [userResponse, setUserResponse] = useState<string[]>([]);
 
     
 
@@ -47,10 +48,12 @@ export default function Question() {
             if (!userResponse) return;
             const correct = userResponse.correct;
             setCorrectAnswer(correct);
+            setUserResponse(userResponse.response);
         } else if (poll.type === "short") {
             const shortPoll = poll as ShortPoll;
             const correct = shortPoll.responses[uid].response.toLowerCase() === shortPoll.answerkey?.toLowerCase();
             setCorrectAnswer(correct);
+            setUserResponse([shortPoll.responses[uid].response]);
         } else if (poll.type === "order") {
             const orderPoll = poll as OrderPoll;
             const userResponse = orderPoll.responses[uid];
@@ -58,7 +61,6 @@ export default function Question() {
             const correct = userResponse.correct;
             setCorrectAnswer(correct);
         }
-        console.log(poll);
         
     }
 
@@ -80,38 +82,34 @@ export default function Question() {
                     <h1>{openpoll.question}</h1>
                     {openpoll && (
                         <div className={s.classGrades}>
-                            <h1>{openpoll.question}</h1>
-                            {options.map((option, index) => {
-                                const optionClasses = `${s.answer} ${correctAnswer ? s.correct : s.incorrect}`;
+                            { openpoll.type === "mc" ? (
+                            <div>
+                                {options.map((option, index) => {
+                                    const isUserResponse = userResponse.includes(option.letter);
+                                    const isCorrect = option.letter === openpoll.answerkey?.[0];
+                                    const optionClasses = `${s.answer} ${isCorrect ? s.correct : isUserResponse ? s.incorrect : ''}`;
 
-                                return (
-                                    <div key={index} className={optionClasses}>
-                                        <p>{option.letter}: {option.option}</p>
+                                    return (
+                                        <div key={index} className={optionClasses}>
+                                            <p>{option.letter}: {option.option}</p>
+                                        </div>
+                                    );
+                                })}
+                                <p>Your answer is {correctAnswer ? 'correct' : 'incorrect'}.</p>
+                            </div>
+                            ) : (
+                                openpoll.type === "short" && (
+                                    <div>
+                                        <p>The correct answer was {openpoll.answerkey as string}.</p>
+                                        <p>Your answer was {userResponse[0]}.</p>
+                                        <p>Your answer is {correctAnswer ? 'correct' : 'incorrect'}.</p>
                                     </div>
-                                );
-                            })}
-                            <p>Your answer is {correctAnswer ? 'correct' : 'incorrect'}.</p>
+                                )
+                            )}
                         </div>
                     )}
                 </div>
             )}
-            {/* {question && (
-                <div className={s.classGrades}>
-                    <h1>{question.question}</h1>
-                    {question.options.map((option, index) => {
-                    const isUserResponse = question.responses.includes(option.letter);
-                    const isCorrect = question.answer.includes(option.letter);
-                    const optionClasses = `${s.answer} ${isUserResponse ? isCorrect ? s.correct : s.incorrect : isCorrect ? s.correct : ''}`;
-
-                    return (
-                        <div key={index} className={optionClasses}>
-                            <p>{option.letter}: {option.option}</p>
-                        </div>
-                    );
-                })}
-                <p>Your answer is {question.isCorrect ? 'correct' : 'incorrect'}.</p>
-                </div>
-            )} */}
         </div>
     );
 }
