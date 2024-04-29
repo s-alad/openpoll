@@ -103,7 +103,9 @@ export default function analytics() {
                             <div className={s.pollContainer}>
                                 <div className={s.pollQuestion}>
                                     {index + 1}. {data.question}
-                                    {/* <Link href={{pathname: `/analytics/${classid}/${key}`}}></Link> */}
+                                    <Link href={{pathname: `/dashboard/${classid}/analytics/${key}`}}>
+                                        Link to advanced analytics
+                                    </Link>
                                 </div>
                                 <div>Correct Answers: {data.answerkey}</div>
                                 <RenderBarChart poll={data} key={index} />
