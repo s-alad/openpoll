@@ -5,8 +5,10 @@ import Loader from "@/components/loader/loader";
 import Unauthorized from "@/components/unauthorized/unauthorized";
 import s from "./profile.module.scss";
 import { auth, db } from "@/firebase/firebaseconfig";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { updateProfile } from "firebase/auth";
 import Classroom from "@/models/class";
+import Image from "next/image";
 
 interface Class {
     cid: string;
@@ -17,6 +19,10 @@ export default function Profile() {
     const { user, logout } = useAuth();
     const [loading, setLoading] = useState(false);
     const [enrolled, setEnrolled] = useState<Class[]>([]);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedName, setEditedName] = useState(user?.displayName || '');
+    const [editedEmail, setEditedEmail] = useState(user?.email || '');
+
 
     async function getenrolled() {
         console.log("getting enrolled classes");
@@ -58,6 +64,53 @@ export default function Profile() {
         setLoading(false);
     }
 
+    async function changeName(newName: string) {
+        const user = auth.currentUser;
+        if (!user) { return; }
+
+        const userRef = doc(db, "users", user.email!);
+
+        try {
+            await updateDoc(userRef, {
+                name: newName
+            });
+            console.log("name updated");
+
+            await updateProfile(user, {
+                displayName: newName
+            });
+        } catch (e) {
+            console.error("Error updating name: ", e);
+        }
+    }
+
+    async function changeEmail(newEmail: string) {
+        const user = auth.currentUser;
+        if (!user) { return; }
+
+        const userRef = doc(db, "users", user.email!);
+
+        try {
+            await updateDoc(userRef, {
+                email: newEmail, 
+            });
+            console.log("Firestore email updated");
+        } catch (e) {
+            console.error("Error updating email: ", e);
+        }
+    }
+
+    async function handleEditClick() {
+        setIsEditing(true);
+    }
+
+    async function handleSaveChanges() {
+        await changeName(editedName);
+        // await changeEmail(editedEmail); 
+        setIsEditing(false); 
+    }
+
+
     useEffect(() => {
 
         const unsubscribe = onAuthStateChanged(auth, (user: any) => {
@@ -78,17 +131,60 @@ export default function Profile() {
 
     return (
         <div className={s.profile}>
-            <h1>Account</h1>
-            <button
-                onClick={logout}
-            >Logout</button>
-            <h3>
-                Name: {user?.displayName}
-                Email: {user?.email}
-            </h3>
-            <h3>
-                Classes you're taking:
-            </h3>
+            <h1 style={{alignItems: 'center', textAlign: 'center'}}>Account</h1>
+            <div className={s.boxContainer}>
+                <div className={s.leftBox}>
+                    <h2>Enrolled Classes</h2>
+                    <ul>
+                        {enrolled.map(({ cid, class: c }) => (
+                            <li key={cid}>
+                                <p>{c.classname}</p>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+                <div className={s.rightBox}>
+                    <h2>Account Information</h2>
+                    <button
+                        onClick={logout}
+                    >
+                        <Image 
+                            src="/logout.svg"
+                            alt="Logout"
+                            width={20}
+                            height={20}
+                        />Logout
+                    </button>
+                    <p> <span style={{ fontWeight: '600', marginRight: '40px'}}>Name</span> 
+                    
+                    { isEditing ? (
+                        <input
+                        type="text"
+                        value={editedName}
+                        onChange={(e) => setEditedName(e.target.value)}
+                        />
+                    ) : (
+                        <span>{user?.displayName}</span>
+                    )}
+                    <button className={s.edit} onClick={handleEditClick}><Image 
+                        src="/mode_edit.svg"
+                        alt="edit"
+                        width={20}
+                        height={20}
+                        style={{ marginLeft: '10px', alignItems: 'center'}}
+                    />
+                    </button>
+                    </p>
+                    <p> <span style={{ fontWeight: '600', marginRight: '40px'}}>Email</span> 
+                       <span>{user?.email}</span>
+                    {isEditing && (
+                        <button className={s.saveChanges} onClick={handleSaveChanges}>
+                            Save changes
+                        </button>
+                    )}
+                    </p>
+                </div>
+            </div>
         </div>
     );
 }
