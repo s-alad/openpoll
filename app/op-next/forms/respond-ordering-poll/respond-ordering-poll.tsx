@@ -22,8 +22,7 @@ export default function RespondOrderPoll({ classid, poll }: RespondOrderPollProp
 
     const { user } = useAuth();
     const orderpoll = poll.poll as OrderPoll;
-
-    const [sortedOptions, setSortedOptions] = useState(orderpoll.options);
+    const [sortedOptions, setSortedOptions] = useState(orderpoll.options.sort(() => Math.random() - 0.5))
 
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);

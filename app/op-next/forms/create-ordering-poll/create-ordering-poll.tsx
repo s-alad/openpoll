@@ -217,10 +217,10 @@ export default function CreateOrderingPoll() {
                 </DndContext>
             </div>
 
-            <div className={s.add}>
-                <FontAwesomeIcon icon={faPlus} onClick={
+            <div className={s.add} onClick={
                     () => append({ letter: String.fromCharCode(65 + fields.length), option: "" })
-                } />
+                }>
+                <FontAwesomeIcon icon={faPlus}  />
             </div>
 
             <Spacer />
