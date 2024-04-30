@@ -12,7 +12,7 @@ import { ref, set } from "firebase/database";
 import { db, rdb } from "@/firebase/firebaseconfig";
 import { useRouter } from "next/router";
 import Spacer from "@/components/spacer/spacer";
-import ShortPoll from "@/models/poll/short";
+import ShortPoll from "@openpoll/packages/models/poll/short";
 
 
 type CreateShortPollProps = {

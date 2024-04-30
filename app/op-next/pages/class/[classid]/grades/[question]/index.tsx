@@ -1,9 +1,9 @@
 import { useAuth } from "@/context/authcontext";
 import { auth, db } from '@/firebase/firebaseconfig';
-import { getCorrectPollType } from '@/models/poll';
-import MCPoll, { MCOptions } from '@/models/poll/mc';
-import OrderPoll from '@/models/poll/ordering';
-import ShortPoll from '@/models/poll/short';
+import { getCorrectPollType } from '@openpoll/packages/models/poll';
+import MCPoll, { MCOptions } from '@openpoll/packages/models/poll/mc';
+import OrderPoll from '@openpoll/packages/models/poll/ordering';
+import ShortPoll from '@openpoll/packages/models/poll/short';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { useRouter } from 'next/router';

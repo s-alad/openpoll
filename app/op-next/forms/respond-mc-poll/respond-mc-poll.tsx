@@ -4,11 +4,11 @@ import {
     Checkbox,
     FormControlLabel
 } from '@mui/material';
-import Poll, { getCorrectPollType, PollAndId } from "@/models/poll";
+import Poll, { getCorrectPollType, PollAndId } from "@openpoll/packages/models/poll";
 import { Controller, useForm } from 'react-hook-form';
 import Button from '@/ui/button/button';
 import s from '../respond-poll.module.scss';
-import MCPoll, { MCResponses } from '@/models/poll/mc';
+import MCPoll, { MCResponses } from '@openpoll/packages/models/poll/mc';
 import { ref, update } from 'firebase/database';
 import { useState } from 'react';
 

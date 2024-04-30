@@ -15,7 +15,7 @@ import { remove, ref, set } from "firebase/database";
 import { db, rdb } from "@/firebase/firebaseconfig";
 import { useRouter } from "next/router";
 import Spacer from "@/components/spacer/spacer";
-import MCPoll, { MCAnswerKey, MCOptions } from "@/models/poll/mc";
+import MCPoll, { MCAnswerKey, MCOptions } from "@openpoll/packages/models/poll/mc";
 
 
 type CreateMultipleChoicePollProps = {

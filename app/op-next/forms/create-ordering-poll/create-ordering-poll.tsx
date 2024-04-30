@@ -16,7 +16,7 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGripVertical, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
-import OrderPoll from "@/models/poll/ordering";
+import OrderPoll from "@openpoll/packages/models/poll/ordering";
 
 
 function SortableItem({ register, index, error, field, end, callback }:

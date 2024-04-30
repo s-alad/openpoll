@@ -14,7 +14,7 @@ import { createClassSchema } from "@/validation/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Loader from "@/components/loader/loader";
 import Input from "@/ui/input/input";
-import Classroom, { Class } from "@/models/class";
+import Classroom, { Class } from "@openpoll/packages/models/class";
 
 
 export default function CreateClass() {

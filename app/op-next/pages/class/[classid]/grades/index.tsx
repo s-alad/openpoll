@@ -1,5 +1,5 @@
 import { useAuth } from "@/context/authcontext";
-import Poll, { PollAndId, getCorrectPollType } from "@/models/poll";
+import Poll, { PollAndId, getCorrectPollType } from "@openpoll/packages/models/poll";
 import { onAuthStateChanged } from "firebase/auth";
 import { Timestamp, collection, doc, getDocs, query, where } from "firebase/firestore";
 import { useRouter } from "next/router";
@@ -11,11 +11,11 @@ import Image from "next/image";
 import { AppBar, Tabs, Tab, Box, Typography } from "@mui/material";
 import TopSection from "@/components/grades/topSection/topSection";
 import StudentStats from "@/components/grades/studentStats/studentStats";
-import MCPoll, { MCResponses } from "@/models/poll/mc";
-import ShortPoll, { ShortResponses } from "@/models/poll/short";
-import OrderPoll from "@/models/poll/ordering";
-import AttendancePoll from "@/models/poll/attendance";
-import MatchPoll from "@/models/poll/matching";
+import MCPoll, { MCResponses } from "@openpoll/packages/models/poll/mc";
+import ShortPoll, { ShortResponses } from "@openpoll/packages/models/poll/short";
+import OrderPoll from "@openpoll/packages/models/poll/ordering";
+import AttendancePoll from "@openpoll/packages/models/poll/attendance";
+import MatchPoll from "@openpoll/packages/models/poll/matching";
 import { set } from "firebase/database";
 
 interface PollAndAnswer {

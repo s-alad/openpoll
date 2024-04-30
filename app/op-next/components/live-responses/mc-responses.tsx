@@ -1,7 +1,7 @@
 import React from "react";
 
 import s from "./mc-responses.module.scss";
-import MCPoll, { MCResponses } from "@/models/poll/mc";
+import MCPoll, { MCResponses } from "@openpoll/packages/models/poll/mc";
 
 interface LiveMcResponsesProps {
     livepoll: MCPoll;

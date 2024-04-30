@@ -1,30 +1,32 @@
-import { _Poll } from "../poll";
+import Poll from "../poll";
 
-type responses = {
+type ShortResponses = {
     [userid: string]: {
         email: string;
         response: string;
+        correct: boolean;
     }
 }
 
-class ShortPoll extends _Poll {
+export default class ShortPoll extends Poll {
     answerkey?: string;
-    responses: responses
+    responses: ShortResponses
 
     constructor(
         active: boolean,
-        classcode: string,
         classid: string,
         createdat: any,
-        endedat: any,
         creator: string,
         done: boolean,
         question: string,
-        responses: responses,
+        responses: ShortResponses,
         answerkey?: string,
+        endedat?: any,
     ) {
-        super("short", active, classcode, classid, createdat, endedat, creator, done, question);
+        super("short", active, classid, createdat, creator, done, question, endedat);
         this.answerkey = answerkey;
         this.responses = responses;
     }
 }
+
+export type { ShortResponses }

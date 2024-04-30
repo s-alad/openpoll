@@ -11,7 +11,7 @@ import { ref, set } from "firebase/database";
 import { useRouter } from "next/router";
 import Spacer from "@/components/spacer/spacer";
 import { createAttendanceSchema } from "@/validation/schema";
-import AttendancePoll from "@/models/poll/attendance";
+import AttendancePoll from "@openpoll/packages/models/poll/attendance";
 
 export default function CreateAttendancePoll() {
 

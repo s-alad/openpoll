@@ -2,8 +2,8 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from 'react';
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../../../firebase/firebaseconfig";
-import MCPoll from "@/models/poll/mc";
-import ShortPoll from "@/models/poll/short";
+import MCPoll from "@openpoll/packages/models/poll/mc";
+import ShortPoll from "@openpoll/packages/models/poll/short";
 import RenderBarChart from "@/components/barchart/barchart";
 import s from "./analytics.poll.module.scss"
 

@@ -1,7 +1,7 @@
 import React from "react";
 
 import s from "./short-responses.module.scss";
-import ShortPoll, { ShortResponses } from "@/models/poll/short";
+import ShortPoll, { ShortResponses } from "@openpoll/packages/models/poll/short";
 import { FaCheck } from "react-icons/fa";
 
 interface LiveShortResponsesProps {

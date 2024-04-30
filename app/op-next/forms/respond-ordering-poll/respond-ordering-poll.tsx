@@ -1,12 +1,12 @@
 import { useAuth } from '@/context/authcontext';
 import { rdb } from '@/firebase/firebaseconfig';
-import Poll, { getCorrectPollType, PollAndId } from "@/models/poll";
+import Poll, { getCorrectPollType, PollAndId } from "@openpoll/packages/models/poll";
 import { Controller, useForm } from 'react-hook-form';
 import Button from '@/ui/button/button';
 import s from '../respond-poll.module.scss';
 import { ref, update } from 'firebase/database';
-import AttendancePoll, { AttendanceResponses } from '@/models/poll/attendance';
-import OrderPoll, { OrderResponses, OrderResponseStructure } from '@/models/poll/ordering';
+import AttendancePoll, { AttendanceResponses } from '@openpoll/packages/models/poll/attendance';
+import OrderPoll, { OrderResponses, OrderResponseStructure } from '@openpoll/packages/models/poll/ordering';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useEffect, useState } from 'react';

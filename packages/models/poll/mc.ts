@@ -1,39 +1,40 @@
-import { _Poll } from "../poll";
+import Poll from "../poll";
 
-type letter = string;
-type options = { 
-    [letter: string]: string; // letter: option
-} 
-type responses = {
-    [letter: string]: {
-        [userid: string]: string; // userid: email
+type MCAnswerKey = string[];
+type MCOptions = {
+    letter: string; 
+    option: string;
+}[];
+type MCResponses = {
+    [userid: string]: {
+        email: string;
+        correct: boolean;
+        response: string[]
     }
 }
 
-class MCPoll extends _Poll {
-    answerkey: letter[]; // letter[]
-    options: options;
-    responses: responses;
+export default class MCPoll extends Poll {
+    answerkey: MCAnswerKey; // letter[]
+    options: MCOptions;
+    responses: MCResponses;
 
     constructor(
         active: boolean,
-        classcode: string,
         classid: string,
         createdat: any,
-        endedat: any,
         creator: string, 
         done: boolean, 
         question: string, 
-        answerkey: letter[],
-        options: options,
-        responses: responses
-
+        answerkey: MCAnswerKey,
+        options: MCOptions,
+        responses: MCResponses,
+        endedat?: any,
     ) {
-        super("mc", active, classcode, classid, createdat, endedat, creator, done, question);
+        super("mc", active, classid, createdat, creator, done, question, endedat);
         this.answerkey = answerkey;
         this.options = options;
         this.responses = responses;
     }
 }
 
-export type { options as MCOptions, responses as MCResponses }
+export type { MCOptions, MCResponses, MCAnswerKey }

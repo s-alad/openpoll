@@ -1,5 +1,5 @@
-import { MCAnswerKey, MCOptions } from "@/models/poll/mc";
-import { OrderAnswerKey, OrderOptions } from "@/models/poll/ordering";
+import { MCAnswerKey, MCOptions } from "@openpoll/packages/models/poll/mc";
+import { OrderAnswerKey, OrderOptions } from "@openpoll/packages/models/poll/ordering";
 import { FieldError, FieldValues, Path, UseFormRegister } from "react-hook-form";
 
 

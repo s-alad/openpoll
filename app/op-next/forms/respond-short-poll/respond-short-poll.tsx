@@ -1,12 +1,12 @@
 import { useAuth } from '@/context/authcontext';
 import { rdb } from '@/firebase/firebaseconfig';
-import Poll, { getCorrectPollType, PollAndId } from "@/models/poll";
+import Poll, { getCorrectPollType, PollAndId } from "@openpoll/packages/models/poll";
 import { Controller, useForm } from 'react-hook-form';
 import Button from '@/ui/button/button';
 import s from '../respond-poll.module.scss';
 import { ref, update } from 'firebase/database';
-import AttendancePoll, { AttendanceResponses } from '@/models/poll/attendance';
-import ShortPoll, { ShortResponses } from '@/models/poll/short';
+import AttendancePoll, { AttendanceResponses } from '@openpoll/packages/models/poll/attendance';
+import ShortPoll, { ShortResponses } from '@openpoll/packages/models/poll/short';
 import { useState } from 'react';
 
 interface RespondShortPollProps {

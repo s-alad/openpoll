@@ -1,60 +1,53 @@
+import AttendancePoll from "./poll/attendance";
+import MatchPoll from "./poll/matching";
+import MCPoll from "./poll/mc";
+import OrderPoll from "./poll/ordering";
+import ShortPoll from "./poll/short";
 
-type TPoll = "mc" | "short" | "attendance" | "order" | "match"
+export type TPoll = "mc" | "short" | "attendance" | "order" | "match"
+export type xPoll = Poll | MCPoll | ShortPoll | AttendancePoll | OrderPoll | MatchPoll;
+export const TLPoll = ["mc", "short", "attendance", "order", "match"]
 
-export abstract class _Poll {
+export default abstract class Poll {
   type: TPoll;
   active: boolean;
-  classcode: string;
   classid: string;
   createdat: any;
-  endedat?: any;
   creator: string;
   done: boolean;
   question: string;
   image?: string;
+  endedat?: any;
 
   constructor(
     type: TPoll,
     active: boolean,
-    classcode: string,
     classid: string,
     createdat: any,
-    endedat: any,
     creator: string,
     done: boolean,
     question: string,
-    image?: string
+    image?: string,
+    endedat?: any,
   ) {
     this.type = type;
     this.active = active;
-    this.classcode = classcode;
     this.classid = classid;
     this.createdat = createdat;
-    this.endedat = endedat;
     this.creator = creator;
     this.done = done;
     this.question = question;
     this.image = image;
+    this.endedat = endedat;
   }
 }
 
-interface Poll {
-  active: boolean;
-  answers: string[];
-  classid: string;
-  created: any;
-  question: string;
-  options: {
-    letter: string;
-    option: string;
-  }[];
-  responses?: PollResponse;
-  done?: boolean;
-  date?: any;
-  type: "mc" | "short" | "attendance";
+export interface PollAndId {
+  id: string;
+  poll: Poll | MCPoll | ShortPoll | AttendancePoll | OrderPoll | MatchPoll;
 }
 
-function convertPollTypeToText(type: "mc" | "short" | "attendance") {
+function convertPollTypeToText(type: TPoll) {
   switch (type) {
     case "mc":
       return "Multiple Choice";
@@ -62,15 +55,28 @@ function convertPollTypeToText(type: "mc" | "short" | "attendance") {
       return "Short Answer";
     case "attendance":
       return "Attendance";
+    case "order":
+      return "Ordering";
+    case "match":
+      return "Matching";
   }
 }
 
-interface PollResponse {
-  [option: string]: { [uid: string]: string };
-}
+function getCorrectPollType(data: any) {
+  if (data.type === "mc") {
+    return data as MCPoll;
+  } else if (data.type === "short") {
+    return data as ShortPoll;
+  } else if (data.type === "attendance") {
+    return data as AttendancePoll;
+  } else if (data.type === "order") {
+    return data as OrderPoll;
+  } else if (data.type === "match") {
+    return data as MatchPoll;
+  } else {
+    return undefined
+  }
+} 
 
-export default Poll;
-export type { PollResponse }
-export type { TPoll }
-export { convertPollTypeToText };
+export { convertPollTypeToText, getCorrectPollType };
 

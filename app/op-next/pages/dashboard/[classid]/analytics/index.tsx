@@ -2,18 +2,18 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from 'react';
 import { collection, doc, getDocs, query, where } from 'firebase/firestore';
 import { db, auth } from '@/firebase/firebaseconfig';
-import Poll, { getCorrectPollType, xPoll } from "@/models/poll";
+import Poll, { getCorrectPollType, xPoll } from "@openpoll/packages/models/poll";
 import RenderBarChart from '@/components/barchart/barchart';
 import { useAuth } from '@/context/authcontext';
 import { onAuthStateChanged } from 'firebase/auth';
-import { getClassnameFromId } from "@/models/class";
+import { getClassnameFromId } from "@openpoll/packages/models/class";
 import Link from "next/link";
 import s from './analytics.module.scss'
-import MCPoll from "@/models/poll/mc";
-import AttendancePoll from "@/models/poll/attendance";
-import MatchPoll from "@/models/poll/matching";
-import OrderPoll from "@/models/poll/ordering";
-import ShortPoll from "@/models/poll/short";
+import MCPoll from "@openpoll/packages/models/poll/mc";
+import AttendancePoll from "@openpoll/packages/models/poll/attendance";
+import MatchPoll from "@openpoll/packages/models/poll/matching";
+import OrderPoll from "@openpoll/packages/models/poll/ordering";
+import ShortPoll from "@openpoll/packages/models/poll/short";
 
 type PollType = MCPoll | ShortPoll | AttendancePoll | OrderPoll | MatchPoll
 

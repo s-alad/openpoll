@@ -6,9 +6,9 @@ import CreateMultipleChoicePoll from '@/forms/create-mc-poll/create-mc-poll';
 import CreateShortAnswerPoll from '@/forms/create-short-poll/create-short-poll';
 import CreateOrderingPoll from '@/forms/create-ordering-poll/create-ordering-poll';
 import s from './edit.poll.module.scss';
-import Poll, {  } from '@/models/poll';
-import MCPoll from "@/models/poll/mc";
-import ShortPoll from "@/models/poll/short";
+import Poll, {  } from '@openpoll/packages/models/poll';
+import MCPoll from "@openpoll/packages/models/poll/mc";
+import ShortPoll from "@openpoll/packages/models/poll/short";
 
 export default function EditPoll() {
     const router = useRouter();

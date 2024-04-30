@@ -7,7 +7,7 @@ import s from "./profile.module.scss";
 import { auth, db } from "@/firebase/firebaseconfig";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
-import Classroom from "@/models/class";
+import Classroom from "@openpoll/packages/models/class";
 import Image from "next/image";
 
 interface Class {

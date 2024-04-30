@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import { db, auth } from "../../firebase/firebaseconfig";
 import { collection, getDocs, where, query, addDoc, setDoc, doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
-import Classroom, { Class } from "@/models/class";
+import Classroom, { Class } from "@openpoll/packages/models/class";
 import Loader from "@/components/loader/loader";
 import { useAuth } from "@/context/authcontext";
 import Unauthorized from "@/components/unauthorized/unauthorized";

@@ -13,7 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { createAttendanceSchema } from '@/validation/schema';
 import Button from '@/ui/button/button';
 import Spacer from '@/components/spacer/spacer';
-import { TPoll, convertPollTypeToText } from '@/models/poll';
+import { TPoll, convertPollTypeToText } from '@openpoll/packages/models/poll';
 import CreateAttendancePoll from '@/forms/create-attendance-poll/create-attendance-poll';
 
 export default function CreatePoll() {
