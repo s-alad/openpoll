@@ -97,6 +97,31 @@ async function calculatePollResults(pollid: string, classid: string) {
             }
         }
     } else if (polltype === "order") {
+        console.log("CALCULATING ORDER POLL RESULTS");
+
+        for (const [userid, userResponse] of Object.entries(responses)) {
+            const response = (userResponse as any).response; // type OrderResponses
+
+            console.log("Answerkey", answerkey);
+            console.log("RESPONSE", response);
+
+            // convert response which looks like [{letter: "A", option: "Option 1"}, {letter: "B", option: "Option 2"}]
+            // into a map that looks like {0: {letter: "A", option: "Option 1"}, 1: {letter: "B", option: "Option 2"}}
+
+            const responseMap = response.reduce((acc: any, item: any, index: number) => {
+                acc[index] = item;
+                return acc;
+            }, {});
+            
+            // check if the response is equal to the answer key
+            const correct = JSON.stringify(responseMap) === JSON.stringify(answerkey);
+            console.log("CORRECT - RESPONSE", correct, response);
+
+            await pollRef.update({
+                [`responses.${userid}.correct`]: correct
+            });
+            
+        }
     }
 }
 

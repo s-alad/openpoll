@@ -6,7 +6,7 @@ import Button from '@/ui/button/button';
 import s from '../respond-poll.module.scss';
 import { ref, update } from 'firebase/database';
 import AttendancePoll, { AttendanceResponses } from '@openpoll/packages/models/poll/attendance';
-import OrderPoll, { OrderResponses, OrderResponseStructure } from '@openpoll/packages/models/poll/ordering';
+import OrderPoll, { OrderAnswerKey, OrderResponses, OrderResponseStructure } from '@openpoll/packages/models/poll/ordering';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useEffect, useState } from 'react';
@@ -33,7 +33,7 @@ export default function RespondOrderPoll({ classid, poll }: RespondOrderPollProp
         console.log(sortedOptions);
         setLoading(true);
 
-        const responseStructure = sortedOptions.reduce<OrderResponseStructure>((acc, option, index) => {
+        const responseStructure = sortedOptions.reduce<OrderAnswerKey>((acc, option, index) => {
             acc[index] = { letter: option.letter, option: option.option };
             return acc;
         }, {});
@@ -44,7 +44,7 @@ export default function RespondOrderPoll({ classid, poll }: RespondOrderPollProp
             [user!.uid]: {
                 correct: false,
                 email: user!.email,
-                response: responseStructure
+                response: responseStructure as OrderAnswerKey
             }
         } as OrderResponses
 
@@ -108,7 +108,7 @@ export default function RespondOrderPoll({ classid, poll }: RespondOrderPollProp
                     ))}
                 </SortableContext>
             </DndContext>
-            <Button type='submit' text='Submit' />
+            <Button type='submit' text='Submit' loading={loading} success={success} />
         </form>
     );
 }
