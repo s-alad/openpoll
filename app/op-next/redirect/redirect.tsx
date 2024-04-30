@@ -4,7 +4,7 @@ import { useAuth } from "../context/authcontext";
 import {
 	onAuthStateChanged,
 } from "firebase/auth";
-import { auth } from "../firebase/firebaseconfig";
+import { auth } from '@openpoll/packages/config/firebaseconfig';
 
 // these are the protected routes that you need token verification
 // add routes that you want to have it protected

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Poll, { getCorrectPollType } from '@openpoll/packages/models/poll';
 import { doc, collection, getDocs, getDoc, query, where } from 'firebase/firestore';
-import { db, auth } from '@/firebase/firebaseconfig';
+import { db, auth } from '@openpoll/packages/config/firebaseconfig';
 import { useAuth } from '@/context/authcontext';
 import s from "./gradebook.module.scss";
 import { onAuthStateChanged } from 'firebase/auth';

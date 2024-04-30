@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from 'react';
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../../../../firebase/firebaseconfig";
+import { db } from '@openpoll/packages/config/firebaseconfig';
 import CreateMultipleChoicePoll from '@/forms/create-mc-poll/create-mc-poll';
 import CreateShortAnswerPoll from '@/forms/create-short-poll/create-short-poll';
 import CreateOrderingPoll from '@/forms/create-ordering-poll/create-ordering-poll';

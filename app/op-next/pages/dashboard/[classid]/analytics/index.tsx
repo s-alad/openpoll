@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from 'react';
 import { collection, doc, getDocs, query, where } from 'firebase/firestore';
-import { db, auth } from '@/firebase/firebaseconfig';
+import { db, auth } from '@openpoll/packages/config/firebaseconfig';
 import Poll, { getCorrectPollType, xPoll } from "@openpoll/packages/models/poll";
 import RenderBarChart from '@/components/barchart/barchart';
 import { useAuth } from '@/context/authcontext';

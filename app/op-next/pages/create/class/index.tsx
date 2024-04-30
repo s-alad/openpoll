@@ -3,7 +3,7 @@ import Navbar from "@/layout/navbar/navbar"
 import s from "./create.class.module.scss"
 
 import { User, getAdditionalUserInfo } from "firebase/auth";
-import { auth, db, fxns } from "../../../firebase/firebaseconfig";
+import { auth, db, fxns } from '@openpoll/packages/config/firebaseconfig';
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { useRouter } from "next/router";
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";

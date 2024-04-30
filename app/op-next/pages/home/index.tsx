@@ -3,7 +3,7 @@ import s from "./home.module.scss"
 import { faUser, faHome, faPlus, faRightToBracket } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRouter } from "next/router";
-import { db, auth } from "../../firebase/firebaseconfig";
+import { db, auth } from '@openpoll/packages/config/firebaseconfig';
 import { collection, getDocs, where, query, addDoc, setDoc, doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import Classroom, { Class } from "@openpoll/packages/models/class";

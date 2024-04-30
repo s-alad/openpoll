@@ -1,5 +1,5 @@
 import { useAuth } from '@/context/authcontext';
-import { rdb } from '@/firebase/firebaseconfig';
+import { rdb } from '@openpoll/packages/config/firebaseconfig';
 import Poll, { getCorrectPollType, PollAndId } from "@openpoll/packages/models/poll";
 import { Controller, useForm } from 'react-hook-form';
 import Button from '@/ui/button/button';

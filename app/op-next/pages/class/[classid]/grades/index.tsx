@@ -4,7 +4,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { Timestamp, collection, doc, getDocs, query, where } from "firebase/firestore";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { auth, db } from "../../../../firebase/firebaseconfig";
+import { auth, db } from '@openpoll/packages/config/firebaseconfig';
 import s from "./classGrades.module.scss";
 import Link from "next/link";
 import Image from "next/image";

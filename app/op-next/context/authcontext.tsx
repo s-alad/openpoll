@@ -7,7 +7,7 @@ import {
 } from "firebase/auth";
 
 import { User, getAdditionalUserInfo } from "firebase/auth";
-import { auth } from "../firebase/firebaseconfig";
+import { auth } from '@openpoll/packages/config/firebaseconfig';
 import { useRouter } from "next/router";
 
 import s from "./auth.module.scss";

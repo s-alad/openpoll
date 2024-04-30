@@ -12,7 +12,7 @@ import { Box, Chip, FormControl, MenuItem, OutlinedInput, Select } from "@mui/ma
 import { useAuth } from "@/context/authcontext";
 import { deleteDoc, addDoc, collection, doc } from "firebase/firestore";
 import { remove, ref, set } from "firebase/database";
-import { db, rdb } from "@/firebase/firebaseconfig";
+import { db, rdb } from "@openpoll/packages/config/firebaseconfig";
 import { useRouter } from "next/router";
 import Spacer from "@/components/spacer/spacer";
 import MCPoll, { MCAnswerKey, MCOptions } from "@openpoll/packages/models/poll/mc";

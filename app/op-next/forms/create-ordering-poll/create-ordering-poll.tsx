@@ -9,7 +9,7 @@ import Button from "@/ui/button/button";
 import { useAuth } from "@/context/authcontext";
 import { addDoc, collection, doc } from "firebase/firestore";
 import { ref, set } from "firebase/database";
-import { db, rdb } from "@/firebase/firebaseconfig";
+import { db, rdb } from "@openpoll/packages/config/firebaseconfig";
 import { useRouter } from "next/router";
 import Spacer from "@/components/spacer/spacer";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';

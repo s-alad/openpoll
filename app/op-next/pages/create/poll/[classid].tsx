@@ -1,5 +1,5 @@
 import s from './create.poll.module.scss';
-import { auth, db, fxns, rdb } from "../../../firebase/firebaseconfig";
+import { auth, db, fxns, rdb } from '@openpoll/packages/config/firebaseconfig';
 import { useRouter } from "next/router";
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import React, { useState, FormEvent, useEffect } from 'react';

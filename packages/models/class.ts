@@ -1,5 +1,5 @@
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
-import { db } from '@/firebase/firebaseconfig';
+import { db } from '@openpoll/packages/config/firebaseconfig';
 
 
 export interface Admins {

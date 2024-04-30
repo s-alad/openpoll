@@ -5,7 +5,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { CreateAttendancePollFormData } from "@/validation/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@/ui/button/button";
-import { auth, db, fxns, rdb } from "@/firebase/firebaseconfig";
+import { auth, db, fxns, rdb } from "@openpoll/packages/config/firebaseconfig";
 import { addDoc, collection, doc } from "firebase/firestore";
 import { ref, set } from "firebase/database";
 import { useRouter } from "next/router";

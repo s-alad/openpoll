@@ -3,7 +3,7 @@ import s from "./subnavbar.module.scss";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
-import { db } from "@/firebase/firebaseconfig";
+import { db } from "@openpoll/packages/config/firebaseconfig";
 import { useAuth } from "@/context/authcontext";
 
 export default function SubNavbar() {

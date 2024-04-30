@@ -4,7 +4,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import Loader from "@/components/loader/loader";
 import Unauthorized from "@/components/unauthorized/unauthorized";
 import s from "./profile.module.scss";
-import { auth, db } from "@/firebase/firebaseconfig";
+import { auth, db } from "@openpoll/packages/config/firebaseconfig";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
 import Classroom from "@openpoll/packages/models/class";

@@ -1,8 +1,8 @@
-import { rdb } from "@/firebase/firebaseconfig";
+import { rdb } from "@openpoll/packages/config/firebaseconfig";
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { equalTo, get, onValue, orderByChild, query, ref, set } from "firebase/database";
 import { collection, doc, getDoc, query as q, updateDoc } from "firebase/firestore";
-import { auth, db, fxns } from "../../firebase/firebaseconfig";
+import { auth, db, fxns } from "@openpoll/packages/config/firebaseconfig";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import s from './live.module.scss';

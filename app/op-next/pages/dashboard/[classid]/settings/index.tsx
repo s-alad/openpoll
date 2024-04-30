@@ -5,7 +5,7 @@ import { faUser, faArrowLeftLong, faPlus, faRightToBracket } from '@fortawesome/
 import s from './settings.module.scss';
 import Link from 'next/link';
 import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
-import { auth, db } from '@/firebase/firebaseconfig';
+import { auth, db } from '@openpoll/packages/config/firebaseconfig';
 import Poll, { PollAndId, TLPoll, TPoll, convertPollTypeToText, getCorrectPollType } from '@openpoll/packages/models/poll';
 import Loader from '@/components/loader/loader';
 import Image from 'next/image';

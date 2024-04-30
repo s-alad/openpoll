@@ -1,5 +1,5 @@
 import { useAuth } from '@/context/authcontext';
-import { rdb } from '@/firebase/firebaseconfig';
+import { rdb } from '@openpoll/packages/config/firebaseconfig';
 import {
     Checkbox,
     FormControlLabel

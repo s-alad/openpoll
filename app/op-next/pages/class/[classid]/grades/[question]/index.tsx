@@ -1,5 +1,5 @@
 import { useAuth } from "@/context/authcontext";
-import { auth, db } from '@/firebase/firebaseconfig';
+import { auth, db } from '@openpoll/packages/config/firebaseconfig';
 import { getCorrectPollType } from '@openpoll/packages/models/poll';
 import MCPoll, { MCOptions } from '@openpoll/packages/models/poll/mc';
 import OrderPoll from '@openpoll/packages/models/poll/ordering';
