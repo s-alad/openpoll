@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import type { AppProps } from "next/app";
 import AuthProvider from "@/context/authcontext";
 import RedirectBasedOnAuth from "@/redirect/redirect";

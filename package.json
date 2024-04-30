@@ -1,13 +1,15 @@
 {
-  "name": "openpoll-main",
+  "name": "@openpoll/config",
   "version": "1.0.0",
   "description": "OpenPoll Main",
+  "private": true,
   "license": "MIT",
+  "main": "index.js",
   "workspaces": [
     "app/*",
-    "packages/*"
+    "packages/*",
+    "packages"
   ],
-  "private": true,
   "scripts": {
     "dev": "run-pty % yarn dev:web % yarn dev:app",
     "dev:web": "cd app/op-next && yarn dev",
@@ -20,6 +22,6 @@
     "run-pty": "^4.1.0"
   },
   "dependencies": {
-    "@mui/x-charts": "^6.19.5"
+    "dotenv": "^16.4.5"
   }
 }

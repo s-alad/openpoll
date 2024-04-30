@@ -1,8 +1,13 @@
 {
-    "name": "packages",
-    "version": "1.0.0",
-    "description": "",
-    "author": "",
-    "main": "index.ts",
-    "license": "MIT"
+  "name": "@openpoll/packages",
+  "version": "0.0.0",
+  "description": "packages",
+  "author": "s-alad",
+  "homepage": "",
+  "license": "ISC",
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "devDependencies": {},
+  "keywords": []
 }
