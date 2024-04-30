@@ -173,9 +173,12 @@
 
 
       .stat {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         width: 100px;
         text-align: center; 
-        padding: 0 10px; // Add padding to prevent text from touching the edges
+        padding: 0 10px;
       }
     }
   }

@@ -9,4 +9,18 @@
     border: none;
     color: white;
     cursor: pointer;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    img {
+        height: 40%;
+        width: 40%;
+    }
+}
+
+.disabled {
+    background-color: #D3D3D3;
+    cursor: not-allowed;
 }

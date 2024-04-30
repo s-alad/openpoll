@@ -1,21 +1,32 @@
-import { _Poll } from "../poll";
+import Poll, { TPoll } from "../poll";
 
 type OrderAnswerKey = {
-    [index: number]: string // index: letter
+    [index: number]: {
+        letter: string;
+        option: string;
+    };
 }
 type OrderOptions = {
-    [letter: string]: string; // letter: option
-}
+    letter: string; 
+    option: string;
+}[];
+type OrderResponseStructure = {
+    [key: number]: { letter: string; option: string; };
+};
 type OrderResponses = {
-    correct: {
-        [userid: string]: string; // userid: email
-    },
-    incorrect: {
-        [userid: string]: string; // userid: email
+    [userid: string]: {
+        correct: boolean;
+        email: string;
+        response: {
+            [index: number]: {
+                letter: string;
+                option: string;
+            };
+        }
     }
 }
 
-export default class OrderPoll extends _Poll {
+export default class OrderPoll extends Poll {
     answerkey: OrderAnswerKey
     options: OrderOptions
     responses: OrderResponses
@@ -23,23 +34,21 @@ export default class OrderPoll extends _Poll {
 
     constructor(
         active: boolean,
-        classcode: string,
         classid: string,
         createdat: any,
-        endedat: any,
         creator: string,
         done: boolean,
         question: string,
         answerkey: OrderAnswerKey,
         options: OrderOptions,
-        responses: OrderResponses
-
+        responses: OrderResponses,
+        endedat?: any,
     ) {
-        super("order", active, classcode, classid, createdat, endedat, creator, done, question);
+        super("order", active, classid, createdat, creator, done, question, endedat);
         this.answerkey = answerkey;
         this.options = options;
         this.responses = responses;
     }
 }
 
-export type { OrderOptions, OrderAnswerKey, OrderResponses}
+export type { OrderOptions, OrderAnswerKey, OrderResponses, OrderResponseStructure}

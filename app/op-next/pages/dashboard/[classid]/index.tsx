@@ -5,98 +5,30 @@ import { faUser, faArrowLeftLong, faPlus, faRightToBracket } from '@fortawesome/
 import s from './dashboard.module.scss';
 import Link from 'next/link';
 import { arrayUnion, collection, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
-import { auth, db } from '@/firebase/firebaseconfig';
-import Poll, { PollAndId, TLPoll, TPoll, convertPollTypeToText, getCorrectPollType } from '@/models/poll';
+import { auth, db } from '@openpoll/packages/config/firebaseconfig';
+import Poll, { PollAndId, TLPoll, TPoll, convertPollTypeToText, getCorrectPollType } from '@openpoll/packages/models/poll';
 import Loader from '@/components/loader/loader';
 import Image from 'next/image';
 import { PiChatsDuotone, PiChatsFill } from "react-icons/pi";
-import { getClassnameFromId } from '@/models/class';
-import MCPoll from '@/models/poll/mc';
+import { getClassnameFromId } from '@openpoll/packages/models/class';
+import MCPoll from '@openpoll/packages/models/poll/mc';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useAuth } from '@/context/authcontext';
 
 
 export default function Dashboard() {
 
-    const [isaddAdmin, setisaddAdmin] = useState<boolean>(false);
     const [loading, setLoading] = useState(false);
-    const { user } = useAuth();
+    const { user, loading: authloading } = useAuth();
     // get the class id from the url
     const router = useRouter();
     const classid = router.query.classid;
     const [classname, setClassname] = useState<string>("");
 
-    const [taId, settaId] = useState<string>("");
-    const [adminId, setadminId] = useState<string>("");
-    const [isOwner, setIsOwner] = useState<boolean>(false);
     const [openpolls, setOpenpolls] = useState<PollAndId[]>([]);
     const [selectedType, setSelectedType] = useState<TPoll>("mc");
 
-    async function handleSubmit(event: any) {
-        event.preventDefault();
-
-        try {
-            addAdmin(adminId);
-            setadminId("");
-        } catch (e) {
-            console.error("Error adding TA: ", e);
-        }
-
-
-    }
-
-    async function addAdmin(userEmail: string) {
-        setLoading(true);
-        const classRef = doc(db, "classes", classid as string);
-        const userRef = doc(db, "users", userEmail);
-
-
-        try {
-            const userSnap = await getDoc(userRef);
-            if (userSnap.exists()) {
-                console.log("Document data:", userSnap.data()); // Handle the data as needed
-                const userData = userSnap.data();
-                console.log(userData);  
-                const userId = userSnap.id;
-
-                await updateDoc(classRef, {
-                    admin: arrayUnion(userId) // add the user email to the admin array
-                });      
-            } else {
-                console.log("No such document!");            
-            }
-
-        } catch (e) {
-            console.error("Error adding TA: ", e);
-        }
-
-        setLoading(false);
-    }   
-
-    async function checkOwner() {
-        setLoading(true);
-        const classRef = doc(db, "classes", classid as string);
-        const user = auth.currentUser;
-        if (!user) return;
-        const uid = user!.uid;
-        console.log(uid);
-
-        const classSnap = await getDoc(classRef);
-        if (classSnap.exists()) {
-            const classData = classSnap.data();
-            if (classData.owner.uid === uid) {
-                console.log("Owner");
-                setIsOwner(true);
-            } else {
-                console.log("Not Owner");
-                setIsOwner(false);
-            }
-        }
-        setLoading(false);
-    }
-
     async function getpolls() {
-        setLoading(true);
         // collection classes - document class id - collection polls
         const classref = doc(db, "classes", classid as string);
         console.log(classref);
@@ -120,27 +52,24 @@ export default function Dashboard() {
         } catch (e) {
             console.error("Error getting documents: ", e);
         }
+    }
 
+    // execute necessary functions
+    async function main() {
+        setLoading(true);
+        await getpolls();
+        const classname = await getClassnameFromId(classid as string);
+        setClassname(classname);
         setLoading(false);
     }
 
     //wait for router to load
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user: any) => {
-            if (user && classid) {
-                getpolls();
-                checkOwner();
-                const classname = getClassnameFromId(classid as string);
-                classname.then((name) => {
-                    setClassname(name);
-                });
-            }
-        });
-
-        return () => {
-            unsubscribe();
+        if (user && classid) {
+            main();
         }
     }, [classid]);
+    if (!user || authloading || !classid) { return (<div></div>) }
 
     return (
         <div className={s.dashboard}>
@@ -148,7 +77,6 @@ export default function Dashboard() {
                 loading ? <Loader /> :
 
                     <div className={s.openpolls}>
-
                         <div className={s.info}>
                             <div className={s.classinfo}>
                                 <div className={s.classname}>
@@ -157,28 +85,6 @@ export default function Dashboard() {
                                 <div className={s.date}>
                                     {new Date().toLocaleDateString()}
                                 </div>
-                                {isOwner && (
-                                    isaddAdmin ? (
-                                        <div className={s.addAdmin}>
-                                            <form onSubmit={handleSubmit}>
-                                                <input 
-                                                    type="text" 
-                                                    value={adminId}
-                                                    onChange={(e) => setadminId(e.target.value)}
-                                                    placeholder="Enter Admin Email"
-                                                    required
-                                                    />
-                                                    <button type="submit">
-                                                        <FontAwesomeIcon icon={faRightToBracket} /> Add Admin
-                                                    </button>
-                                            </form>
-                                        </div>
-                                    ) : (
-                                        <div className={s.addAdmin} onClick={() => setisaddAdmin(true)}>
-                                            Add Admin
-                                        </div>
-                                    )                          
-                                )}
                             </div>
 
                             <Link
@@ -218,7 +124,7 @@ export default function Dashboard() {
                                                 <PiChatsFill />
                                                 {poll.poll.question}
                                             </div>
-                                            <div className={s.created}>created: {new Date(poll.poll.createdat.seconds).toLocaleDateString()}</div>
+                                            <div className={s.created}>created: {new Date(poll.poll.createdat.seconds * 1000).toLocaleDateString()}</div>
                                             <div className={s.polltype}>
                                                 {convertPollTypeToText(poll.poll.type as TPoll)}
                                             </div>

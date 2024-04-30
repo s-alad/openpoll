@@ -2,17 +2,17 @@ import React from "react";
 import s from "./create-short-poll.module.scss";
 import Input from "@/ui/input/input";
 import { useFieldArray, useForm } from "react-hook-form";
-import { CreateMultipleChoicePollFormData, CreateShortAnswerPollFormData } from "@/validation/form";
+import { CreateMultipleChoicePollFormData, CreateShortAnswerPollFormData } from "@openpoll/packages/validation/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createMultipleChoicePollData, createShortAnswerPollSchema } from "@/validation/schema";
+import { createMultipleChoicePollData, createShortAnswerPollSchema } from "@openpoll/packages/validation/schema";
 import Button from "@/ui/button/button";
 import { useAuth } from "@/context/authcontext";
 import { addDoc, collection, deleteDoc, doc } from "firebase/firestore";
 import { ref, set } from "firebase/database";
-import { db, rdb } from "@/firebase/firebaseconfig";
+import { db, rdb } from "@openpoll/packages/config/firebaseconfig";
 import { useRouter } from "next/router";
 import Spacer from "@/components/spacer/spacer";
-import ShortPoll from "@/models/poll/short";
+import ShortPoll from "@openpoll/packages/models/poll/short";
 
 
 type CreateShortPollProps = {

@@ -1,0 +1,33 @@
+.shortresponses {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    .response, .correct {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+
+        .letter {
+            padding: 15px;
+            width: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            background-color: #6750A4;
+            color: white;
+        }
+        .content {
+            font-weight: bold;
+            padding: 15px;
+            width: 60px;
+            display: flex;
+            align-items: center;
+            border-radius: 4px;
+            background-color: #fff;
+            min-width: 200px;
+        }
+    }
+    .correct {.letter {background-color: #46b42a;}}
+}

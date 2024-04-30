@@ -1,0 +1,46 @@
+.class {
+    width: 100%;
+
+    .analyticsHeader {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+        font-size: 2vh;
+        margin-top: 1vh;
+        font-weight: 800;
+    }
+    
+    .pollContainer {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+        margin-top: 2vh;
+
+        .pollQuestion {
+            font-size: 20px;
+        }
+
+        .shortAnswerTable {
+            border-collapse: collapse;
+            width: 50%;
+            text-align: left;
+            border: 1px solid black;
+            padding: 8px;
+            
+            .tableHeader{
+                background-color: #4036EE;
+                color: white;
+            }
+
+            .correctRow {
+                background-color: #FBB91B;
+            }
+
+            .incorrectRow {
+                background-color: #FE6768;
+            }
+        }
+    }
+}

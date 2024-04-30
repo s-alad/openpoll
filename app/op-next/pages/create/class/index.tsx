@@ -3,18 +3,18 @@ import Navbar from "@/layout/navbar/navbar"
 import s from "./create.class.module.scss"
 
 import { User, getAdditionalUserInfo } from "firebase/auth";
-import { auth, db, fxns } from "../../../firebase/firebaseconfig";
+import { auth, db, fxns } from '@openpoll/packages/config/firebaseconfig';
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { useRouter } from "next/router";
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import React, { useState, FormEvent } from 'react';
 import { useForm } from "react-hook-form";
-import { CreateClassFormData } from "@/validation/form";
-import { createClassSchema } from "@/validation/schema";
+import { CreateClassFormData } from "@openpoll/packages/validation/form";
+import { createClassSchema } from "@openpoll/packages/validation/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Loader from "@/components/loader/loader";
 import Input from "@/ui/input/input";
-import Classroom, { Class } from "@/models/class";
+import Classroom, { Class } from "@openpoll/packages/models/class";
 
 
 export default function CreateClass() {
@@ -30,7 +30,7 @@ export default function CreateClass() {
         const uid = user!.uid;
 
         const classdata: Classroom = {
-            admin: [],
+            admins: {emails: [], details: {}},
             classid: "",
             classname: data.classname,
             classidentifier: data.classidentifier,
@@ -40,8 +40,6 @@ export default function CreateClass() {
                 email: user!.email!,
                 name: user!.displayName!
             },
-            students: {},
-            polls: {}
         }
 
         try {

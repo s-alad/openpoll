@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import Poll, { getCorrectPollType } from '@/models/poll';
+import Poll, { getCorrectPollType } from '@openpoll/packages/models/poll';
 import { doc, collection, getDocs, getDoc, query, where } from 'firebase/firestore';
-import { db, auth } from '@/firebase/firebaseconfig';
+import { db, auth } from '@openpoll/packages/config/firebaseconfig';
 import { useAuth } from '@/context/authcontext';
 import s from "./gradebook.module.scss";
 import { onAuthStateChanged } from 'firebase/auth';
-import MCPoll from '@/models/poll/mc';
-import ShortPoll from '@/models/poll/short';
-import AttendancePoll from '@/models/poll/attendance';
-import OrderPoll from '@/models/poll/ordering';
-import MatchPoll from '@/models/poll/matching';
+import MCPoll from '@openpoll/packages/models/poll/mc';
+import ShortPoll from '@openpoll/packages/models/poll/short';
+import AttendancePoll from '@openpoll/packages/models/poll/attendance';
+import OrderPoll from '@openpoll/packages/models/poll/ordering';
+import MatchPoll from '@openpoll/packages/models/poll/matching';
 
 interface Student {
     name: string;

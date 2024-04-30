@@ -1,32 +1,31 @@
-import { _Poll } from "../poll";
+import Poll from "../poll";
 
-type responses = {
-    attended: {
-        [userid: string]: boolean;
-    },
-    absent: {
-        [userid: string]: boolean;
+type AttendanceResponses = {
+    [userid: string]: {
+        email: string;
+        attended: boolean;
     }
 }
 
-class AttendancePoll extends _Poll {
+export default class AttendancePoll extends Poll {
     date: any;
-    responses: responses
+    responses: AttendanceResponses
 
     constructor(
         active: boolean,
-        classcode: string,
         classid: string,
         createdat: any,
-        endedat: any,
         creator: string,
         done: boolean,
         question: string,
         date: any,
-        responses: responses
+        responses: AttendanceResponses,
+        endedat?: any,
     ) {
-        super("attendance", active, classcode, classid, createdat, endedat, creator, done, question);
+        super("attendance", active, classid, createdat, creator, done, question, endedat);
         this.date = date;
         this.responses = responses;
     }
 }
+
+export type { AttendanceResponses }

@@ -1,8 +1,8 @@
 import { BarChart } from '@mui/x-charts';
 import { useEffect, useState } from 'react';
-import Poll from '@/models/poll';
-import MCPoll, { MCResponses } from '@/models/poll/mc';
-import ShortPoll from '@/models/poll/short';
+import Poll from '@openpoll/packages/models/poll';
+import MCPoll, { MCResponses } from '@openpoll/packages/models/poll/mc';
+import ShortPoll from '@openpoll/packages/models/poll/short';
 
 interface PollChartProps {
     poll?: MCPoll;

@@ -1,21 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import s from "./create-ordering-poll.module.scss";
 import Input from "@/ui/input/input";
 import { FieldArrayWithId, UseFormRegister, useFieldArray, useForm } from "react-hook-form";
-import { CreateOrderingPollFormData } from "@/validation/form";
+import { CreateOrderingPollFormData } from "@openpoll/packages/validation/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createOrderingPollSchema } from "@/validation/schema";
+import { createOrderingPollSchema } from "@openpoll/packages/validation/schema";
 import Button from "@/ui/button/button";
 import { useAuth } from "@/context/authcontext";
 import { addDoc, collection, doc } from "firebase/firestore";
 import { ref, set } from "firebase/database";
-import { db, rdb } from "@/firebase/firebaseconfig";
+import { db, rdb } from "@openpoll/packages/config/firebaseconfig";
 import { useRouter } from "next/router";
 import Spacer from "@/components/spacer/spacer";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGripVertical, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import OrderPoll from "@openpoll/packages/models/poll/ordering";
 
 
 function SortableItem({ register, index, error, field, end, callback }:
@@ -83,22 +84,23 @@ export default function CreateOrderingPoll() {
         register,
         handleSubmit,
         setValue,
+        getValues,
         control,
         formState: { errors },
         setError,
+        watch
     } = useForm<CreateOrderingPollFormData>(
         {
             resolver: zodResolver(createOrderingPollSchema),
             defaultValues: {
                 question: "",
                 options: [{ letter: "A", option: "A" }, { letter: "B", option: "B" }],
-                answerkey: {
-                    "0": { letter: "A", option: "A" },
-                    "1": { letter: "B", option: "B" },
-                },
+                answerkey: {}
             },
         }
     );
+
+    const watchedOptions = watch("options");
 
     const { fields, append, remove, move } = useFieldArray({
         control,
@@ -112,10 +114,68 @@ export default function CreateOrderingPoll() {
         })
     );
 
+    type AnswerType = {
+        [key: string]: {
+            letter: string;
+            option: string;
+        };
+    };
+
     const onSubmit = async (data: CreateOrderingPollFormData) => {
         console.log("SUCCESS", data);
 
+
+        const updatedAnswer: AnswerType = fields.reduce((acc: AnswerType, field, index) => {
+            const currentOptionValue = getValues(`options.${index}.option`);
+            acc[index] = { letter: field.letter, option: currentOptionValue };
+            return acc;
+        }, {});
+
+        console.log(updatedAnswer);
+
+        const uid = user!.uid;
+
+        const polldata: OrderPoll = {
+            type: "order",
+			classid: classid,
+			question: data.question,
+			options: data.options,
+			answerkey: updatedAnswer,
+			createdat: new Date(),
+			creator: uid,
+			responses: {},
+			active: false,
+			done: false
+		}
+		console.log(polldata);
+
+        const classref = doc(db, "classes", classid as string);
+		const pollref = collection(classref, "polls");
+
+		try {
+			const docRef = await addDoc(pollref, polldata);
+			const pollid = docRef.id;
+			const rdbref = ref(rdb, `classes/${classid}/polls/${pollid}`);
+			await set(rdbref, polldata)
+
+			router.back();
+		} catch (e) {
+			console.error("Error adding document: ", e);
+		}
     }
+
+    useEffect(() => {
+    
+        const updatedAnswer: AnswerType = fields.reduce((acc: AnswerType, field, index) => {
+            const currentOptionValue = getValues(`options.${index}.option`);
+            acc[index] = { letter: field.letter, option: currentOptionValue };
+            return acc;
+        }, {});
+
+        console.log(updatedAnswer);
+    
+        setValue('answerkey', updatedAnswer, { shouldValidate: true });
+    }, [fields, getValues, setValue]);
 
     return (
         <form className={s.form} onSubmit={handleSubmit(onSubmit)}>
@@ -137,20 +197,6 @@ export default function CreateOrderingPoll() {
                         move(oldIndex, newIndex);
 
                         console.log("fields", fields);
-
-                        type AnswerType = {
-                            [key: string]: {
-                                letter: string;
-                                option: string;
-                            };
-                        }
-
-                        const updatedAnswer: AnswerType = fields.reduce((acc: AnswerType, field, index) => {
-                            acc[index.toString()] = { letter: field.letter, option: field.option };
-                            return acc;
-                        }, {});
-
-                        setValue('answerkey', updatedAnswer);
                     }
                 }}>
                     <SortableContext items={fields} strategy={verticalListSortingStrategy}>

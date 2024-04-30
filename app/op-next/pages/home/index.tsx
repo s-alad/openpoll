@@ -3,10 +3,10 @@ import s from "./home.module.scss"
 import { faUser, faHome, faPlus, faRightToBracket } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRouter } from "next/router";
-import { db, auth } from "../../firebase/firebaseconfig";
+import { db, auth } from '@openpoll/packages/config/firebaseconfig';
 import { collection, getDocs, where, query, addDoc, setDoc, doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
-import Classroom, { Class } from "@/models/class";
+import Classroom, { Class } from "@openpoll/packages/models/class";
 import Loader from "@/components/loader/loader";
 import { useAuth } from "@/context/authcontext";
 import Unauthorized from "@/components/unauthorized/unauthorized";
@@ -79,7 +79,7 @@ export default function Home() {
             const email = user!.email!;
 
             const ownerQuery = query(collection(db, "classes"), where("owner.uid", "==", uid));
-            const adminQuery = query(collection(db, "classes"), where("admin", "array-contains", email));
+            const adminQuery = query(collection(db, "classes"), where("admins.emails", "array-contains", email));
 
             const [ownerSnapshot, adminSnapshot] = await Promise.all([
                 getDocs(ownerQuery),

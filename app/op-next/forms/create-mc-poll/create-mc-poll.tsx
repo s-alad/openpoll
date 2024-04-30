@@ -2,9 +2,9 @@ import React from "react";
 import s from "./create-mc-poll.module.scss";
 import Input from "@/ui/input/input";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { CreateMultipleChoicePollFormData } from "@/validation/form";
+import { CreateMultipleChoicePollFormData } from "@openpoll/packages/validation/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createMultipleChoicePollData } from "@/validation/schema";
+import { createMultipleChoicePollData } from "@openpoll/packages/validation/schema";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Button from "@/ui/button/button";
@@ -12,10 +12,10 @@ import { Box, Chip, FormControl, MenuItem, OutlinedInput, Select } from "@mui/ma
 import { useAuth } from "@/context/authcontext";
 import { deleteDoc, addDoc, collection, doc } from "firebase/firestore";
 import { remove, ref, set } from "firebase/database";
-import { db, rdb } from "@/firebase/firebaseconfig";
+import { db, rdb } from "@openpoll/packages/config/firebaseconfig";
 import { useRouter } from "next/router";
 import Spacer from "@/components/spacer/spacer";
-import MCPoll, { MCAnswerKey, MCOptions } from "@/models/poll/mc";
+import MCPoll, { MCAnswerKey, MCOptions } from "@openpoll/packages/models/poll/mc";
 
 
 type CreateMultipleChoicePollProps = {

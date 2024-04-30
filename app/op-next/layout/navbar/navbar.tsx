@@ -16,6 +16,7 @@ export default function Navbar() {
         "/dashboard/[^/]+/?$": "/home",
         "/dashboard/([^/]+)/analytics": "/dashboard/$1",
         "/dashboard/([^/]+)/gradebook": "/dashboard/$1",
+        "/dashboard/([^/]+)/settings": "/dashboard/$1",
         "/class/[^/]+/?$": "/home",
         "/class/([^/]+)/grades/([^/]+)": "/class/$1/grades",
         "/class/([^/]+)/grades": "/class/$1",
@@ -54,6 +55,7 @@ export default function Navbar() {
             { pattern: /^\/dashboard\/([^/]+)$/, displayFunc: (match) => `Dashboard / ${ss(match[1])} / Polls` },
             { pattern: /^\/dashboard\/([^/]+)\/analytics$/, displayFunc: (match) => `Dashboard / ${ss(match[1])} / Analytics` },
             { pattern: /^\/dashboard\/([^/]+)\/gradebook$/, displayFunc: (match) => `Dashboard / ${ss(match[1])} / Gradebook` },
+            { pattern: /^\/dashboard\/([^/]+)\/settings$/, displayFunc: (match) => `Dashboard / ${ss(match[1])} / Settings` },
             { pattern: /^\/live\/([^/]+)\/([^/]+)$/, displayFunc: (match) => `Dashboard / ${ss(match[1])} / Live / ${ss(match[2])}`},
             { pattern: /^\/profile$/, display: "Profile /" },
         ];
@@ -98,10 +100,7 @@ export default function Navbar() {
                 </div>
             </div>
 
-            <div className={s.right} onClick={() => {
-                /* logout(); */
-                router.push("/profile");
-            }}>
+            <div className={s.right} onClick={() => { router.push("/profile"); }}>
                 <div className={s.person}>
                     <FontAwesomeIcon icon={faUserCircle} size='2x'/>
                 </div>

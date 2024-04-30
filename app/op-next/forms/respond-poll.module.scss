@@ -1,0 +1,75 @@
+.poll {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    color: black;
+    border-radius: 12px;
+    padding: 20px 40px;
+    gap: 20px;
+
+        h1 {
+            margin: 0;
+        }
+
+        .question {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .options {
+            .option {
+                display: flex;
+                align-items: center;
+                
+            }
+        }
+
+        .attendanceinput {
+            input {
+                width: 100%;
+                border: 2px solid #4036ee;
+                border-radius: 4px;
+                width: min-content;
+                padding: 10px;
+            }
+        }
+
+        .shortinput {
+            width: 100%;
+                border: 2px solid #4036ee;
+                border-radius: 4px;
+                
+                padding: 10px;
+        }
+
+        .orderable {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            width: 100%;
+    
+            .letter,.drag {
+                height: 40px;
+                width: 40px;
+                min-width: 40px;
+                border-radius: 4px;
+                margin-right: 20px;
+                font-weight: 600;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                color: white;
+                background-color: #4036ee;
+            }
+
+            .drag {
+                color: black;
+                background-color: transparent;
+                cursor: pointer;
+                margin-right: 0;
+                margin-left: 20px;
+            }
+        }
+
+}
