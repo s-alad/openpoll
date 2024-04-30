@@ -12,7 +12,7 @@ const openSansBold = Open_Sans({ weight: "700", style: 'normal', subsets: ['lati
 export default function Index() {
 
 	let router = useRouter()
-	const { user, googlesignin, logout } = useAuth();
+	const { user, message, googlesignin, logout, githubsignin } = useAuth();
 
 	return (
 		<>
@@ -34,11 +34,28 @@ export default function Index() {
 					<h1 className={openSansBold.className}>Log in to Open Poll</h1>
 					<p className={openSansNormal.className}>Welcome back! Please log in below</p>
 				</div>
-				<button className={s.loginButton}
-					onClick={() => { googlesignin(); }}
-				>
-					Continue with Google
-				</button>
+				<div className={s.login}>
+					<div className={s.provider}>
+						<img src="/googlelogo.webp" alt="Google Logo" />
+						<button className={s.loginButton}
+							onClick={() => { googlesignin(); }}
+						>
+							Continue with Google
+						</button>
+
+					</div>
+					<div className={s.provider}>
+						<img src="/githublogo.png" alt="Github Logo" />
+						<button className={s.loginButton}
+							onClick={() => { githubsignin(); }}
+						>
+							Continue with Github
+						</button>
+					</div>
+				</div>
+				{
+					message && <div className={s.message}>{message}</div>
+				}
 			</div>
 		</>
 	);
