@@ -8,9 +8,10 @@
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
-  "devDependencies": {},
   "keywords": [],
   "dependencies": {
-    "firebase": "^10.11.1"
+    "firebase": "^10.11.1",
+    "react-hook-form": "^7.51.3",
+    "zod": "^3.23.5"
   }
 }

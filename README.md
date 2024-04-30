@@ -31,12 +31,25 @@
 --- 
 ### openpoll directory structure
 - /app
+    - /op-expo
     - /op-next
-    - /op-next
-- /functions
+        - /components
+        - /context
+        - /forms
+        - /layout
+        - /pages
+        - /public
+        - /redirect
+        - /styles
+        - /ui
+        .env
+- /firebase
+    - /functions
+        - /src
+        - /lib
 - /packages
     - /models
     - /utils
     - /config
-
+    - /validation
 ---
