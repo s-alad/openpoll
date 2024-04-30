@@ -53,5 +53,17 @@
         font-size: 1.2em;
         color: #ff0000;
     }
+
+    .contribute {
+        flex: 1;
+        align-items: end;
+        display: flex;
+        padding-bottom: 5em;
+        gap: 4px;
+
+        a {
+            color: black;
+        }
+    }
 }
 
