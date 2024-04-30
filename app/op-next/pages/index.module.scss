@@ -2,52 +2,56 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100vh;
-    text-align: center;
-    /* Ensures text is centered within its container */
-    padding: 0 20px;
-}
-
-.logo {
-    margin-bottom: 0;
-    /* Space below the logo */
-}
-
-.text {
-    color: black;
-}
-
-.text h1 {
-    font-size: 24px;
-    /* Size of the main heading */
-    margin-bottom: 8px;
-    /* Space below the main heading */
-}
-
-.text p {
-    font-size: 16px;
-    /* Size of the paragraph */
-    margin-bottom: 24px;
-    /* Space below the paragraph */
-    font-family: 'Open Sans', sans-serif;
-}
-
-.loginDiv {
-    width: 100%;
+    /* justify-content: center; */
     height: 100%;
-    background: #4036EE
+    text-align: center;
+    padding: 0 20px;
+    gap: 10px;
+
+    .text {
+        h1 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+        p {
+            margin: 0;
+            font-size: 1.2em;
+        }
+    }
+    .login {
+        margin-top: 30px;
+        display: flex; flex-direction: column; gap: 10px;
+
+        .provider {
+            height: 50px;
+            width: 260px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            background-color: #4034eb;
+            padding: 10px 20px;
+            img {
+                height: 30px;
+                width: 30px;
+            }
+
+            button {
+                font-size: 1em;
+                font-weight: bold;
+                border: none;
+                border-radius: 2px;
+                background-color: #4034eb;
+                color: white;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+        }
+    }
+
+    .message {
+        margin-top: 30px;
+        font-size: 1.2em;
+        color: #ff0000;
+    }
 }
 
-.loginButton {
-    background-color: #4036EE;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    font-size: 16px;
-    cursor: pointer;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.25);
-    /* Optional: shadow for the button */
-    transition: background-color 0.2s;
-    /* Smooth background color change on hover */
-}
