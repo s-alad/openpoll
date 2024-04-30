@@ -27,3 +27,16 @@
 3. follow any steps in *running an instance of openpoll* to set up the firebase project
 4. `/openpoll $ yarn install`
 5. `/openpoll $ yarn dev`
+
+--- 
+### openpoll directory structure
+- /app
+    - /op-next
+    - /op-next
+- /functions
+- /packages
+    - /models
+    - /utils
+    - /config
+
+---
