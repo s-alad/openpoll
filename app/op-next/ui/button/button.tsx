@@ -9,11 +9,12 @@ interface ButtonProps {
     type?: "submit" | "button";
     loading?: boolean;
     success?: boolean;
+    disabled?: boolean;
 }
 
-export default function Button({ onClick, text, type, loading, success }: ButtonProps) {
+export default function Button({ onClick, text, type, loading, success, disabled }: ButtonProps) {
     return (
-        <button className={s.button} onClick={onClick} type={type}>
+        <button className={`${s.button} ${disabled && s.disabled}`} onClick={onClick} type={type} disabled={disabled}>
             {success ? <FaCheck /> : (loading ? <Spinner /> : text)}
         </button>
     )

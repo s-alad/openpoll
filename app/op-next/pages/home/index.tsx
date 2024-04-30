@@ -79,7 +79,7 @@ export default function Home() {
             const email = user!.email!;
 
             const ownerQuery = query(collection(db, "classes"), where("owner.uid", "==", uid));
-            const adminQuery = query(collection(db, "classes"), where("admin", "array-contains", email));
+            const adminQuery = query(collection(db, "classes"), where("admins.emails", "array-contains", email));
 
             const [ownerSnapshot, adminSnapshot] = await Promise.all([
                 getDocs(ownerQuery),

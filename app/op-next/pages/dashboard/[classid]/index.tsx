@@ -18,7 +18,6 @@ import { useAuth } from '@/context/authcontext';
 
 export default function Dashboard() {
 
-    const [isaddAdmin, setisaddAdmin] = useState<boolean>(false);
     const [loading, setLoading] = useState(false);
     const { user, loading: authloading } = useAuth();
     // get the class id from the url
@@ -26,71 +25,8 @@ export default function Dashboard() {
     const classid = router.query.classid;
     const [classname, setClassname] = useState<string>("");
 
-    const [taId, settaId] = useState<string>("");
-    const [adminId, setadminId] = useState<string>("");
-    const [isOwner, setIsOwner] = useState<boolean>(false);
     const [openpolls, setOpenpolls] = useState<PollAndId[]>([]);
     const [selectedType, setSelectedType] = useState<TPoll>("mc");
-
-    async function handleSubmit(event: any) {
-        event.preventDefault();
-
-        try {
-            addAdmin(adminId);
-            setadminId("");
-        } catch (e) {
-            console.error("Error adding TA: ", e);
-        }
-
-
-    }
-
-    async function addAdmin(userEmail: string) {
-        setLoading(true);
-        const classRef = doc(db, "classes", classid as string);
-        const userRef = doc(db, "users", userEmail);
-        
-        try {
-            const userSnap = await getDoc(userRef);
-            if (userSnap.exists()) {
-                console.log("Document data:", userSnap.data()); // Handle the data as needed
-                const userData = userSnap.data();
-                console.log(userData);  
-                const userId = userSnap.id;
-
-                await updateDoc(classRef, {
-                    admin: arrayUnion(userId) // add the user email to the admin array
-                });      
-            } else {
-                console.log("No such document!");            
-            }
-
-        } catch (e) {
-            console.error("Error adding TA: ", e);
-        }
-
-        setLoading(false);
-    }   
-
-    async function checkOwner() {
-        const classRef = doc(db, "classes", classid as string);
-        const user = auth.currentUser;
-        if (!user) return;
-        const uid = user!.uid;
-        console.log(uid);
-
-        const classSnap = await getDoc(classRef);
-        if (classSnap.exists()) {
-            const classData = classSnap.data();
-            if (classData.owner.uid === uid) {
-                console.log("Owner");
-                setIsOwner(true);
-            } else {
-                console.log("Not Owner");
-                setIsOwner(false);
-            }
-        }
-    }
 
     async function getpolls() {
         // collection classes - document class id - collection polls
@@ -122,7 +58,6 @@ export default function Dashboard() {
     async function main() {
         setLoading(true);
         await getpolls();
-        await checkOwner();
         const classname = await getClassnameFromId(classid as string);
         setClassname(classname);
         setLoading(false);
@@ -150,28 +85,6 @@ export default function Dashboard() {
                                 <div className={s.date}>
                                     {new Date().toLocaleDateString()}
                                 </div>
-                                {isOwner && (
-                                    isaddAdmin ? (
-                                        <div className={s.addAdmin}>
-                                            <form onSubmit={handleSubmit}>
-                                                <input 
-                                                    type="text" 
-                                                    value={adminId}
-                                                    onChange={(e) => setadminId(e.target.value)}
-                                                    placeholder="Enter Admin Email"
-                                                    required
-                                                    />
-                                                    <button type="submit">
-                                                        <FontAwesomeIcon icon={faRightToBracket} /> Add Admin
-                                                    </button>
-                                            </form>
-                                        </div>
-                                    ) : (
-                                        <div className={s.addAdmin} onClick={() => setisaddAdmin(true)}>
-                                            Add Admin
-                                        </div>
-                                    )                          
-                                )}
                             </div>
 
                             <Link

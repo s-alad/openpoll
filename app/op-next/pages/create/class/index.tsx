@@ -30,7 +30,7 @@ export default function CreateClass() {
         const uid = user!.uid;
 
         const classdata: Classroom = {
-            admin: [],
+            admins: {emails: [], details: {}},
             classid: "",
             classname: data.classname,
             classidentifier: data.classidentifier,

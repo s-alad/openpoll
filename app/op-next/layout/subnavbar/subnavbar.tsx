@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import s from "./subnavbar.module.scss";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
+import { db } from "@/firebase/firebaseconfig";
+import { useAuth } from "@/context/authcontext";
 
 export default function SubNavbar() {
 
     const router = useRouter();
+    const { user } = useAuth();
 
     let showdashboard = router.pathname.startsWith("/dashboard")
     let showclass = router.pathname.startsWith("/class")
@@ -15,7 +19,7 @@ export default function SubNavbar() {
     const classid = regexMatch ? regexMatch[2] : null;
     console.log(prefix, classid);
 
-    const dashboardpathitems = [
+    const [dashboardpathitems, setDashboardpathitems] = useState([
         {
             path: `/dashboard/${classid}`,
             name: "Polls",
@@ -30,13 +34,32 @@ export default function SubNavbar() {
             path: `/dashboard/${classid}/analytics`,
             name: "Analytics",
             activeby: ["/dashboard/[classid]/analytics"]
-        },
-        {
-            path: `/dashboard/${classid}/settings`,
-            name: "Settings",
-            activeby: ["/dashboard/[classid]/settings"]
         }
-    ]
+    ])
+
+    useEffect(() => {
+        //check if the current uid is the owner of the classid, if so then show the settings tab
+        if (!classid || !user) return;
+
+        const classref = doc(db, "classes", classid);
+        const data = getDoc(classref).then((doc) => {
+            if (doc.exists()) {
+                const classdata = doc.data();
+                if (classdata.owner.uid === user.uid) {
+                    setDashboardpathitems((prev) => {
+                        return [
+                            ...prev,
+                            {
+                                path: `/dashboard/${classid}/settings`,
+                                name: "Settings",
+                                activeby: ["/dashboard/[classid]/settings"]
+                            }
+                        ]
+                    })
+                }
+            }
+        })
+    }, [])
 
     const classpathitems = [
         {
