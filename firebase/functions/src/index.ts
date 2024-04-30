@@ -17,7 +17,7 @@ export const onAccountCreated = functions.auth.user().onCreate(async (user) => {
         await admin.firestore().collection("users").doc(email || uid).set({
             email,
             uid,
-            name: displayName,
+            name: displayName || "",
             timestamp: admin.firestore.FieldValue.serverTimestamp(),
         });
 

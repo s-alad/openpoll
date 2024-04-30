@@ -4,6 +4,8 @@ import { Open_Sans } from 'next/font/google'
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { useAuth } from '@/context/authcontext';
+import Link from 'next/link';
+import { FaGithub } from "react-icons/fa";
 
 const openSansNormal = Open_Sans({ weight: "400", style: 'normal', subsets: ['latin'] });
 const openSansBold = Open_Sans({ weight: "700", style: 'normal', subsets: ['latin'] });
@@ -56,6 +58,10 @@ export default function Index() {
 				{
 					message && <div className={s.message}>{message}</div>
 				}
+				<div className={s.contribute}>
+					<div>Contribute to </div>
+					<Link href="https://github.com/s-alad/openpoll">OpenPoll <FaGithub /></Link>
+				</div>
 			</div>
 		</>
 	);
