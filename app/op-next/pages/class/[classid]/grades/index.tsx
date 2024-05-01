@@ -287,7 +287,7 @@ export default function ClassGrades() {
 
 											if (pollAndId.poll.type === "mc") {
 												const mcPoll = pollAndId.poll as MCPoll;
-												correct = mcPoll.responses[uid].correct;
+												correct = mcPoll.responses[uid]?.correct ?? false;
 												answerkey = mcPoll.answerkey.join(", ");
 											} else if (pollAndId.poll.type === "short") {
 												const shortPoll = pollAndId.poll as ShortPoll;
