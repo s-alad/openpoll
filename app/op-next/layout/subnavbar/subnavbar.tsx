@@ -20,23 +20,12 @@ export default function SubNavbar() {
     console.log("SUBNAVBAR, prefix, classid")
     console.log(prefix, classid);
 
-    const [dashboardpathitems, setDashboardpathitems] = useState([
-        {
-            path: `/dashboard/${classid}`,
-            name: "Polls",
-            activeby: ["/dashboard/[classid]"]
-        },
-        {
-            path: `/dashboard/${classid}/gradebook`,
-            name: "Gradebook",
-            activeby: ["/dashboard/[classid]/gradebook"]
-        },
-        {
-            path: `/dashboard/${classid}/analytics`,
-            name: "Analytics",
-            activeby: ["/dashboard/[classid]/analytics"]
-        }
-    ])
+    interface PathItem {
+        path: string;
+        name: string;
+        activeby: string[];
+    }
+    const [dashboardpathitems, setDashboardpathitems] = useState<PathItem[]>([]);
 
     useEffect(() => {
         //check if the current uid is the owner of the classid, if so then show the settings tab
@@ -47,16 +36,45 @@ export default function SubNavbar() {
             if (doc.exists()) {
                 const classdata = doc.data();
                 if (classdata.owner.uid === user.uid) {
-                    setDashboardpathitems((prev) => {
-                        return [
-                            ...prev,
-                            {
-                                path: `/dashboard/${classid}/settings`,
-                                name: "Settings",
-                                activeby: ["/dashboard/[classid]/settings"]
-                            }
-                        ]
-                    })
+                    setDashboardpathitems([
+                        {
+                            path: `/dashboard/${classid}`,
+                            name: "Polls",
+                            activeby: ["/dashboard/[classid]"]
+                        },
+                        {
+                            path: `/dashboard/${classid}/gradebook`,
+                            name: "Gradebook",
+                            activeby: ["/dashboard/[classid]/gradebook"]
+                        },
+                        {
+                            path: `/dashboard/${classid}/analytics`,
+                            name: "Analytics",
+                            activeby: ["/dashboard/[classid]/analytics"]
+                        },
+                        {
+                            path: `/dashboard/${classid}/settings`,
+                            name: "Settings",
+                            activeby: ["/dashboard/[classid]/settings"]
+                        }])
+                } else {
+                    setDashboardpathitems([
+                        {
+                            path: `/dashboard/${classid}`,
+                            name: "Polls",
+                            activeby: ["/dashboard/[classid]"]
+                        },
+                        {
+                            path: `/dashboard/${classid}/gradebook`,
+                            name: "Gradebook",
+                            activeby: ["/dashboard/[classid]/gradebook"]
+                        },
+                        {
+                            path: `/dashboard/${classid}/analytics`,
+                            name: "Analytics",
+                            activeby: ["/dashboard/[classid]/analytics"]
+                        }
+                    ])
                 }
             }
         })
