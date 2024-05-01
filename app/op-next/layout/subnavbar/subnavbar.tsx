@@ -17,6 +17,7 @@ export default function SubNavbar() {
     const regexMatch = router.asPath.match(/\/(dashboard|class)\/([^\/]+)(\/|$)/);
     const prefix = regexMatch ? regexMatch[1] : null; // 'dashboard' or 'class'
     const classid = regexMatch ? regexMatch[2] : null;
+    console.log("SUBNAVBAR, prefix, classid")
     console.log(prefix, classid);
 
     const [dashboardpathitems, setDashboardpathitems] = useState([
@@ -59,7 +60,7 @@ export default function SubNavbar() {
                 }
             }
         })
-    }, [])
+    }, [classid, user])
 
     const classpathitems = [
         {

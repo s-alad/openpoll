@@ -17,12 +17,7 @@ type OrderResponses = {
     [userid: string]: {
         correct: boolean;
         email: string;
-        response: {
-            [index: number]: {
-                letter: string;
-                option: string;
-            };
-        }
+        response: OrderAnswerKey;
     }
 }
 
