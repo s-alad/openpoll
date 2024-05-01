@@ -61,15 +61,15 @@ export default function TopSection({totalGrade, attendedCount, studentAttendance
                   <div className={s.scoreCategory}>
                     <span>Correctness</span>
                     <span className={s.scoreValue}>
-                      {numCorrect}/{totalQuestions}
+                    {totalQuestions > 0 ? `${numCorrect}/${totalQuestions}` : `0/100`} 
                     </span>
                   </div>
                   <div className={s.progressBarContainer}>
                     <div
                       className={s.progressBar}
                       style={{
-                        width: `${(numCorrect / totalQuestions) * 100}%`,
-                        backgroundColor: "purple",
+                        width: totalQuestions > 0 ? `${(numCorrect / totalQuestions) * 100}%` : "0%",
+                        backgroundColor: "purple",  
                       }}
                     ></div>
                   </div>
