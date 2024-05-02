@@ -1,5 +1,6 @@
 .analytics {
     width: 100%;
+    text-align: center;
 
     .analyticsHeader {
         display: flex;
@@ -16,7 +17,7 @@
         flex-direction: column;
         width: 100%;
         align-items: center;
-        margin-top: 2vh;
+        margin: auto;
 
         .pollQuestion {
             font-size: 30px;
