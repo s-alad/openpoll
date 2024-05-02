@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createOrderingPollSchema } from "@openpoll/packages/validation/schema";
 import Button from "@/ui/button/button";
 import { useAuth } from "@/context/authcontext";
-import { addDoc, collection, doc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc } from "firebase/firestore";
 import { ref, set } from "firebase/database";
 import { db, rdb } from "@openpoll/packages/config/firebaseconfig";
 import { useRouter } from "next/router";
@@ -74,7 +74,12 @@ function SortableItem({ register, index, error, field, end, callback }:
     );
 }
 
-export default function CreateOrderingPoll() {
+type CreateOrderingPollProps = {
+    pollData?: OrderPoll
+    pollid?: string
+}
+
+export default function CreateOrderingPoll({ pollData, pollid }: CreateOrderingPollProps) {
 
     const { user } = useAuth();
     const router = useRouter();
@@ -93,9 +98,9 @@ export default function CreateOrderingPoll() {
         {
             resolver: zodResolver(createOrderingPollSchema),
             defaultValues: {
-                question: "",
-                options: [{ letter: "A", option: "A" }, { letter: "B", option: "B" }],
-                answerkey: {}
+                question: pollData?.question ?? "",
+                options: pollData?.options ?? [{ letter: "A", option: "A" }, { letter: "B", option: "B" }],
+                answerkey: pollData?.answerkey ?? {}
             },
         }
     );
@@ -122,6 +127,10 @@ export default function CreateOrderingPoll() {
     };
 
     const onSubmit = async (data: CreateOrderingPollFormData) => {
+        if (pollid) {
+            await deleteOldPoll(pollid, classid);
+        }
+
         console.log("SUCCESS", data);
 
 
@@ -176,6 +185,20 @@ export default function CreateOrderingPoll() {
     
         setValue('answerkey', updatedAnswer, { shouldValidate: true });
     }, [fields, getValues, setValue]);
+
+    const deleteOldPoll = async (pollId: string, classId: string) => {
+        // Reference to the Firestore document
+        const pollRef = doc(db, `classes/${classId}/polls`, pollId);
+        // Reference to the Realtime Database path    
+        try {
+            // Delete from Firestore
+            await deleteDoc(pollRef);
+            console.log("Poll deleted from Firestore successfully");
+    
+        } catch (error) {
+            console.error("Error deleting poll:", error);
+        }
+    };
 
     return (
         <form className={s.form} onSubmit={handleSubmit(onSubmit)}>
