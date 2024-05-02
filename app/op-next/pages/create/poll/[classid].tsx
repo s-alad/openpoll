@@ -36,7 +36,7 @@ export default function CreatePoll() {
 								<div
 									key={type}
 									onClick={() => setpolltype(type as TPoll)}
-									className={polltype === type ? s.selected : ""}
+									className={`${polltype === type ? s.selected : ""} ${s.selectee}`}
 								>
 									{convertPollTypeToText(type as TPoll)}
 								</div>
