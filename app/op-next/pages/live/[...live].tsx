@@ -17,6 +17,7 @@ import LiveMcResponses from "@/components/live-responses/mc-responses";
 import { FaCheck } from "react-icons/fa";
 import LiveShortResponses from "@/components/live-responses/short-responses";
 import Spinner from "@/components/spinner/spinner";
+import TrueFalsePoll from "@openpoll/packages/models/poll/truefalse";
 
 export default function Live() {
 
@@ -26,7 +27,7 @@ export default function Live() {
     const classId = live ? live[0] : "";
     const pollId = live ? live[1] : "";
 
-    const [livepoll, setLivepoll] = useState<MCPoll | ShortPoll | OrderPoll | AttendancePoll>();
+    const [livepoll, setLivepoll] = useState<MCPoll | ShortPoll | OrderPoll | AttendancePoll | TrueFalsePoll>();
 
     const [localpollstatus, setLocalPollStatus] = useState<boolean>(false);
     const [endedstatus, setEndedStatus] = useState<boolean>(false);
@@ -36,7 +37,7 @@ export default function Live() {
 
     const isshortwithnokey = livepoll?.type === "short" && !(livepoll as ShortPoll).answerkey;
 
-    const [responses, setResponses] = useState<(MCResponses | ShortResponses | OrderResponses | AttendanceResponses | null)>();
+    const [responses, setResponses] = useState<(MCResponses | ShortResponses | OrderResponses | AttendanceResponses | TrueFalsePoll | null)>();
 
 
     // gets the poll from the realtime database on page load
@@ -70,6 +71,8 @@ export default function Live() {
                 case "attendance":
                     setLivepoll(getCorrectPollType(lp) as AttendancePoll);
                     break;
+                case "tf":
+                    setLivepoll(getCorrectPollType(lp) as TrueFalsePoll);
                 default:
                     break;
             }
@@ -106,6 +109,8 @@ export default function Live() {
                         case "attendance":
                             setResponses(responses as AttendanceResponses);
                             break;
+                        case "tf":
+                            setResponses(responses as TrueFalsePoll);
                         default:
                             break;
                     }
@@ -232,6 +237,17 @@ export default function Live() {
                                         )
                                     })
                                 }
+                            </div>
+                        }
+                        {
+                            livepoll.type === "tf" &&
+                            <div className={s.order}>
+                                <div className={s.option}>
+                                    <div className={s.letter}>True</div>
+                                </div>
+                                <div className={s.option}>
+                                    <div className={s.letter}>False</div>
+                                </div>
                             </div>
                         }
                     </div>

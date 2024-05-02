@@ -13,8 +13,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { createAttendanceSchema } from '@openpoll/packages/validation/schema';
 import Button from '@/ui/button/button';
 import Spacer from '@/components/spacer/spacer';
-import { TPoll, convertPollTypeToText } from '@openpoll/packages/models/poll';
+import { TLPoll, TPoll, convertPollTypeToText } from '@openpoll/packages/models/poll';
 import CreateAttendancePoll from '@/forms/create-attendance-poll/create-attendance-poll';
+import CreateTrueFalsePoll from '@/forms/create-true-false-poll/create-true-false-poll';
 
 export default function CreatePoll() {
 
@@ -31,7 +32,7 @@ export default function CreatePoll() {
 
 					<div className={s.selector}>
 						{
-							["mc", "short", "attendance", "order", "match"].map(type => (
+							TLPoll.map(type => (
 								<div
 									key={type}
 									onClick={() => setpolltype(type as TPoll)}
@@ -53,6 +54,9 @@ export default function CreatePoll() {
 					}
 					{
 						polltype === "attendance" && <CreateAttendancePoll />
+					}
+					{
+						polltype === "tf" && <CreateTrueFalsePoll />
 					}
 				</div>
 			</main>
