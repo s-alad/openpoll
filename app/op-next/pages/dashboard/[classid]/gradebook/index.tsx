@@ -11,6 +11,7 @@ import ShortPoll from '@openpoll/packages/models/poll/short';
 import AttendancePoll from '@openpoll/packages/models/poll/attendance';
 import OrderPoll from '@openpoll/packages/models/poll/ordering';
 import MatchPoll from '@openpoll/packages/models/poll/matching';
+import { getClassnameFromId } from '@openpoll/packages/models/class';
 
 interface Student {
     name: string;
@@ -32,6 +33,7 @@ export default function gradebook() {
     const [totalAttendence, setTotalAttendnence] = useState<number>(0);
     const [Sstudents, setStudents] = useState<StudentsMap>({});
     const [Spolls, setPolls] = useState<(MCPoll | ShortPoll | AttendancePoll | OrderPoll | MatchPoll)[]>([]);
+    const [className, setClassName] = useState<string>("")
 
     // Grab all students and initialize their grades to 0.0
     async function process() {
@@ -149,7 +151,9 @@ export default function gradebook() {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user && classid) {
-                await process()
+                await process();
+                const className = getClassnameFromId(classid as string);
+                className.then((name) => setClassName(name));
             }
         });
 
@@ -159,7 +163,7 @@ export default function gradebook() {
     return (
         <div className={s.gradebook}>
             <div>
-                <h1>Gradebook for Class: {classid}</h1>
+                <h1>Gradebook for Class: {className}</h1>
                 <button onClick={downloadCSV} className={s.downloadButton}>Download CSV</button>
                 <table className={s.gradebookTable}>
                     <thead>
