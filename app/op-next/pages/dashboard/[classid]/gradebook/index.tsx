@@ -35,6 +35,7 @@ export default function gradebook() {
     const [Spolls, setPolls] = useState<xPoll[]>([]);
     const [className, setClassName] = useState<string>("")
 
+
     // Grab all students and initialize their grades to 0.0
     async function process() {
 
