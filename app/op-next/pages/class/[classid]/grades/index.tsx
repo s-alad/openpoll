@@ -221,12 +221,7 @@ export default function ClassGrades() {
 			{user ? (
 				<>
 					<div className={s.gradebookContainer}>
-						<h1
-							style={{
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "center",
-							}}
+						<h1 className={s.gradebookTitle}
 						>
 							Gradebook
 						</h1>

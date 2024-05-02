@@ -1,10 +1,7 @@
 @media (max-width: 768px) {
   .gradebookContainer {
-    font-size: 80% !important;
-
-    h1, h2, h3, p, span, a {
-      font-size: inherit !important;
-    }
+    font-size: 90% !important;
+    
     padding: 0 10px;
 
     .questionText {
@@ -18,13 +15,35 @@
 }
 
 .gradebookContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 40px; // Consistent padding with the dashboard
 
-  padding: 0 20px;
+
+  .gradebookTitle {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: start;
+    margin-bottom: 20px;
+
+    font-size: 28px;
+    font-weight: 600;
+    color: #000;
+  }
 
   .topSection {
+    width: 70%;
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
+    @media screen and (max-width: 1089px) {
+      width: 90%;
+    }
+    @media screen and (max-width: 768px) {
+      width: 100%;
+    }
   }
 
   .studentInfo {
@@ -100,12 +119,12 @@
       font-weight: bold;
     }
   }
+  
 
   .boxContainer {
-    display: flex;
-    flex-direction: column;
     border: 2.5px solid #000;
     background: white;
+    gap: 20px;
 
 
     h2 {
