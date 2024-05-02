@@ -122,7 +122,20 @@ async function calculatePollResults(pollid: string, classid: string) {
             });
             
         }
-    } else if (polltype === "matching") {}
+    } else if (polltype === "matching") {
+    } else if (polltype === "tf") {
+        console.log("CALCULATING TF POLL RESULTS") 
+
+        for (const [userid, userResponse] of Object.entries(responses)) {
+            const response = (userResponse as any).response; // type TrueFalseResponses
+            const correct = response.response === answerkey;
+            console.log("CORRECT - RESPONSE", correct, response);
+
+            await pollRef.update({
+                [`responses.${userid}.correct`]: correct
+            });
+        }
+    }
 }
 
 export const transferAndCalculatePollResults = functions.https.onCall(async (data, context) => {
