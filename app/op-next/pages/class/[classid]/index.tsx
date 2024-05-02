@@ -21,6 +21,7 @@ import RespondMcPoll from '@/forms/respond-mc-poll/respond-mc-poll';
 import RespondAttendancePoll from '@/forms/respond-attendance-poll/respond-attendance-poll';
 import RespondShortPoll from '@/forms/respond-short-poll/respond-short-poll';
 import RespondOrderPoll from '@/forms/respond-ordering-poll/respond-ordering-poll';
+import RespondTrueFalsePoll from '@/forms/respond-true-false-poll/respond-true-false-poll';
 
 export default function Class() {
 
@@ -79,8 +80,12 @@ export default function Class() {
                                 <RespondOrderPoll  key={poll.id} classid={classid as string} poll={poll} />
                             );
 
-                            if (type === "match") return (
-                                <div>Match Poll</div>
+                            /* if (type === "match") return (
+                                <div>Respond Poll Poll</div>
+                            ); */
+
+                            if (type === "tf") return (
+                                <RespondTrueFalsePoll key={poll.id} classid={classid as string} poll={poll} />
                             );
                         })
                     }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import Poll, { getCorrectPollType } from '@openpoll/packages/models/poll';
+import Poll, { getCorrectPollType, xPoll } from '@openpoll/packages/models/poll';
 import { doc, collection, getDocs, getDoc, query, where } from 'firebase/firestore';
 import { db, auth } from '@openpoll/packages/config/firebaseconfig';
 import { useAuth } from '@/context/authcontext';
@@ -32,7 +32,7 @@ export default function gradebook() {
     const [totalCorrectAnswers, setTotalCorrectAnswers] = useState<number>(0);
     const [totalAttendence, setTotalAttendnence] = useState<number>(0);
     const [Sstudents, setStudents] = useState<StudentsMap>({});
-    const [Spolls, setPolls] = useState<(MCPoll | ShortPoll | AttendancePoll | OrderPoll | MatchPoll)[]>([]);
+    const [Spolls, setPolls] = useState<xPoll[]>([]);
     const [className, setClassName] = useState<string>("")
 
     // Grab all students and initialize their grades to 0.0
@@ -65,7 +65,7 @@ export default function gradebook() {
         const classRef = doc(db, "classes", classid as string);
         const pollsRef = collection(classRef, "polls");
 
-        let openpolls: (MCPoll | ShortPoll | AttendancePoll | OrderPoll | MatchPoll)[] = []
+        let openpolls: xPoll[] = []
         try {
             const donePollsQuery = query(pollsRef, where("done", "==", true));
             const snapshot = await getDocs(donePollsQuery);

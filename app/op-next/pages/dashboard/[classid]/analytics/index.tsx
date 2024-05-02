@@ -15,9 +15,8 @@ import MatchPoll from "@openpoll/packages/models/poll/matching";
 import OrderPoll from "@openpoll/packages/models/poll/ordering";
 import ShortPoll from "@openpoll/packages/models/poll/short";
 
-type PollType = MCPoll | ShortPoll | AttendancePoll | OrderPoll | MatchPoll
 
-type pollMap = Record<string, PollType>;
+type pollMap = Record<string, xPoll>;
 
 export default function analytics() {
     const router = useRouter();
