@@ -3,13 +3,13 @@ import Poll from "../poll";
 type TrueFalseResponses = {
     [userid: string]: {
         email: string;
-        response: "true" | "false";
+        response: boolean;
         correct: boolean;
     }
 }
 
 export default class TrueFalsePoll extends Poll {
-    answerkey: "true" | "false";
+    answerkey: "true" | "false"
     responses: TrueFalseResponses
 
     constructor(
