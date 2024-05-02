@@ -14,6 +14,7 @@ import StudentStats from "@/components/grades/studentStats/studentStats";
 import MCPoll, { MCResponses } from "@openpoll/packages/models/poll/mc";
 import ShortPoll, { ShortResponses } from "@openpoll/packages/models/poll/short";
 import OrderPoll from "@openpoll/packages/models/poll/ordering";
+import { OrderAnswerKey } from "@openpoll/packages/models/poll/ordering";
 import AttendancePoll from "@openpoll/packages/models/poll/attendance";
 import MatchPoll from "@openpoll/packages/models/poll/matching";
 import { set } from "firebase/database";
@@ -158,21 +159,19 @@ export default function ClassGrades() {
 					console.log("No response found");
 					return;
 				}
+			} else if (poll.poll.type === "tf") {
+				const tfPoll = poll.poll as TrueFalsePoll;
+				const userResponse = tfPoll.responses[uid];
+				if (userResponse) {
+					if (userResponse.correct) {
+						correctCount++;
+					}
+				} else {
+					console.log("No response found");
+					return;
+				}
 			}
 			questionsAnswered++;
-			// Do match poll when there is a correct
-			// else if (poll.poll.type == "match") {
-			// 	const matchPoll = poll.poll as MatchPoll;
-			// 	const userResponse = matchPoll.responses[uid];
-			// 	if (userResponse) {
-			// 		if (userResponse.correct) {
-			// 			correctCount++;
-			// 		}
-			// 	} else {
-			// 		console.log("No response found");
-			// 		return;
-			// 	}
-			// }
 
 			
 		});
@@ -232,7 +231,7 @@ export default function ClassGrades() {
 							Gradebook
 						</h1>
 						<TopSection
-							totalGrade={totalGrade}
+							totalGrade={totalGrade.toFixed(1)}
 							attendedCount={attendedCount}
 							studentAttendanceLength={attendancePolls.length}
 							numCorrect={numCorrect}
@@ -265,7 +264,13 @@ export default function ClassGrades() {
 									sx={{
 										".Mui-selected": {
 											color: "red",
+											
 										},
+										'.MuiTab-root': { 
+											'@media (max-width: 768px)': {
+											  fontSize: '88%',
+											}
+										  }
 									}}
 								>
 									<Tab label="Questions" />
@@ -280,6 +285,7 @@ export default function ClassGrades() {
 										<h2>Total</h2>
 									</div>
 									<div className={s.questionsList}>
+
 										{openPolls.map((pollAndId, index) => {
 											const uid = auth.currentUser?.uid;
 											if (!uid) return;
@@ -307,6 +313,12 @@ export default function ClassGrades() {
 											} else if (pollAndId.poll.type === "order") {
 												const orderPoll = pollAndId.poll as OrderPoll;
 												correct = orderPoll.responses[uid].correct;
+												let answerKeyArray = Object.keys(orderPoll.answerkey).map(key => orderPoll.answerkey[key as any]);
+												answerkey = answerKeyArray.map(ak => ak.letter).join(", ");
+											} else if (pollAndId.poll.type === "tf") {
+												const tfPoll = pollAndId.poll as TrueFalsePoll;
+												correct = tfPoll.responses[uid].correct;
+												answerkey = tfPoll.answerkey ? "True" : "False";
 											}
 
 											return (
@@ -328,9 +340,9 @@ export default function ClassGrades() {
 																	{pollAndId.poll.question}
 																</h2>
 															</Link>
-															<Typography variant="body2" className={s.correctAnswer}>
+															<h2 className={s.correctAnswer}>
 																Correct answer is {answerkey}
-															</Typography>
+															</h2>
 														</div>
 													</div>
 													<div className={s.stat}>{correct ?

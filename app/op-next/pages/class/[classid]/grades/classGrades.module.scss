@@ -1,7 +1,25 @@
+@media (max-width: 768px) {
+  .gradebookContainer {
+    font-size: 80% !important;
+
+    h1, h2, h3, p, span, a {
+      font-size: inherit !important;
+    }
+    padding: 0 10px;
+
+    .questionText {
+      margin-bottom: 0px;
+    }
+
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+}
+
 .gradebookContainer {
-  padding: 0px 35px;
-  display: flex;
-  flex-direction: column;
+
+  padding: 0 20px;
 
   .topSection {
     display: flex;
