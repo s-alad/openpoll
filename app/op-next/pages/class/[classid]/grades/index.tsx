@@ -312,12 +312,12 @@ export default function ClassGrades() {
 												answerkey = shortPoll.answerkey ?? '';
 											} else if (pollAndId.poll.type === "order") {
 												const orderPoll = pollAndId.poll as OrderPoll;
-												correct = orderPoll.responses[uid].correct;
+												correct = orderPoll.responses[uid]?.correct ?? false;
 												let answerKeyArray = Object.keys(orderPoll.answerkey).map(key => orderPoll.answerkey[key as any]);
 												answerkey = answerKeyArray.map(ak => ak.letter).join(", ");
 											} else if (pollAndId.poll.type === "tf") {
 												const tfPoll = pollAndId.poll as TrueFalsePoll;
-												correct = tfPoll.responses[uid].correct;
+												correct = tfPoll.responses[uid]?.correct ?? false;
 												answerkey = tfPoll.answerkey ? "True" : "False";
 											}
 
