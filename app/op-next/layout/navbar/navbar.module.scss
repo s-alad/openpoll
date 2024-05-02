@@ -6,20 +6,35 @@
     justify-content: space-between;
     padding: 0 40px;
     background-color: #c5cfe5;
+    @media screen and (max-width: 768px) {
+        padding: 0 15px;
+    }
 
     .left {
         display: flex;
+        flex-direction: row;
+        height: 75px;
         align-items: inherit;
+        text-align: center;
+        justify-content: center;
 
         .logo {
             position: relative;
-            top: 18px;
+            @media screen and (max-width: 528px) {
+                display: none;
+            }
         }
         
         .path {
+            height: 100%;
             font-size: 22px;
             font-weight: 600;
             margin-left: 20px;
+            display: flex;
+            align-items: center;
+            @media screen and (max-width: 768px) {
+                font-size: 14px;
+            }
 
         .back {
             margin-right: 12px;
@@ -35,6 +50,7 @@
         text-align: center;
         border-radius: 5px;
         padding: 5px;
+        height: 75px;
         cursor: pointer;
 
         .person {
@@ -51,6 +67,9 @@
             justify-content: center;
             margin-left: 5px;
             align-items: center;
+            @media screen and (max-width: 661px){
+                display: none;
+            }
         }
     }
 
