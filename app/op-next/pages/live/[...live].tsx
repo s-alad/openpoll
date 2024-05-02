@@ -17,7 +17,7 @@ import LiveMcResponses from "@/components/live-responses/mc-responses";
 import { FaCheck } from "react-icons/fa";
 import LiveShortResponses from "@/components/live-responses/short-responses";
 import Spinner from "@/components/spinner/spinner";
-import TrueFalsePoll from "@openpoll/packages/models/poll/truefalse";
+import TrueFalsePoll, { TrueFalseResponses } from "@openpoll/packages/models/poll/truefalse";
 
 export default function Live() {
 
@@ -37,7 +37,7 @@ export default function Live() {
 
     const isshortwithnokey = livepoll?.type === "short" && !(livepoll as ShortPoll).answerkey;
 
-    const [responses, setResponses] = useState<(MCResponses | ShortResponses | OrderResponses | AttendanceResponses | TrueFalsePoll | null)>();
+    const [responses, setResponses] = useState<(MCResponses | ShortResponses | OrderResponses | AttendanceResponses | TrueFalseResponses | null)>();
 
 
     // gets the poll from the realtime database on page load
@@ -110,7 +110,7 @@ export default function Live() {
                             setResponses(responses as AttendanceResponses);
                             break;
                         case "tf":
-                            setResponses(responses as TrueFalsePoll);
+                            setResponses(responses as TrueFalseResponses);
                         default:
                             break;
                     }
@@ -323,6 +323,28 @@ export default function Live() {
                             responses={responses as ShortResponses} 
                             showcorrectanswers={showcorrectanswers}
                         />
+                    )
+                }
+                {
+                    livepoll && livepoll.type === "tf" && showlivereponses && responses && (
+                        <div className={s.tfresponses}>
+                            <div className={s.numtrue}>
+                                <div className={`${s.t} 
+                                ${showcorrectanswers && (livepoll as TrueFalsePoll).answerkey === "true" ? s.correct : ''}
+                                `}>true</div>
+                                <div className={s.num}>
+                                {Object.values(responses as TrueFalseResponses).filter(response => response.response === "true").length}
+                                </div>
+                            </div>
+                            <div className={s.numfalse}>
+                                <div className={`${s.f} 
+                                ${showcorrectanswers && (livepoll as TrueFalsePoll).answerkey === "false" ? s.correct : ''}
+                                `}>false</div>
+                                <div className={s.num}>
+                                {Object.values(responses as TrueFalseResponses).filter(response => response.response === "false").length}
+                                </div>
+                            </div>
+                        </div>
                     )
                 }
                 {
