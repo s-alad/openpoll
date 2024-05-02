@@ -1,37 +1,59 @@
 .profile {
     display: flex;
     flex-direction: column;
+    align-items: center;
     
     ul {
         list-style-type: none;
+        padding: 0; 
+    }
+
+    @media (max-width: 768px) {
+        .boxContainer {
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-around;
+
+            .leftBox, .rightBox {
+                flex: 1 1 100%; 
+                margin-right: 0; 
+                padding-left: 20px; 
+                margin-bottom: 20px; 
+            }
+        }
     }
 
     .boxContainer {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        width: 100%;
         padding: 50px;
-        margin: 0px 50px;
         border-radius: 10px;
+
+        .leftBox, .rightBox {
+            background: #FFF;
+            border-radius: 10px;
+            padding: 20px;
+            overflow: hidden;
+            word-wrap: break-word; 
+        }
+        
 
         .leftBox {
             border-radius: 10px;
             background: #FFF;
             flex-shrink: 0;
-            padding: 20px;
-            width: 476px;
-            height: 349px;
+            flex: 1 1 40%; 
         }
 
         .rightBox {
             border-radius: 10px;
             background: #FFF;
+            flex: 1 1 60%;
             flex-grow: 1;
             margin-left: 20px;
-            width: 836px;
-            height: 360px;
-            padding: 20px;
-            padding-left: 50px;
+            padding: 50px;
 
             .h2 {
                 font-family: "Open Sans";
