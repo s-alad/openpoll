@@ -228,7 +228,7 @@ export default function Live() {
                             livepoll.type === "order" &&
                             <div className={s.order}>
                                 {
-                                    (livepoll as OrderPoll)?.options.map((option, index) => {
+                                    (livepoll as OrderPoll)?.options.sort(() => Math.random() - 0.5).map((option, index) => {
                                         return (
                                             <div key={index} className={s.option}>
                                                 <div className={s.letter}>{option.letter}</div>
