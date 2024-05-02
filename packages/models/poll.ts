@@ -5,7 +5,7 @@ import OrderPoll from "./poll/ordering";
 import ShortPoll from "./poll/short";
 import TrueFalsePoll from "./poll/truefalse";
 
-export type TPoll = "mc" | "short" | "attendance" | "order" /* | "match" */ | "tf";
+export type TPoll = "mc" | "short" | "attendance" | "order" | "match" | "tf";
 export type xPoll = Poll | MCPoll | ShortPoll | AttendancePoll | OrderPoll /* | MatchPoll */ | TrueFalsePoll;
 export const TLPoll = ["mc", "short", "attendance", "order", /* "match", */ "tf"];
 
