@@ -72,3 +72,11 @@ export type CreateAttendancePollFormData = {
     question: string;
     date: Date;
 };
+
+
+// create true false poll form
+
+export type CreateTrueFalsePollFormData = {
+    question: string;
+    answerkey: "true" | "false";
+};

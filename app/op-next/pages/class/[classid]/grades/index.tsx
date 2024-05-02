@@ -17,6 +17,7 @@ import OrderPoll from "@openpoll/packages/models/poll/ordering";
 import AttendancePoll from "@openpoll/packages/models/poll/attendance";
 import MatchPoll from "@openpoll/packages/models/poll/matching";
 import { set } from "firebase/database";
+import TrueFalsePoll from "@openpoll/packages/models/poll/truefalse";
 
 interface PollAndAnswer {
 	pollId: string;
@@ -95,8 +96,8 @@ export default function ClassGrades() {
 
 			if (poll.type === "attendance") {
 				attendancePollsData.push({id: pid, poll: poll as AttendancePoll});
-			} else if (poll.type === "mc" || poll.type === "short" || poll.type === "order" || poll.type === "match") {
-				openPollsData.push({id: pid, poll: poll as MCPoll | ShortPoll | OrderPoll | MatchPoll});
+			} else if (poll.type === "mc" || poll.type === "short" || poll.type === "order" || poll.type === "tf") {
+				openPollsData.push({id: pid, poll: poll as MCPoll | ShortPoll | OrderPoll | TrueFalsePoll});
 			}
 		});
 
@@ -287,7 +288,7 @@ export default function ClassGrades() {
 
 											if (pollAndId.poll.type === "mc") {
 												const mcPoll = pollAndId.poll as MCPoll;
-												correct = mcPoll.responses[uid].correct;
+												correct = mcPoll.responses[uid]?.correct ?? false;
 												answerkey = mcPoll.answerkey.join(", ");
 											} else if (pollAndId.poll.type === "short") {
 												const shortPoll = pollAndId.poll as ShortPoll;

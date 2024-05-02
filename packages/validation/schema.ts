@@ -1,5 +1,5 @@
 import { z, ZodEnum, ZodType } from "zod"; // Add new import
-import { CreateAttendancePollFormData, CreateClassFormData, CreateMultipleChoicePollFormData, CreateOrderingPollFormData, CreateShortAnswerPollFormData } from "./form";
+import { CreateAttendancePollFormData, CreateClassFormData, CreateMultipleChoicePollFormData, CreateOrderingPollFormData, CreateShortAnswerPollFormData, CreateTrueFalsePollFormData } from "./form";
 
 export const createClassSchema: ZodType<CreateClassFormData> = z
     .object({
@@ -45,4 +45,10 @@ export const createOrderingPollSchema: ZodType<CreateOrderingPollFormData> = z
             letter: z.string(),
             option: z.string(),
         }))
+    })
+
+export const createTrueFalsePollSchema: ZodType<CreateTrueFalsePollFormData> = z
+    .object({
+        question: z.string().min(1, "Question must be at least 2 characters").max(200, "Question must be between 1 and 200 characters"),
+        answerkey: z.enum(["true", "false"])
     })

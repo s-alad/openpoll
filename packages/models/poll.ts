@@ -3,10 +3,11 @@ import MatchPoll from "./poll/matching";
 import MCPoll from "./poll/mc";
 import OrderPoll from "./poll/ordering";
 import ShortPoll from "./poll/short";
+import TrueFalsePoll from "./poll/truefalse";
 
-export type TPoll = "mc" | "short" | "attendance" | "order" | "match"
-export type xPoll = Poll | MCPoll | ShortPoll | AttendancePoll | OrderPoll | MatchPoll;
-export const TLPoll = ["mc", "short", "attendance", "order", "match"]
+export type TPoll = "mc" | "short" | "attendance" | "order" | "match" | "tf";
+export type xPoll = Poll | MCPoll | ShortPoll | AttendancePoll | OrderPoll /* | MatchPoll */ | TrueFalsePoll;
+export const TLPoll = ["mc", "short", "attendance", "order", /* "match", */ "tf"];
 
 export default abstract class Poll {
   type: TPoll;
@@ -44,7 +45,7 @@ export default abstract class Poll {
 
 export interface PollAndId {
   id: string;
-  poll: Poll | MCPoll | ShortPoll | AttendancePoll | OrderPoll | MatchPoll;
+  poll: Poll | MCPoll | ShortPoll | AttendancePoll | OrderPoll /* | MatchPoll */ | TrueFalsePoll;
 }
 
 function convertPollTypeToText(type: TPoll) {
@@ -57,8 +58,10 @@ function convertPollTypeToText(type: TPoll) {
       return "Attendance";
     case "order":
       return "Ordering";
-    case "match":
-      return "Matching";
+    /* case "match":
+      return "Matching"; */
+    case "tf":
+      return "True/False";
   }
 }
 
@@ -71,8 +74,10 @@ function getCorrectPollType(data: any) {
     return data as AttendancePoll;
   } else if (data.type === "order") {
     return data as OrderPoll;
-  } else if (data.type === "match") {
+  } /* else if (data.type === "match") {
     return data as MatchPoll;
+  } */ else if (data.type === "tf") {
+    return data as TrueFalsePoll;
   } else {
     return undefined
   }
