@@ -96,7 +96,7 @@ export default function analytics() {
             ) : (
                 <div>
                     <div className={s.analyticsHeader}>
-                        <h1>Analytics for {classname}</h1>
+                        <div>Analytics for {classname}</div>
                     </div>
                     {
                         Object.entries(filterMCPolls(openpolls)).map(([key, data], index) => (
