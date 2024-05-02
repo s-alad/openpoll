@@ -9,6 +9,8 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
 import Classroom from "@openpoll/packages/models/class";
 import Image from "next/image";
+import Spacer from "@/components/spacer/spacer";
+import { LuPencil } from "react-icons/lu";
 
 interface Class {
     cid: string;
@@ -92,7 +94,7 @@ export default function Profile() {
 
         try {
             await updateDoc(userRef, {
-                email: newEmail, 
+                email: newEmail,
             });
             console.log("Firestore email updated");
         } catch (e) {
@@ -100,14 +102,10 @@ export default function Profile() {
         }
     }
 
-    async function handleEditClick() {
-        setIsEditing(true);
-    }
-
     async function handleSaveChanges() {
         await changeName(editedName);
         // await changeEmail(editedEmail); 
-        setIsEditing(false); 
+        setIsEditing(false);
     }
 
 
@@ -127,13 +125,16 @@ export default function Profile() {
 
     if (!user) { return (<Unauthorized />); }
 
-    if (loading) { return (<Loader flex/>); }
+    if (loading) { return (<Loader flex />); }
 
     return (
         <div className={s.profile}>
-            <h1 style={{alignItems: 'center', textAlign: 'center'}}>Account</h1>
-            <div className={s.boxContainer}>
-                <div className={s.leftBox}>
+            <div className={s.acc}>
+                <h1>Account</h1>
+            </div>
+
+            <div className={s.details}>
+                <div className={s.left}>
                     <h2>Enrolled Classes</h2>
                     <ul>
                         {enrolled.map(({ cid, class: c }) => (
@@ -142,47 +143,50 @@ export default function Profile() {
                             </li>
                         ))}
                     </ul>
+                    {enrolled.length === 0 && <p>You are not enrolled in any classes</p>}
                 </div>
-                <div className={s.rightBox}>
+
+                <div className={s.right}>
                     <h2>Account Information</h2>
-                    <button
-                        onClick={logout}
-                    >
-                        <Image 
+
+                    <div>
+                        <span style={{ fontWeight: '600', marginRight: '40px' }}>Name</span>
+                        {
+                            isEditing ?
+                                <input
+                                    type="text"
+                                    value={editedName}
+                                    onChange={(e) => setEditedName(e.target.value)}
+                                />
+                                :
+                                <span>{user?.displayName}</span>
+                        }
+                        <button className={s.edit} onClick={() => setIsEditing(!isEditing)}>
+                            <LuPencil />
+                        </button>
+                    </div>
+
+                    <div>
+                        <span style={{ fontWeight: '600', marginRight: '40px' }}>Email</span>
+                        <span>{user?.email}</span>
+                        {
+                            isEditing &&
+                            <button className={s.save} onClick={handleSaveChanges}>
+                                Save changes
+                            </button>
+                        }
+                    </div>
+
+                    <Spacer />
+
+                    <button onClick={logout}>
+                        <Image
                             src="/logout.svg"
                             alt="Logout"
                             width={20}
                             height={20}
                         />Logout
                     </button>
-                    <p> <span style={{ fontWeight: '600', marginRight: '40px'}}>Name</span> 
-                    
-                    { isEditing ? (
-                        <input
-                        type="text"
-                        value={editedName}
-                        onChange={(e) => setEditedName(e.target.value)}
-                        />
-                    ) : (
-                        <span>{user?.displayName}</span>
-                    )}
-                    <button className={s.edit} onClick={handleEditClick}><Image 
-                        src="/mode_edit.svg"
-                        alt="edit"
-                        width={20}
-                        height={20}
-                        style={{ marginLeft: '10px', alignItems: 'center'}}
-                    />
-                    </button>
-                    </p>
-                    <p> <span style={{ fontWeight: '600', marginRight: '40px'}}>Email</span> 
-                       <span>{user?.email}</span>
-                    {isEditing && (
-                        <button className={s.saveChanges} onClick={handleSaveChanges}>
-                            Save changes
-                        </button>
-                    )}
-                    </p>
                 </div>
             </div>
         </div>

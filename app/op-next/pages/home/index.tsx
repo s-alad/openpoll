@@ -220,7 +220,7 @@ export default function Home() {
                         {
                             joinClass ?
                                 <div className={s.join}>
-                                    <input type="text" placeholder="class code"
+                                    <input type="text" placeholder="class code" className={s.joiner}
                                         onChange={(e) => { setClassCode(e.target.value) }}
                                     />
                                     <button onClick={joinclass}>
