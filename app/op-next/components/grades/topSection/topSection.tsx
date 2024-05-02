@@ -43,8 +43,8 @@ export default function TopSection({totalGrade, attendedCount, studentAttendance
                   <span>Participation</span>
                   <span className={s.scoreValue}>
                     {studentAttendanceLength !== 0
-                      ? `${(attendedCount / studentAttendanceLength) * 100}.toFixed(1)`
-                      : '0'} / 100
+                      ? `${((attendedCount / studentAttendanceLength) * 100).toFixed(1)}`
+                      : '0.0'} / 100
                   </span>
                 </div>
                 <div className={s.progressBarContainer}>
