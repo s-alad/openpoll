@@ -374,7 +374,8 @@ export default function ClassGrades() {
 											let attended = false;
 
 											const attendancePoll = pollAndId.poll as AttendancePoll;
-											attended = attendancePoll.responses[uid].attended;
+											// TODO: Check for null values
+											attended = attendancePoll.responses[uid]?.attended;
 
 											return (
 												<div key={index} className={s.question}>

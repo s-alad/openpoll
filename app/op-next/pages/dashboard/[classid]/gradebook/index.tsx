@@ -11,11 +11,13 @@ import ShortPoll from '@openpoll/packages/models/poll/short';
 import AttendancePoll from '@openpoll/packages/models/poll/attendance';
 import OrderPoll from '@openpoll/packages/models/poll/ordering';
 import MatchPoll from '@openpoll/packages/models/poll/matching';
+import { getClassnameFromId } from '@openpoll/packages/models/class';
 
 interface Student {
     name: string;
     email: string;
     grade: number;
+    attendance: number;
 };
 
 interface StudentsMap {
@@ -28,8 +30,11 @@ export default function gradebook() {
     const { user } = useAuth();
 
     const [totalCorrectAnswers, setTotalCorrectAnswers] = useState<number>(0);
+    const [totalAttendence, setTotalAttendnence] = useState<number>(0);
     const [Sstudents, setStudents] = useState<StudentsMap>({});
     const [Spolls, setPolls] = useState<xPoll[]>([]);
+    const [className, setClassName] = useState<string>("")
+
 
     // Grab all students and initialize their grades to 0.0
     async function process() {
@@ -45,7 +50,7 @@ export default function gradebook() {
 
                 // Check if entry is not empty
                 if (Object.keys(data).length != 0) {
-                    const studentItem: Student = { name: data.name, email: data.email, grade: 0.0 };
+                    const studentItem: Student = { name: data.name, email: data.email, grade: 0.0, attendance: 0 };
                     students[data.uid] = studentItem;
                     console.log(data);
                 }
@@ -60,7 +65,6 @@ export default function gradebook() {
 
         const classRef = doc(db, "classes", classid as string);
         const pollsRef = collection(classRef, "polls");
-
 
         let openpolls: xPoll[] = []
         try {
@@ -86,7 +90,10 @@ export default function gradebook() {
         }
 
         console.log(openpolls);
+
+        // Process Record and grade polls here
         let totalcorrect = 0
+        let totalAttendence = 0
         for (let poll of openpolls) {
             if (poll.type == "mc") {
                 totalcorrect += 1;
@@ -99,8 +106,18 @@ export default function gradebook() {
                     }
                 }
             }
+            else if (poll.type == "attendance") {
+                totalAttendence += 1;
+                const attendencePoll = poll as AttendancePoll;
+                for (let response in attendencePoll.responses) {
+                    if (response) {
+                        students[response].attendance += 1;
+                    }
+                }
+            }
             else if (poll.type == "short") {}
         }
+        setTotalAttendnence(totalAttendence);
         setTotalCorrectAnswers(totalcorrect);
     }
 
@@ -109,11 +126,11 @@ export default function gradebook() {
     function convertToCSV(data: { [x: string]: any; }) {
         const csvRows = [];
         // Headers
-        csvRows.push('Name,Email,Grade');
+        csvRows.push('Name,Email,Attendence,Grade');
         // Data
         Object.keys(data).forEach((key) => {
             const student = data[key];
-            csvRows.push(`${student.name},${student.email},${student.grade}`);
+            csvRows.push(`${student.name},${student.email},${student.attendance},${student.grade}`);
         });
         return csvRows.join('\n');
     }
@@ -135,7 +152,9 @@ export default function gradebook() {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user && classid) {
-                await process()
+                await process();
+                const className = getClassnameFromId(classid as string);
+                className.then((name) => setClassName(name));
             }
         });
 
@@ -145,13 +164,14 @@ export default function gradebook() {
     return (
         <div className={s.gradebook}>
             <div>
-                <h1>Gradebook for Class: {classid}</h1>
+                <h1>Gradebook for Class: {className}</h1>
                 <button onClick={downloadCSV} className={s.downloadButton}>Download CSV</button>
                 <table className={s.gradebookTable}>
                     <thead>
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
+                            <th>Attendence</th>
                             <th>Grade</th>
                         </tr>
                     </thead>
@@ -160,7 +180,8 @@ export default function gradebook() {
                             <tr key={studentId}>
                                 <td>{Sstudents[studentId].name}</td>
                                 <td>{Sstudents[studentId].email}</td>
-                                <td>{Sstudents[studentId].grade} / {totalCorrectAnswers}</td>
+                                <td>{Sstudents[studentId].attendance} / {totalAttendence} ({(Sstudents[studentId].attendance / totalAttendence) * 100}%)</td>
+                                <td>{Sstudents[studentId].grade} / {totalCorrectAnswers} ({(Sstudents[studentId].grade / totalCorrectAnswers) * 100}%)</td>
                             </tr>
                         ))}
                     </tbody>
