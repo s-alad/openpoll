@@ -20,6 +20,7 @@
 
         .logo {
             position: relative;
+            cursor: pointer;
             @media screen and (max-width: 528px) {
                 display: none;
             }
