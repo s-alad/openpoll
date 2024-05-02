@@ -12,11 +12,14 @@ import AttendancePoll from '@openpoll/packages/models/poll/attendance';
 import OrderPoll from '@openpoll/packages/models/poll/ordering';
 import MatchPoll from '@openpoll/packages/models/poll/matching';
 import { getClassnameFromId } from '@openpoll/packages/models/class';
+import TrueFalsePoll from '@openpoll/packages/models/poll/truefalse';
 
 interface Student {
     name: string;
     email: string;
-    grade: number;
+    mcGrade: number;
+    shortGrade: number;
+    tfGrade: number;
     attendance: number;
 };
 
@@ -29,8 +32,10 @@ export default function gradebook() {
     const classid = router.query.classid;
     const { user } = useAuth();
 
-    const [totalCorrectAnswers, setTotalCorrectAnswers] = useState<number>(0);
+    const [totalMCAnswers, setTotalMCAnswers] = useState<number>(0);
     const [totalAttendence, setTotalAttendnence] = useState<number>(0);
+    const [totalShort, setTotalShort] = useState<number>(0);
+    const [totalTF, setTotalTF] = useState<number>(0);
     const [Sstudents, setStudents] = useState<StudentsMap>({});
     const [Spolls, setPolls] = useState<xPoll[]>([]);
     const [className, setClassName] = useState<string>("")
@@ -50,7 +55,14 @@ export default function gradebook() {
 
                 // Check if entry is not empty
                 if (Object.keys(data).length != 0) {
-                    const studentItem: Student = { name: data.name, email: data.email, grade: 0.0, attendance: 0 };
+                    const studentItem: Student = {
+                        name: data.name, 
+                        email: data.email, 
+                        mcGrade: 0.0, 
+                        shortGrade: 0.0, 
+                        tfGrade: 0.0, 
+                        attendance: 0
+                    };
                     students[data.uid] = studentItem;
                     console.log(data);
                 }
@@ -92,17 +104,19 @@ export default function gradebook() {
         console.log(openpolls);
 
         // Process Record and grade polls here
-        let totalcorrect = 0
+        let mcCorrectTotal = 0
         let totalAttendence = 0
+        let totalShort = 0
+        let totalTF = 0
         for (let poll of openpolls) {
             if (poll.type == "mc") {
-                totalcorrect += 1;
+                mcCorrectTotal += 1;
                 const mcPoll = poll as MCPoll;
                 for (let response in mcPoll.responses) {
                     console.log(response);
                     console.log(students)
                     if (mcPoll.responses[response].correct) {
-                        if (students[response]) {students[response].grade += 1;}
+                        if (students[response]) {students[response].mcGrade += 1;}
                     }
                 }
             }
@@ -110,15 +124,34 @@ export default function gradebook() {
                 totalAttendence += 1;
                 const attendencePoll = poll as AttendancePoll;
                 for (let response in attendencePoll.responses) {
+                    // If it exists
                     if (response) {
                         if (students[response]) {students[response].attendance += 1;}
                     }
                 }
             }
-            else if (poll.type == "short") {}
+            else if (poll.type == "short") {
+                totalShort += 1
+                const shortPoll = poll as ShortPoll;
+                for (let response in shortPoll.responses) {
+                    if (shortPoll.responses[response].correct) {
+                        if (students[response]) {students[response].shortGrade += 1;}
+                    }
+                }
+            } else if (poll.type == "tf") {
+                totalTF += 1
+                const trueFalsePoll = poll as TrueFalsePoll;
+                for (let response in trueFalsePoll.responses) {
+                    if (trueFalsePoll.responses[response].correct) {
+                        if (students[response]) {students[response].tfGrade += 1;}
+                    }
+                }
+            }
         }
         setTotalAttendnence(totalAttendence);
-        setTotalCorrectAnswers(totalcorrect);
+        setTotalMCAnswers(mcCorrectTotal);
+        setTotalShort(totalShort);
+        setTotalTF(totalTF);
     }
 
 
@@ -126,11 +159,11 @@ export default function gradebook() {
     function convertToCSV(data: { [x: string]: any; }) {
         const csvRows = [];
         // Headers
-        csvRows.push('Name,Email,Attendence,Grade');
+        csvRows.push('Name,Email,Attendence,MC Grade, Short Grade, T/F Grade');
         // Data
         Object.keys(data).forEach((key) => {
             const student = data[key];
-            csvRows.push(`${student.name},${student.email},${student.attendance},${student.grade}`);
+            csvRows.push(`${student.name},${student.email},${student.attendance},${student.mcGrade},${student.shortGrade},${student.tfGrade}`);
         });
         return csvRows.join('\n');
     }
@@ -172,7 +205,9 @@ export default function gradebook() {
                             <th>Name</th>
                             <th>Email</th>
                             <th>Attendence</th>
-                            <th>Grade</th>
+                            <th>MC Grade</th>
+                            <th>Short Grade</th>
+                            <th>T/F Grade</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -181,7 +216,9 @@ export default function gradebook() {
                                 <td>{Sstudents[studentId].name}</td>
                                 <td>{Sstudents[studentId].email}</td>
                                 <td>{Sstudents[studentId].attendance} / {totalAttendence} ({(Sstudents[studentId].attendance / totalAttendence) * 100}%)</td>
-                                <td>{Sstudents[studentId].grade} / {totalCorrectAnswers} ({(Sstudents[studentId].grade / totalCorrectAnswers) * 100}%)</td>
+                                <td>{Sstudents[studentId].mcGrade} / {totalMCAnswers} ({(Sstudents[studentId].mcGrade / totalMCAnswers) * 100}%)</td>
+                                <td>{Sstudents[studentId].shortGrade} / {totalShort} ({(Sstudents[studentId].shortGrade / totalShort) * 100}%)</td>
+                                <td>{Sstudents[studentId].tfGrade} / {totalTF} ({(Sstudents[studentId].tfGrade / totalTF) * 100}%)</td>
                             </tr>
                         ))}
                     </tbody>
