@@ -1,77 +1,47 @@
 .class {
     width: 100%;
-    height: 100vh;
+    min-height: 100%;
     display: flex;
     flex-direction: column;
-    
+    align-items: center;
+    padding: 40px 40px;
+
     .openpolls {
-        padding-top: 100px;
-        width: 100%;
+        width: 70%;
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 20px;
         align-items: center;
         justify-content: center;
 
-        .poll {
-            width: 70%;
+        @media screen and (max-width: 1089px) {
+            width: 90%;
+        }
+
+        @media screen and (max-width: 768px) {
+            width: 100%;
+        }
+
+        .info {
             display: flex;
             flex-direction: column;
-            background-color: #fff;
-            color: black;
-            border-radius: 12px;
-            padding: 20px 40px;
-            gap: 20px;
+            align-items: start;
+            justify-content: start;
+            margin-bottom: 20px;
+            width: 100%;
 
-                h1 {
-                    margin: 0;
-                }
+            .classname {
+                font-size: 28px;
+                font-weight: 600;
+                color: #000;
+            }
 
-                .question {
-                    font-size: 28px;
-                    font-weight: 600;
-                }
-
-                .options {
-                    .option {
-                        display: flex;
-                        align-items: center;
-                        
-                    }
-                }
-
-                .attendanceinput {
-                    input {
-                        width: 100%;
-                        border: 2px solid #4036ee;
-                        border-radius: 4px;
-                        width: min-content;
-                        padding: 10px;
-                    }
-                }
-
-                .shortinput {
-                    width: 100%;
-                        border: 2px solid #4036ee;
-                        border-radius: 4px;
-                        
-                        padding: 10px;
-                }
-
+            .classdate {
+                font-size: 24px;
+                font-weight: 500;
+                color: #9596FF;
+            }
         }
-    }
-}
 
-@media screen and (max-width: 768px) {
-    .poll {
-        width: 90%; /* Adjust width for smaller screens */
-        padding: 15px 30px; /* Adjust padding for smaller screens */
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .poll {
-        width: 95%; /* Further adjust width for even smaller screens */
-        padding: 10px 20px; /* Further adjust padding for even smaller screens */
     }
 }

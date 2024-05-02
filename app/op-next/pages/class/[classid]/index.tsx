@@ -4,7 +4,7 @@ import {
     Checkbox,
     FormControlLabel
 } from '@mui/material';
-import { equalTo, onValue, orderByChild, query, ref, remove, update } from 'firebase/database';
+import { equalTo, onValue, orderByChild, query, ref, remove, set, update } from 'firebase/database';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -22,15 +22,18 @@ import RespondAttendancePoll from '@/forms/respond-attendance-poll/respond-atten
 import RespondShortPoll from '@/forms/respond-short-poll/respond-short-poll';
 import RespondOrderPoll from '@/forms/respond-ordering-poll/respond-ordering-poll';
 import RespondTrueFalsePoll from '@/forms/respond-true-false-poll/respond-true-false-poll';
+import { getClassnameFromId } from '@openpoll/packages/models/class';
 
 export default function Class() {
 
     const router = useRouter();
     const classid = router.query.classid;
 
-    const { user } = useAuth();
+    const { user, loading: authloading } = useAuth();
+    const [loading, setLoading] = useState(false);
 
     const [activePolls, setActivePolls] = useState<PollAndId[]>([]);
+    const [classname, setClassname] = useState<string>("");
 
     // THIS IS INSECURE AS IT RETURNS ANSWERKEY TO CLIENT
     useEffect(() => {
@@ -51,12 +54,36 @@ export default function Class() {
         return () => unsubscribe();
     }, [classid]);
 
+    // execute necessary functions
+    async function main() {
+        setLoading(true);
+        const classname = await getClassnameFromId(classid as string);
+        setClassname(classname);
+        setLoading(false);
+    }
+
+    //wait for router to load
+    useEffect(() => {
+        if (user && classid) {
+            main();
+        }
+    }, [classid]);
+    if (!user || authloading || !classid) { return (<div></div>) }
 
     if (!user || !classid) return (<Loader />)
 
     return (
         <div className={s.class}>
-            { activePolls.length === 0 && <div className={s.openpolls}> no active polls </div> }
+            <div className={s.openpolls}>
+            <div className={s.info}>
+                <div className={s.classname}>
+                    {classname}
+                </div>
+                <div className={s.date}>
+                    {new Date().toLocaleDateString()}
+                </div>
+            </div></div>
+            {activePolls.length === 0 && <div className={s.openpolls}> no active polls </div>}
             {
                 activePolls.length > 0 &&
                 <div className={s.openpolls}>
@@ -77,7 +104,7 @@ export default function Class() {
                             );
 
                             if (type === "order") return (
-                                <RespondOrderPoll  key={poll.id} classid={classid as string} poll={poll} />
+                                <RespondOrderPoll key={poll.id} classid={classid as string} poll={poll} />
                             );
 
                             /* if (type === "match") return (
