@@ -123,6 +123,7 @@ async function calculatePollResults(pollid: string, classid: string) {
             
         }
     } else if (polltype === "matching") {
+        console.log("CALCULATING MATCHING POLL RESULTS");
     } else if (polltype === "tf") {
         console.log("CALCULATING TF POLL RESULTS") 
 

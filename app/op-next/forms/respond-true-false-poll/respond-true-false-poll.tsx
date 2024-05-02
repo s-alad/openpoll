@@ -34,7 +34,7 @@ export default function RespondTrueFalsePoll({ classid, poll }: RespondTrueFalse
 
         let Sres = { [user!.uid]: {
             email: user!.email,
-            response: data.answer === "true",
+            response: data.answer,
             correct: false
         } } as TrueFalseResponses
         const answerRef = ref(rdb, `classes/${classid}/polls/${pollId}/responses`);

@@ -3,7 +3,7 @@ import Poll from "../poll";
 type TrueFalseResponses = {
     [userid: string]: {
         email: string;
-        response: boolean;
+        response: "true" | "false";
         correct: boolean;
     }
 }
