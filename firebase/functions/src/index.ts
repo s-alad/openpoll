@@ -129,7 +129,7 @@ async function calculatePollResults(pollid: string, classid: string) {
 
         for (const [userid, userResponse] of Object.entries(responses)) {
             const response = (userResponse as any).response; // type TrueFalseResponses
-            const correct = response.response === answerkey;
+            const correct = `${response}` === `${answerkey}`; // convert to string to compare
             console.log("CORRECT - RESPONSE", correct, response);
 
             await pollRef.update({

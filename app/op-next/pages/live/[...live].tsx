@@ -333,7 +333,7 @@ export default function Live() {
                                 ${showcorrectanswers && (livepoll as TrueFalsePoll).answerkey === "true" ? s.correct : ''}
                                 `}>true</div>
                                 <div className={s.num}>
-                                {Object.values(responses as TrueFalseResponses).filter(response => response.response === "true").length}
+                                {Object.values(responses as TrueFalseResponses).filter(response => response.response === true).length}
                                 </div>
                             </div>
                             <div className={s.numfalse}>
@@ -341,7 +341,7 @@ export default function Live() {
                                 ${showcorrectanswers && (livepoll as TrueFalsePoll).answerkey === "false" ? s.correct : ''}
                                 `}>false</div>
                                 <div className={s.num}>
-                                {Object.values(responses as TrueFalseResponses).filter(response => response.response === "false").length}
+                                {Object.values(responses as TrueFalseResponses).filter(response => response.response === false).length}
                                 </div>
                             </div>
                         </div>
