@@ -61,3 +61,17 @@
         }
     }
 }
+
+@media screen and (max-width: 768px) {
+    .poll {
+        width: 90%; /* Adjust width for smaller screens */
+        padding: 15px 30px; /* Adjust padding for smaller screens */
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .poll {
+        width: 95%; /* Further adjust width for even smaller screens */
+        padding: 10px 20px; /* Further adjust padding for even smaller screens */
+    }
+}
