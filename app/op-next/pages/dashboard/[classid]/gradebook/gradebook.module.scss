@@ -42,6 +42,10 @@
             tr:nth-child(odd) {
                 background-color: lightgray; /* Apply styles to every odd row */
             }
+            
+            tr:hover {
+                background-color: #9596FF;
+            }
         }
     }
 }

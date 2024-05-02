@@ -1,12 +1,13 @@
-.class {
+.analytics {
     width: 100%;
+    text-align: center;
 
     .analyticsHeader {
         display: flex;
         flex-direction: column;
         width: 100%;
         align-items: center;
-        font-size: 2vh;
+        font-size: 25pt;
         margin-top: 1vh;
         font-weight: 800;
     }
@@ -16,10 +17,20 @@
         flex-direction: column;
         width: 100%;
         align-items: center;
-        margin-top: 2vh;
+        margin: auto;
 
         .pollQuestion {
-            font-size: 20px;
+            font-size: 30px;
+
+            a {
+                text-decoration: none;
+                color: black;
+                transition: color 0.2s ease;
+            }
+
+            a:hover {
+                color: #4036EE;
+            }
         }
 
         .shortAnswerTable {

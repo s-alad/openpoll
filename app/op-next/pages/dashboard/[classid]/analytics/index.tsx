@@ -89,7 +89,7 @@ export default function analytics() {
     }, [classid]);
 
     return (
-        <div className={s.class}>
+        <div className={s.analytics}>
             {loading ? (
                 <div>Loading...</div>
             ) : (
