@@ -9,11 +9,14 @@ import s from './edit.poll.module.scss';
 import Poll, {  } from '@openpoll/packages/models/poll';
 import MCPoll from "@openpoll/packages/models/poll/mc";
 import ShortPoll from "@openpoll/packages/models/poll/short";
+import CreateTrueFalsePoll from "@/forms/create-true-false-poll/create-true-false-poll";
+import TrueFalsePoll from "@openpoll/packages/models/poll/truefalse";
+import OrderPoll from "@openpoll/packages/models/poll/ordering";
 
 export default function EditPoll() {
     const router = useRouter();
     const { pollid, classid } = router.query;
-    const [pollData, setPollData] = useState<MCPoll | ShortPoll | null>(null);
+    const [pollData, setPollData] = useState<MCPoll | ShortPoll | TrueFalsePoll | OrderPoll | null>(null);
     const [loading, setLoading] = useState(true);
 
     function ensureArray(input: any) {
@@ -69,6 +72,12 @@ export default function EditPoll() {
 				}
                 {
 					pollData.type === "short" && <CreateShortAnswerPoll pollData={pollData as ShortPoll} pollid={pollid as string}/>
+				}
+                {
+					pollData.type === "tf" && <CreateTrueFalsePoll pollData={pollData as TrueFalsePoll} pollid={pollid as string}/>
+				}
+                {
+					pollData.type === "order" && <CreateOrderingPoll pollData={pollData as OrderPoll} pollid={pollid as string}/>
 				}
             </div>
         </main>
