@@ -1,4 +1,18 @@
-    .topSection {
+// Support for when browser squished
+.topSection {
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+    padding: 0 10px;
+
+    .studentInfo, .averageScores {
+      width: 100%;
+    }
+  }
+}
+
+.topSection {
       display: flex;
       justify-content: space-between;
       margin-bottom: 20px;

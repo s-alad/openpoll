@@ -182,3 +182,23 @@ export const transferAndCalculatePollResults = functions.https.onCall(async (dat
     }
 });
 // --------------------------------------------------------------------------------------------
+
+
+
+// --------------------------------------------------------------------------------------------
+export const removeClassFromUser = functions.https.onCall(async (data, context) => {
+    console.log("---DATA---", data);
+    const email = data.email;
+    const classid = data.classid;
+    const userRef = admin.firestore().collection("users").doc(email);
+    const userDoc = await userRef.get();
+    const userData = userDoc.data();
+    console.log("---USER DATA---", userData);
+    const classids = userData?.enrolled;
+    if (!classids) {
+        console.error("User has no enrolled classes");
+        return;
+    }
+    const newClassids = classids.filter((id: string) => id !== classid);
+    await userRef.update({ enrolled: newClassids });
+})

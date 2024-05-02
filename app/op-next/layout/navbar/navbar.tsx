@@ -88,6 +88,9 @@ export default function Navbar() {
                     width={75}
                     height={75}
                     className={s.logo}
+                    onClick={
+                        () => router.push("/home")
+                    }
                 />
                 <div className={s.path}>
                     {

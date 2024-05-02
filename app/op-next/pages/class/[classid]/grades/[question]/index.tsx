@@ -4,6 +4,7 @@ import { getCorrectPollType } from '@openpoll/packages/models/poll';
 import MCPoll, { MCOptions } from '@openpoll/packages/models/poll/mc';
 import OrderPoll from '@openpoll/packages/models/poll/ordering';
 import ShortPoll from '@openpoll/packages/models/poll/short';
+import TrueFalsePoll from "@openpoll/packages/models/poll/truefalse";
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { useRouter } from 'next/router';
@@ -18,7 +19,7 @@ export default function Question() {
     const { user } = useAuth();
     console.log(pollId, classid)
 
-    const [openpoll, setOpenPoll] = useState<(MCPoll | ShortPoll | OrderPoll) | null>(null);
+    const [openpoll, setOpenPoll] = useState<(MCPoll | ShortPoll | OrderPoll | TrueFalsePoll) | null>(null);
     const [correctAnswer, setCorrectAnswer] = useState<boolean>(false);
     const [options, setOptions] = useState<MCOptions>([]);
     const [userResponse, setUserResponse] = useState<string[]>([]);
@@ -36,7 +37,7 @@ export default function Question() {
         const pollDoc = await getDoc(pollRef);
         const pollData = pollDoc.data();
         if (!pollData) return;
-        setOpenPoll(pollData as MCPoll | ShortPoll | OrderPoll);
+        setOpenPoll(pollData as MCPoll | ShortPoll | OrderPoll | TrueFalsePoll);
         console.log(pollData)
         console.log(openpoll)
         const poll = getCorrectPollType(pollData);
@@ -81,39 +82,64 @@ export default function Question() {
 
       return (
         <div className={s.grades}>
-            { openpoll && (
-                <div className={s.classGrades}>
-                    <h1>{openpoll.question}</h1>
-                    {openpoll && (
-                        <div className={s.classGrades}>
-                            { openpoll.type === "mc" ? (
-                            <div>
-                                {options.map((option, index) => {
-                                    const isUserResponse = userResponse.includes(option.letter);
-                                    const isCorrect = option.letter === openpoll.answerkey?.[0];
-                                    const optionClasses = `${s.answer} ${isCorrect ? s.correct : isUserResponse ? s.incorrect : ''}`;
+        { openpoll && (
+            <div className={s.classGrades}>
+                <h1>{openpoll.question}</h1>
+                {openpoll && (
+                    <div className={s.classGrades}>
+                        {openpoll.type === "mc" ? (
+                    <div>
+                        {options.map((option, index) => {
+                            const isUserResponse = userResponse.includes(option.letter);
+                            const isCorrect = option.letter === openpoll.answerkey?.[0];
+                            const optionClasses = `${s.answer} ${isCorrect ? s.correct : isUserResponse ? s.incorrect : ''}`;
 
-                                    return (
-                                        <div key={index} className={optionClasses}>
-                                            <p>{option.letter}: {option.option}</p>
-                                        </div>
-                                    );
-                                })}
+                            return (
+                                <div key={index} className={optionClasses}>
+                                    <p>{option.letter}: {option.option}</p>
+                                </div>
+                            );
+                        })}
+                        <p>Your answer is {correctAnswer ? 'correct' : 'incorrect'}.</p>
+                            </div>
+                        ) : openpoll.type === "short" ? (
+                            <div>
+                                <p>The correct answer was {openpoll.answerkey as string}.</p>
+                                <p>Your answer was {userResponse[0]}.</p>
                                 <p>Your answer is {correctAnswer ? 'correct' : 'incorrect'}.</p>
                             </div>
-                            ) : (
-                                openpoll.type === "short" && (
-                                    <div>
-                                        <p>The correct answer was {openpoll.answerkey as string}.</p>
-                                        <p>Your answer was {userResponse[0]}.</p>
-                                        <p>Your answer is {correctAnswer ? 'correct' : 'incorrect'}.</p>
-                                    </div>
-                                )
-                            )}
-                        </div>
-                    )}
-                </div>
-            )}
-        </div>
-    );
+                        ) : openpoll.type === "tf" ? (
+                            <div>
+                                <p>The correct answer was {openpoll.answerkey ? 'True' : 'False'}.</p>
+                                <p>Your answer was {userResponse[0] ? 'True' : 'False'}.</p>
+                                <p>Your answer is {correctAnswer ? 'correct' : 'incorrect'}.</p>
+                            </div>
+                        ) : openpoll.type === "order" && openpoll.answerkey ? (
+                            <div>
+                                {(() => {
+                                    if (openpoll.answerkey !== null) {
+                                        const orderPoll = openpoll as OrderPoll;
+                                        let answerKeyArray = Object.keys(orderPoll.answerkey).map(key => orderPoll.answerkey[key as any]);
+                                        const formattedAnswerKey = answerKeyArray.map((ak: any) => ak.letter).join(", ");
+                                        const userResponse = orderPoll.responses[user?.uid as string].response;
+                                        const formattedUserResponse = Object.keys(userResponse).map(key => userResponse[key as any].letter).join(", ");
+                                        return (
+                                            <>
+                                                <p>Correct order: {formattedAnswerKey}</p>
+                                                <p>Your order: {formattedUserResponse}</p>
+                                                <p>Your answer is {correctAnswer ? 'correct' : 'incorrect'}.</p>
+                                            </>
+                                        );
+                                    }
+                                    return null;
+                                })()}
+                            </div>
+                        ) : null}
+
+                                        </div>
+                                    )}
+                                </div>
+                )}
+            </div>
+        );
 }

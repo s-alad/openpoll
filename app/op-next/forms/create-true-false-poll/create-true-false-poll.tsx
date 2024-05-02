@@ -73,9 +73,9 @@ export default function CreateTrueFalsePoll({ pollData, pollid }: CreateTrueFals
     const ischecked = watch("answerkey");
 
     const onSubmit = async (data: CreateTrueFalsePollFormData) => {
-        /* if (pollid) {
+        if (pollid) {
             await deleteOldPoll(pollid, classid);
-        } */
+        }
 
         console.log("SUCCESS", data);
 

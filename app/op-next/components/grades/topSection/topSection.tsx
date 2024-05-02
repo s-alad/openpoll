@@ -2,7 +2,7 @@ import s from "./topSection.module.scss";
 import { useAuth } from "@/context/authcontext";
 
 interface Props {
-  totalGrade: number;
+  totalGrade: string;
   attendedCount: number;
   studentAttendanceLength: number;
   numCorrect: number;
@@ -43,7 +43,7 @@ export default function TopSection({totalGrade, attendedCount, studentAttendance
                   <span>Participation</span>
                   <span className={s.scoreValue}>
                     {studentAttendanceLength !== 0
-                      ? `${(attendedCount / studentAttendanceLength) * 100}`
+                      ? `${(attendedCount / studentAttendanceLength) * 100}.toFixed(1)`
                       : '0'} / 100
                   </span>
                 </div>

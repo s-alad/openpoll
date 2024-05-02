@@ -102,7 +102,7 @@ export default function gradebook() {
                     console.log(response);
                     console.log(students)
                     if (mcPoll.responses[response].correct) {
-                        students[response].grade += 1;
+                        if (students[response]) {students[response].grade += 1;}
                     }
                 }
             }
@@ -111,7 +111,7 @@ export default function gradebook() {
                 const attendencePoll = poll as AttendancePoll;
                 for (let response in attendencePoll.responses) {
                     if (response) {
-                        students[response].attendance += 1;
+                        if (students[response]) {students[response].attendance += 1;}
                     }
                 }
             }

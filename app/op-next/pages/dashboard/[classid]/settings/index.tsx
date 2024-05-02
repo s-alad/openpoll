@@ -4,8 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faArrowLeftLong, faPlus, faRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import s from './settings.module.scss';
 import Link from 'next/link';
-import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
-import { auth, db } from '@openpoll/packages/config/firebaseconfig';
+import { arrayRemove, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
+import { auth, db, fxns } from '@openpoll/packages/config/firebaseconfig';
 import Poll, { PollAndId, TLPoll, TPoll, convertPollTypeToText, getCorrectPollType } from '@openpoll/packages/models/poll';
 import Loader from '@/components/loader/loader';
 import Image from 'next/image';
@@ -21,7 +21,13 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MdOutlineRemoveCircle } from "react-icons/md";
+import { httpsCallable } from 'firebase/functions';
 
+interface Student {
+    name: string;
+    email: string;
+    uid: string;
+}
 
 export default function Settings() {
     const router = useRouter();
@@ -29,6 +35,7 @@ export default function Settings() {
     const classid = router.query.classid as string;
     const [loading, setLoading] = useState(false);
     const [classroom, setClassroom] = useState<Classroom | null>(null);
+    const [students, setStudents] = useState<Student[]>([]);
 
     async function addAdmin(data: { newAdminEmail: string }) {
         setLoading(true);
@@ -63,11 +70,52 @@ export default function Settings() {
         setLoading(false);
     }
 
+    async function getStudents() {
+        const classRef = doc(db, "classes", classid);
+        const studentRef = collection(classRef, "students");
+        const snapshot = await getDocs(studentRef);
+        let students: Student[] = [];
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            if (Object.keys(data).length === 0) { return; }
+            students.push({ name: data.name, email: data.email, uid: data.uid} as Student);
+        });
+        console.log(students);
+        setStudents(students);
+    }
+
+    async function removeStudentFromClass(student: Student) {
+        setLoading(true);
+        // remove that students document from the students collection in the class
+        try {
+            const classRef = doc(db, "classes", classid);
+            const studentDocRef = doc(classRef, "students", student.uid); 
+            console.log('studentid', student.uid);
+            console.log(studentDocRef);
+            await deleteDoc(studentDocRef);
+        } catch (error) {
+            console.error("Error removing student from class");
+        }
+
+        // call the firebase function 'removeClassFromUser' to remove the the classid from the students classids array
+        try {
+            const removeClassFromUserFxn = httpsCallable(fxns, "removeClassFromUser");
+            const res = await removeClassFromUserFxn({ email: student.email, classid: classid });
+            console.log(res);
+        } catch (error) {
+            console.error("Error removing class from user");
+            console.error(error);
+        }
+
+        const reload = await getStudents();
+        setLoading(false);
+    }
+
     // execute necessary functions
     async function main() {
         setLoading(true);
         const c: Classroom | null = await getClassFromId(classid);
-        
+        await getStudents();
         setClassroom(c);
         setLoading(false);
     }
@@ -132,6 +180,32 @@ export default function Settings() {
                                 disabled={classroom?.admins.emails.includes(newAdminEmail) || newAdminEmail === classroom?.owner.email}
                             />
                         </form>
+                    </div>
+
+                    <div className={s.students}>
+                        <div className={s.title}>students</div>
+                        {
+                            students.length === 0 &&
+                            <div className={s.empty}>
+                                No students are currently enrolled in this class
+                            </div>
+                        }
+                        {
+                            students.map((student, index) => {
+                                return (
+                                    <div className={s.student} key={index}>
+                                        <div className={s.idx}>{index + 1}</div>
+                                        <div className={s.name}>{student.name}</div>
+                                        <div className={s.email}>{student.email}</div>
+                                        <div className={s.remove}
+                                            onClick={() => removeStudentFromClass(student)}
+                                        >
+                                            <MdOutlineRemoveCircle />
+                                        </div>
+                                    </div>
+                                )
+                            })
+                        }
                     </div>
                 </div>
             }
