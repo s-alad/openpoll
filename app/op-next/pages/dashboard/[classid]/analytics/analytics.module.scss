@@ -1,4 +1,4 @@
-.class {
+.analytics {
     width: 100%;
 
     .analyticsHeader {
@@ -19,7 +19,17 @@
         margin-top: 2vh;
 
         .pollQuestion {
-            font-size: 20px;
+            font-size: 30px;
+
+            a {
+                text-decoration: none;
+                color: black;
+                transition: color 0.2s ease;
+            }
+
+            a:hover {
+                color: #4036EE;
+            }
         }
 
         .shortAnswerTable {
